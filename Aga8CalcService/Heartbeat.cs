@@ -2,6 +2,7 @@
 using System;
 using System.Globalization;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Timers;
 
 namespace Aga8CalcService
@@ -10,6 +11,7 @@ namespace Aga8CalcService
     {
         private readonly System.Timers.Timer _timer;
         private readonly Aga8OpcClient _client;
+        public ConfigFile conf;
         public Heartbeat()
         {
             _timer = new System.Timers.Timer(10_000) { AutoReset = true };
@@ -17,9 +19,12 @@ namespace Aga8CalcService
 
             int stopTimeout = Timeout.Infinite;
             bool autoAccept = false;
-            string endpointURL;
+
+            conf = Aga8Calc.ReadConfig("Tag_Config.xml");
+
+            string endpointURL = conf.opc_url;
             // use OPC UA .Net Sample server 
-            endpointURL = "opc.tcp://lt-103009:62548/Quickstarts/DataAccessServer";
+            //endpointURL = "opc.tcp://lt-103009:62548/Quickstarts/DataAccessServer";
             //endpointURL = "opc.tcp://127.0.0.1:49320";
             _client = new Aga8OpcClient(endpointURL, autoAccept, stopTimeout);
         }
@@ -53,7 +58,36 @@ namespace Aga8CalcService
             double press = 50_000.0;
             double tempr = 400.0;
 
-            Console.WriteLine(Aga8Calc.aga8_2017(comp, press, tempr, Aga8Calc.Aga8ResultCode.Density));
+            conf.configList.Items[0].pressure = 50_000.0;
+            conf.configList.Items[0].temperature = 400.0;
+            conf.configList.Items[0].composition = comp;
+
+            Parallel.For(0, conf.configList.Items.Count, c =>
+            {
+                conf.configList.Items[c].result =
+                Aga8Calc.aga8_2017(
+                    conf.configList.Items[c].composition,
+                    conf.configList.Items[c].pressure,
+                    conf.configList.Items[c].temperature,
+                    conf.configList.Items[c].calculation);
+
+                Console.WriteLine("{0}: {1}", conf.configList.Items[c].calculation, conf.configList.Items[c].result);
+            });
+
+            Parallel.For(0, 10000, i =>
+            {
+                Aga8Calc.aga8_2017(comp, press, tempr, Config.Aga8ResultCode.SpeedOfSound);
+            });
+
+            foreach (Config c in conf.configList.Items)
+            {
+                c.result = Aga8Calc.aga8_2017(c.composition, c.pressure, c.temperature, c.calculation);
+            }
+
+            foreach (Config.Aga8ResultCode i in (Config.Aga8ResultCode[]) Enum.GetValues(typeof(Config.Aga8ResultCode)))
+            {
+                Console.WriteLine("{0}: {1}", Enum.GetName(typeof(Config.Aga8ResultCode), i), Aga8Calc.aga8_2017(comp, press, tempr, i));
+            }
 
             try
             {
@@ -83,12 +117,12 @@ namespace Aga8CalcService
                     Console.WriteLine("Comp[{0}] = {1}", i, comp[i]);
                 }
 
-                Console.WriteLine(Aga8Calc.aga8_2017(comp, press, tempr, Aga8Calc.Aga8ResultCode.Density));
+                Console.WriteLine(Aga8Calc.aga8_2017(comp, press, tempr, Config.Aga8ResultCode.Density));
 
                 WriteValue wv = new WriteValue();
                 wv.NodeId = "ns=2;s=ABB OPC Connect Server.PhaseOpt.31PY0161_A";
                 wv.AttributeId = Attributes.Value;
-                wv.Value.Value = (Variant)Aga8Calc.aga8_2017(comp, press, tempr, Aga8Calc.Aga8ResultCode.Density);
+                wv.Value.Value = (Variant)Aga8Calc.aga8_2017(comp, press, tempr, Config.Aga8ResultCode.Density);
                 wv.Value.StatusCode = StatusCodes.Good;
 
                 WriteValueCollection wvc = new WriteValueCollection();
