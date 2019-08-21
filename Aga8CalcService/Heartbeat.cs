@@ -1,5 +1,6 @@
 ﻿using Opc.Ua;
 using System;
+using System.Globalization;
 using System.Threading;
 using System.Timers;
 
@@ -18,8 +19,8 @@ namespace Aga8CalcService
             bool autoAccept = false;
             string endpointURL;
             // use OPC UA .Net Sample server 
-            //endpointURL = "opc.tcp://lt-103009:62548/Quickstarts/DataAccessServer";
-            endpointURL = "opc.tcp://127.0.0.1:49320";
+            endpointURL = "opc.tcp://lt-103009:62548/Quickstarts/DataAccessServer";
+            //endpointURL = "opc.tcp://127.0.0.1:49320";
             _client = new Aga8OpcClient(endpointURL, autoAccept, stopTimeout);
         }
 
@@ -73,7 +74,7 @@ namespace Aga8CalcService
                 {
                     if (i < meas.Length)
                     {
-                        comp[i] = Convert.ToDouble(meas[i].Value) / 100.0;
+                        comp[i] = Convert.ToDouble(meas[i].Value, CultureInfo.InvariantCulture) / 100.0;
                     }
                     else
                     {
@@ -117,6 +118,8 @@ namespace Aga8CalcService
         public void Stop()
         {
             _timer.Stop();
+            _timer.Dispose();
+            _client.DisConnect();
         }
     }
 

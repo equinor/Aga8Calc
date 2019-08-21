@@ -83,6 +83,24 @@ namespace Aga8CalcService
             }
         }
 
+        public void DisConnect()
+        {
+            // stop any reconnect operation.
+            if (reconnectHandler != null)
+            {
+                reconnectHandler.Dispose();
+                reconnectHandler = null;
+            }
+
+            // disconnect any existing session.
+            if (session != null)
+            {
+                session.Close(5000);
+                session.Dispose();
+                session = null;
+            }
+        }
+
         private void Client_KeepAlive(Session sender, KeepAliveEventArgs e)
         {
             if (e.Status != null && ServiceResult.IsNotGood(e.Status))
