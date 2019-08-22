@@ -16,11 +16,11 @@ namespace Aga8CalcService
                     s.WhenStopped(heartbeat => heartbeat.Stop());
                 });
 
-                x.RunAsLocalService();
+                x.RunAsLocalSystem();
 
-                x.SetServiceName("HeartbeatService");
-                x.SetDisplayName("Heartbeat Service");
-                x.SetDescription("This is the sample heartbeat service used in a YouTube demo.");
+                x.SetServiceName("Aga8CalcService");
+                x.SetDisplayName("Aga8 Calc Service");
+                x.SetDescription("Calculates Aga8 parameters like density, molar mass, speed of sound.");
             });
 
             int exitCodeValue = (int)Convert.ChangeType(exitCode, exitCode.GetTypeCode());

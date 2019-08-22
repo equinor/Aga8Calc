@@ -15,12 +15,15 @@ namespace Aga8CalcService
         string endpointURL;
         int clientRunTime = Timeout.Infinite;
         static bool autoAccept = false;
+        UserIdentity user;
 
-        public Aga8OpcClient(string _endpointURL, bool _autoAccept, int _stopTimeout)
+        public Aga8OpcClient(string _endpointURL, bool _autoAccept, int _stopTimeout, string _username, string _password)
         {
             endpointURL = _endpointURL;
             autoAccept = _autoAccept;
             clientRunTime = _stopTimeout <= 0 ? Timeout.Infinite : _stopTimeout * 1000;
+
+            user = new UserIdentity(_username, _password);
         }
 
         public async Task Connect()
@@ -69,7 +72,6 @@ namespace Aga8CalcService
                 var endpointConfiguration = EndpointConfiguration.Create(config);
                 var endpoint = new ConfiguredEndpoint(null, selectedEndpoint, endpointConfiguration);
 
-                var user = new UserIdentity("rovo", "kep");
                 session = await Session.Create(config, endpoint, false, "OPC UA Console Client", 60000, user, null);
 
                 // register keep alive handler

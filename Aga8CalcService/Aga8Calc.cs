@@ -9,9 +9,12 @@ namespace Aga8CalcService
     [XmlRoot("configuration")]
     public class ConfigFile
     {
-        public string opc_url;
-        public string opc_user;
-        public string opc_password;
+        [XmlElement("opc_url")]
+        public string OpcUrl { get; set; }
+        [XmlElement("opc_user")]
+        public string OpcUser { get; set; }
+        [XmlElement("opc_password")]
+        public string OpcPassword { get; set; }
 
         [XmlElement("config_list")]
         public ConfigList configList = new ConfigList();
@@ -29,7 +32,7 @@ namespace Aga8CalcService
     {
         public enum Aga8ResultCode : Int32
         {
-            Density = 0,
+            MolarConcentration = 0,
             CompressibilityFactor = 1,
             MolarMass = 2,
             InternalEnergy = 6,
@@ -40,7 +43,8 @@ namespace Aga8CalcService
             SpeedOfSound = 11,
             GibbsEnergy = 12,
             JouleThomsonCoefficient = 13,
-            IsentropicExponent = 14
+            IsentropicExponent = 14,
+            Density = 15
         }
 
         public double[] composition = (double[])Array.CreateInstance(typeof(double), 21);
@@ -62,8 +66,8 @@ namespace Aga8CalcService
 
     class Aga8Calc
     {
-        [DllImport("aga8_2017.dll")]
-        public static extern double aga8_2017(double[] composition, double pressure, double temperature, Config.Aga8ResultCode result);
+        [DllImport(@"aga8_2017.dll", EntryPoint = "aga8_2017")]
+        public static extern double Aga8_2017(double[] composition, double pressure, double temperature, Config.Aga8ResultCode result);
 
         public static ConfigFile ReadConfig(string file)
         {
