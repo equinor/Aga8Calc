@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xs="http://www.w3.org/2001/XMLSchema" attributeFormDefault="unqualified" elementFormDefault="qualified">
+  <xsd:element name="configuration">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="opc_url" type="xsd:string" />
+        <xsd:element name="opc_user" type="xsd:string" />
+        <xsd:element name="opc_password" type="xsd:string" />
+        <xsd:element name="config_list">
+          <xsd:complexType>
+            <xsd:sequence>
+              <xsd:element maxOccurs="unbounded" name="config">
+                <xsd:complexType>
+                  <xsd:sequence>
+                    <xsd:element name="composition_tag">
+                      <xsd:complexType>
+                        <xsd:sequence>
+                          <xsd:element maxOccurs="21" name="string" nillable="true" type="xsd:string" />
+                        </xsd:sequence>
+                      </xsd:complexType>
+                    </xsd:element>
+                    <xsd:element name="pressure_tag" type="xsd:string" />
+                    <xsd:element name="temperature_tag" type="xsd:string" />
+                    <xsd:element name="calculation" type="xsd:string" default="Density"/>
+                    <xsd:element name="result_tag" type="xsd:string" />
+                  </xsd:sequence>
+                </xsd:complexType>
+              </xsd:element>
+            </xsd:sequence>
+          </xsd:complexType>
+        </xsd:element>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+</xs:schema>

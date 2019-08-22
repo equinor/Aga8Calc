@@ -54,7 +54,6 @@
       <temperature_tag>24TI1234</temperature_tag>
       <calculation>Density</calculation>
       <result_tag>24DI1234</result_tag>
-      <dummy>foo</dummy>
     </config>
     <config>
       <composition_tag>
