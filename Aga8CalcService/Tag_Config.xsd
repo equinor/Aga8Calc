@@ -6,6 +6,7 @@
         <xsd:element name="opc_url" type="xsd:string" />
         <xsd:element name="opc_user" type="xsd:string" />
         <xsd:element name="opc_password" type="xsd:string" />
+        <xsd:element name="interval" type="xsd:decimal" />
         <xsd:element name="config_list">
           <xsd:complexType>
             <xsd:sequence>
@@ -21,7 +22,25 @@
                     </xsd:element>
                     <xsd:element name="pressure_tag" type="xsd:string" />
                     <xsd:element name="temperature_tag" type="xsd:string" />
-                    <xsd:element name="calculation" type="xsd:string" default="Density"/>
+                    <xsd:element name="calculation" default="Density">
+                      <xsd:simpleType>
+                        <xsd:restriction base="xsd:string">
+                          <xsd:enumeration value="CompressibilityFactor"/>
+                          <xsd:enumeration value="Density"/>
+                          <xsd:enumeration value="Enthalpy"/>
+                          <xsd:enumeration value="Entropy"/>
+                          <xsd:enumeration value="GibbsEnergy"/>
+                          <xsd:enumeration value="InternalEnergy"/>
+                          <xsd:enumeration value="IsentropicExponent"/>
+                          <xsd:enumeration value="IsobaricHeatCapacity"/>
+                          <xsd:enumeration value="IsochoricHeatCapacity"/>
+                          <xsd:enumeration value="JouleThomsonCoefficient"/>
+                          <xsd:enumeration value="MolarConcentration"/>
+                          <xsd:enumeration value="MolarMass"/>
+                          <xsd:enumeration value="SpeedOfSound"/>
+                        </xsd:restriction>
+                      </xsd:simpleType>
+                    </xsd:element>
                     <xsd:element name="result_tag" type="xsd:string" />
                   </xsd:sequence>
                 </xsd:complexType>

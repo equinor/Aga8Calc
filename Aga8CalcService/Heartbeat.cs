@@ -13,18 +13,16 @@ namespace Aga8CalcService
         public ConfigFile conf;
         public Heartbeat()
         {
-            _timer = new System.Timers.Timer(10_000) { AutoReset = true };
+            string TagConfFile = AppDomain.CurrentDomain.BaseDirectory.ToString() + "Tag_Config.xml";
+            conf = Aga8Calc.ReadConfig(TagConfFile);
+
+            _timer = new System.Timers.Timer(conf.Interval) { AutoReset = true };
             _timer.Elapsed += TimerElapsed;
 
             int stopTimeout = Timeout.Infinite;
             bool autoAccept = false;
 
-            string TagConfFile = AppDomain.CurrentDomain.BaseDirectory.ToString() + "Tag_Config.xml";
-
-            conf = Aga8Calc.ReadConfig(TagConfFile);
-
-            string endpointURL = conf.OpcUrl;
-            _client = new Aga8OpcClient(endpointURL, autoAccept, stopTimeout, conf.OpcUser, conf.OpcPassword);
+            _client = new Aga8OpcClient(conf.OpcUrl, autoAccept, stopTimeout, conf.OpcUser, conf.OpcPassword);
         }
 
         private void TimerElapsed(object sender, ElapsedEventArgs e)

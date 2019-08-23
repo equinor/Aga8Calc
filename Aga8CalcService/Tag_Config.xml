@@ -3,6 +3,7 @@
   <opc_url>opc.tcp://lt-103009:62548/Quickstarts/DataAccessServer</opc_url>
   <opc_user>xxx</opc_user>
   <opc_password>xxx</opc_password>
+  <interval>1000</interval>
   <config_list>
     <config>
       <!-- Sort order is significant -->

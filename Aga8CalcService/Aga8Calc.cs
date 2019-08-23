@@ -16,6 +16,9 @@ namespace Aga8CalcService
         [XmlElement("opc_password")]
         public string OpcPassword { get; set; }
 
+        [XmlElement("interval")]
+        public double Interval { get; set; }
+
         [XmlElement("config_list")]
         public ConfigList configList = new ConfigList();
     }

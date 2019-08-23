@@ -368,6 +368,7 @@
     <None Include="packages.config" />
     <None Include="Tag_Config.xsd">
       <SubType>Designer</SubType>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <ItemGroup>
