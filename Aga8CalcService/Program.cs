@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using Topshelf;
 
 namespace Aga8CalcService
@@ -23,7 +24,7 @@ namespace Aga8CalcService
                 x.SetDescription("Calculates Aga8 parameters like density, molar mass, speed of sound.");
             });
 
-            int exitCodeValue = (int)Convert.ChangeType(exitCode, exitCode.GetTypeCode());
+            int exitCodeValue = (int)Convert.ChangeType(exitCode, exitCode.GetTypeCode(), CultureInfo.InvariantCulture);
             Environment.ExitCode = exitCodeValue;
         }
     }

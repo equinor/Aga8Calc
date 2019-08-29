@@ -13,16 +13,15 @@ namespace Aga8CalcService
         private readonly ConfigFile conf;
         public Heartbeat()
         {
-            string TagConfFile = AppDomain.CurrentDomain.BaseDirectory.ToString() + "Tag_Config.xml";
+            string TagConfFile = AppDomain.CurrentDomain.BaseDirectory.ToString(CultureInfo.InvariantCulture) + "Tag_Config.xml";
             conf = ConfigFile.ReadConfig(TagConfFile);
 
             _timer = new System.Timers.Timer(conf.Interval) { AutoReset = true };
             _timer.Elapsed += TimerElapsed;
 
-            int stopTimeout = Timeout.Infinite;
             bool autoAccept = false;
 
-            _client = new Aga8OpcClient(conf.OpcUrl, autoAccept, stopTimeout, conf.OpcUser, conf.OpcPassword);
+            _client = new Aga8OpcClient(conf.OpcUrl, autoAccept, conf.OpcUser, conf.OpcPassword);
         }
 
         private void TimerElapsed(object sender, ElapsedEventArgs e)
@@ -31,15 +30,15 @@ namespace Aga8CalcService
             {
                 foreach (Config c in conf.ConfigList.Item)
                 {
-                    c.Pressure = Convert.ToDouble(_client.session.ReadValue(c.PressureTag).Value, CultureInfo.InvariantCulture) * 100.0;
+                    c.Pressure = Convert.ToDouble(_client.OpcSession.ReadValue(c.PressureTag).Value, CultureInfo.InvariantCulture) * 100.0;
                     Console.WriteLine("Pressure: {0} kPa", c.Pressure);
-                    c.Temperature = Convert.ToDouble(_client.session.ReadValue(c.TemperatureTag).Value, CultureInfo.InvariantCulture) + 273.15;
+                    c.Temperature = Convert.ToDouble(_client.OpcSession.ReadValue(c.TemperatureTag).Value, CultureInfo.InvariantCulture) + 273.15;
                     Console.WriteLine("Temperature: {0} K", c.Temperature);
                     for (int i = 0; i < c.CompositionTag.Length; i++)
                     {
                         if (c.CompositionTag[i] != null)
                         {
-                            c.GetComposition()[i] = Convert.ToDouble(_client.session.ReadValue(c.CompositionTag[i]).Value, CultureInfo.InvariantCulture) / 100.0;
+                            c.GetComposition()[i] = Convert.ToDouble(_client.OpcSession.ReadValue(c.CompositionTag[i]).Value, CultureInfo.InvariantCulture) / 100.0;
                             Console.WriteLine("{0}: {1} mole fraction", c.CompositionTag[i], c.GetComposition()[i]);
                         }
                     }
@@ -62,7 +61,7 @@ namespace Aga8CalcService
                     StatusCodeCollection results = null;
                     DiagnosticInfoCollection diagnosticInfos = null;
 
-                    _client.session.Write(null, wvc, out results, out diagnosticInfos);
+                    _client.OpcSession.Write(null, wvc, out results, out diagnosticInfos);
                 }
             }
             catch

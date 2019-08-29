@@ -9,21 +9,19 @@ namespace Aga8CalcService
 {
     public class Aga8OpcClient
     {
-        const int ReconnectPeriod = 10;
-        public Session session;
-        SessionReconnectHandler reconnectHandler;
-        string endpointURL;
-        int clientRunTime = Timeout.Infinite;
-        static bool autoAccept = false;
-        UserIdentity user;
+        private const int ReconnectPeriod = 10;
+        public Session OpcSession { get; set; }
+        private SessionReconnectHandler reconnectHandler;
+        private readonly string endpointUrl;
+        private static bool autoAccept = false;
+        private readonly UserIdentity user;
 
-        public Aga8OpcClient(string _endpointURL, bool _autoAccept, int _stopTimeout, string _username, string _password)
+        public Aga8OpcClient(string endpointUrl, bool autoAccept, string username, string password)
         {
-            endpointURL = _endpointURL;
-            autoAccept = _autoAccept;
-            clientRunTime = _stopTimeout <= 0 ? Timeout.Infinite : _stopTimeout * 1000;
+            this.endpointUrl = endpointUrl;
+            Aga8OpcClient.autoAccept = autoAccept;
 
-            user = new UserIdentity(_username, _password);
+            user = new UserIdentity(username, password);
         }
 
         public async Task Connect()
@@ -63,8 +61,8 @@ namespace Aga8CalcService
                     Console.WriteLine("    WARN: missing application certificate, using unsecure connection.");
                 }
 
-                Console.WriteLine("2 - Discover endpoints of {0}.", endpointURL);
-                var selectedEndpoint = CoreClientUtils.SelectEndpoint(endpointURL, haveAppCertificate, 15000);
+                Console.WriteLine("2 - Discover endpoints of {0}.", endpointUrl);
+                var selectedEndpoint = CoreClientUtils.SelectEndpoint(endpointUrl, haveAppCertificate, 15000);
                 Console.WriteLine("    Selected endpoint uses: {0}",
                     selectedEndpoint.SecurityPolicyUri.Substring(selectedEndpoint.SecurityPolicyUri.LastIndexOf('#') + 1));
 
@@ -72,10 +70,10 @@ namespace Aga8CalcService
                 var endpointConfiguration = EndpointConfiguration.Create(config);
                 var endpoint = new ConfiguredEndpoint(null, selectedEndpoint, endpointConfiguration);
 
-                session = await Session.Create(config, endpoint, false, "OPC UA Console Client", 60000, user, null);
+                OpcSession = await Session.Create(config, endpoint, false, "OPC UA Console Client", 60000, user, null);
 
                 // register keep alive handler
-                session.KeepAlive += Client_KeepAlive;
+                OpcSession.KeepAlive += Client_KeepAlive;
             }
             catch (Exception ex)
             {
@@ -95,11 +93,11 @@ namespace Aga8CalcService
             }
 
             // disconnect any existing session.
-            if (session != null)
+            if (OpcSession != null)
             {
-                session.Close(5000);
-                session.Dispose();
-                session = null;
+                OpcSession.Close(5000);
+                OpcSession.Dispose();
+                OpcSession = null;
             }
         }
 
@@ -126,7 +124,7 @@ namespace Aga8CalcService
                 return;
             }
 
-            session = reconnectHandler.Session;
+            OpcSession = reconnectHandler.Session;
             reconnectHandler.Dispose();
             reconnectHandler = null;
 

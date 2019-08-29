@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Xml;
 using System.Xml.Serialization;
 
 namespace Aga8CalcService
@@ -26,11 +27,17 @@ namespace Aga8CalcService
         {
             try
             {
-                string filename = file;
-                FileStream configFileStream = new FileStream(filename, FileMode.Open);
+                XmlReaderSettings readerSettings = new XmlReaderSettings
+                {
+                    IgnoreComments = true,
+                    IgnoreProcessingInstructions = true,
+                    IgnoreWhitespace = true
+                };
+
+                XmlReader configFileReader = XmlReader.Create(file, readerSettings);
                 XmlSerializer configSerializer = new XmlSerializer(typeof(ConfigFile));
-                ConfigFile result = (ConfigFile)configSerializer.Deserialize(configFileStream);
-                configFileStream.Close();
+                ConfigFile result = (ConfigFile)configSerializer.Deserialize(configFileReader);
+                configFileReader.Close();
 
                 return result;
             }

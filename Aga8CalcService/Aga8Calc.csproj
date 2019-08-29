@@ -359,6 +359,7 @@
   <ItemGroup>
     <Compile Include="Aga8Calc.cs" />
     <Compile Include="Aga8OpcClient.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Heartbeat.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
