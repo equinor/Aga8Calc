@@ -10,11 +10,11 @@ namespace Aga8CalcService
     {
         private readonly System.Timers.Timer _timer;
         private readonly Aga8OpcClient _client;
-        public ConfigFile conf;
+        private readonly ConfigFile conf;
         public Heartbeat()
         {
             string TagConfFile = AppDomain.CurrentDomain.BaseDirectory.ToString() + "Tag_Config.xml";
-            conf = Aga8Calc.ReadConfig(TagConfFile);
+            conf = ConfigFile.ReadConfig(TagConfFile);
 
             _timer = new System.Timers.Timer(conf.Interval) { AutoReset = true };
             _timer.Elapsed += TimerElapsed;
@@ -29,31 +29,31 @@ namespace Aga8CalcService
         {
             try
             {
-                foreach (Config c in conf.configList.Items)
+                foreach (Config c in conf.ConfigList.Item)
                 {
-                    c.pressure = Convert.ToDouble(_client.session.ReadValue(c.pressure_tag).Value, CultureInfo.InvariantCulture) * 100.0;
-                    Console.WriteLine("Pressure: {0} kPa", c.pressure);
-                    c.temperature = Convert.ToDouble(_client.session.ReadValue(c.temperature_tag).Value, CultureInfo.InvariantCulture) + 273.15;
-                    Console.WriteLine("Temperature: {0} K", c.temperature);
-                    for (int i = 0; i < c.composition_tag.Length; i++)
+                    c.Pressure = Convert.ToDouble(_client.session.ReadValue(c.PressureTag).Value, CultureInfo.InvariantCulture) * 100.0;
+                    Console.WriteLine("Pressure: {0} kPa", c.Pressure);
+                    c.Temperature = Convert.ToDouble(_client.session.ReadValue(c.TemperatureTag).Value, CultureInfo.InvariantCulture) + 273.15;
+                    Console.WriteLine("Temperature: {0} K", c.Temperature);
+                    for (int i = 0; i < c.CompositionTag.Length; i++)
                     {
-                        if (c.composition_tag[i] != null)
+                        if (c.CompositionTag[i] != null)
                         {
-                            c.composition[i] = Convert.ToDouble(_client.session.ReadValue(c.composition_tag[i]).Value, CultureInfo.InvariantCulture) / 100.0;
-                            Console.WriteLine("{0}: {1} mole fraction", c.composition_tag[i], c.composition[i]);
+                            c.GetComposition()[i] = Convert.ToDouble(_client.session.ReadValue(c.CompositionTag[i]).Value, CultureInfo.InvariantCulture) / 100.0;
+                            Console.WriteLine("{0}: {1} mole fraction", c.CompositionTag[i], c.GetComposition()[i]);
                         }
                     }
                 }
 
-                foreach (Config c in conf.configList.Items)
+                foreach (Config c in conf.ConfigList.Item)
                 {
-                    c.result = Aga8Calc.Aga8_2017(c.composition, c.pressure, c.temperature, c.calculation);
-                    Console.WriteLine(c.result);
+                    c.Result = NativeMethods.Aga8_2017(c.GetComposition(), c.Pressure, c.Temperature, c.Calculation);
+                    Console.WriteLine(c.Result);
 
                     WriteValue wv = new WriteValue();
-                    wv.NodeId = c.result_tag;
+                    wv.NodeId = c.ResultTag;
                     wv.AttributeId = Attributes.Value;
-                    wv.Value.Value = c.result;
+                    wv.Value.Value = c.Result;
                     wv.Value.StatusCode = StatusCodes.Good;
 
                     WriteValueCollection wvc = new WriteValueCollection();

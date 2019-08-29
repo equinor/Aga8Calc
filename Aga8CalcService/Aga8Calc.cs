@@ -20,14 +20,32 @@ namespace Aga8CalcService
         public double Interval { get; set; }
 
         [XmlElement("config_list")]
-        public ConfigList configList = new ConfigList();
+        public ConfigList ConfigList = new ConfigList();
+
+        public static ConfigFile ReadConfig(string file)
+        {
+            try
+            {
+                string filename = file;
+                FileStream configFileStream = new FileStream(filename, FileMode.Open);
+                XmlSerializer configSerializer = new XmlSerializer(typeof(ConfigFile));
+                ConfigFile result = (ConfigFile)configSerializer.Deserialize(configFileStream);
+                configFileStream.Close();
+
+                return result;
+            }
+            catch
+            {
+                return new ConfigFile();
+            }
+        }
     }
 
     public class ConfigList
     {
-        public ConfigList() { Items = new List<Config>(); }
+        public ConfigList() { Item = new List<Config>(); }
         [XmlElement("config")]
-        public List<Config> Items { get; set; }
+        public List<Config> Item { get; set; }
     }
 
     [XmlType("config")]
@@ -50,44 +68,44 @@ namespace Aga8CalcService
             Density = 15
         }
 
-        public double[] composition = (double[])Array.CreateInstance(typeof(double), 21);
-        public string[] composition_tag = (string[])Array.CreateInstance(typeof(string), 21);
+        private double[] Composition = (double[])Array.CreateInstance(typeof(double), 21);
+
+        [XmlArray("composition_tag")]
+        public string[] CompositionTag { get; set; } = (string[])Array.CreateInstance(typeof(string), 21);
+
         [XmlIgnore]
-        public double pressure;
-        public string pressure_tag;
+        public double Pressure { get => Pressure; set => Pressure = value; }
         [XmlIgnore]
-        public double temperature;
-        public string temperature_tag;
-        public Aga8ResultCode calculation;
+        public double Temperature { get; set; }
         [XmlIgnore]
-        public double result;
-        public string result_tag;
+        public double Result { get => Result; set => Result = value; }
+
+        public double[] GetComposition()
+        {
+            return Composition;
+        }
+
+        public void SetComposition(double[] value)
+        {
+            Composition = value;
+        }
+
+        [XmlElement("result_tag")]
+        public string ResultTag { get; set; }
+        [XmlElement("pressure_tag")]
+        public string PressureTag { get; set; }
+        [XmlElement("temperature_tag")]
+        public string TemperatureTag { get; set; }
+        public Aga8ResultCode Calculation { get; set; }
 
         public Config()
         { }
     }
 
-    class Aga8Calc
+    internal static class NativeMethods
     {
         [DllImport(@"aga8_2017.dll", EntryPoint = "aga8_2017")]
-        public static extern double Aga8_2017(double[] composition, double pressure, double temperature, Config.Aga8ResultCode result);
+        internal static extern double Aga8_2017(double[] composition, double pressure, double temperature, Config.Aga8ResultCode result);
 
-        public static ConfigFile ReadConfig(string file)
-        {
-            try
-            {
-                string filename = file;
-                FileStream configFileStream = new FileStream(filename, FileMode.Open);
-                XmlSerializer configSerializer = new XmlSerializer(typeof(ConfigFile));
-                ConfigFile result = (ConfigFile)configSerializer.Deserialize(configFileStream);
-                configFileStream.Close();
-
-                return result;
-            }
-            catch
-            {
-                return new ConfigFile();
-            }
-        }
     }
 }
