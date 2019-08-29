@@ -15,6 +15,7 @@ namespace Aga8CalcService
         private readonly string endpointUrl;
         private static bool autoAccept = false;
         private readonly UserIdentity user;
+        private static readonly NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
 
         public Aga8OpcClient(string endpointUrl, bool autoAccept, string username, string password)
         {
@@ -28,7 +29,7 @@ namespace Aga8CalcService
         {
             try
             {
-                Console.WriteLine("1 - Create an Application Configuration.");
+                logger.Info("Create an Application Configuration.");
 
                 ApplicationInstance application = new ApplicationInstance
                 {
@@ -61,12 +62,13 @@ namespace Aga8CalcService
                     Console.WriteLine("    WARN: missing application certificate, using unsecure connection.");
                 }
 
-                Console.WriteLine("2 - Discover endpoints of {0}.", endpointUrl);
+                logger.Info($"Discover endpoints of { endpointUrl }.");
                 var selectedEndpoint = CoreClientUtils.SelectEndpoint(endpointUrl, haveAppCertificate, 15000);
-                Console.WriteLine("    Selected endpoint uses: {0}",
+               
+                logger.Info("Selected endpoint uses: {0}",
                     selectedEndpoint.SecurityPolicyUri.Substring(selectedEndpoint.SecurityPolicyUri.LastIndexOf('#') + 1));
 
-                Console.WriteLine("3 - Create a session with OPC UA server.");
+                logger.Info("Create a session with OPC UA server.");
                 var endpointConfiguration = EndpointConfiguration.Create(config);
                 var endpoint = new ConfiguredEndpoint(null, selectedEndpoint, endpointConfiguration);
 
@@ -78,8 +80,8 @@ namespace Aga8CalcService
             catch (Exception ex)
             {
                 Utils.Trace("ServiceResultException:" + ex.Message);
-                Console.WriteLine("Exception: {0}", ex.Message);
-                return;
+                logger.Fatal(ex, "Failed to connect to Opc server.");
+                throw;
             }
         }
 

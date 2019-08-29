@@ -11,11 +11,22 @@ namespace Aga8CalcService
         private readonly System.Timers.Timer _timer;
         private readonly Aga8OpcClient _client;
         private readonly ConfigFile conf;
+        private static readonly NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
+
         public Heartbeat()
         {
+            logger.Info("Initializing service.");
             string TagConfFile = AppDomain.CurrentDomain.BaseDirectory.ToString(CultureInfo.InvariantCulture) + "Tag_Config.xml";
-            conf = ConfigFile.ReadConfig(TagConfFile);
+            try
+            {
+                conf = ConfigFile.ReadConfig(TagConfFile);
 
+            }
+            catch (Exception e)
+            {
+                logger.Fatal(e, "Failed to read tag configuration.");
+                throw;
+            }
             _timer = new System.Timers.Timer(conf.Interval) { AutoReset = true };
             _timer.Elapsed += TimerElapsed;
 
@@ -64,20 +75,23 @@ namespace Aga8CalcService
                     _client.OpcSession.Write(null, wvc, out results, out diagnosticInfos);
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                Console.WriteLine(@"Opc error!");
+                logger.Error(ex, "Opc error.");
             }
         }
 
         public async void Start()
         {
-            _timer.Start();
+            logger.Info("Starting service.");
             await _client.Connect();
+            _timer.Start();
+
         }
 
         public void Stop()
         {
+            logger.Info("Stopping service.");
             _timer.Stop();
             _timer.Dispose();
             _client.DisConnect();

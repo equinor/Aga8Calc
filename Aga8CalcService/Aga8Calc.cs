@@ -25,26 +25,19 @@ namespace Aga8CalcService
 
         public static ConfigFile ReadConfig(string file)
         {
-            try
+            XmlReaderSettings readerSettings = new XmlReaderSettings
             {
-                XmlReaderSettings readerSettings = new XmlReaderSettings
-                {
-                    IgnoreComments = true,
-                    IgnoreProcessingInstructions = true,
-                    IgnoreWhitespace = true
-                };
+                IgnoreComments = true,
+                IgnoreProcessingInstructions = true,
+                IgnoreWhitespace = true
+            };
 
-                XmlReader configFileReader = XmlReader.Create(file, readerSettings);
-                XmlSerializer configSerializer = new XmlSerializer(typeof(ConfigFile));
-                ConfigFile result = (ConfigFile)configSerializer.Deserialize(configFileReader);
-                configFileReader.Close();
+            XmlReader configFileReader = XmlReader.Create(file, readerSettings);
+            XmlSerializer configSerializer = new XmlSerializer(typeof(ConfigFile));
+            ConfigFile result = (ConfigFile)configSerializer.Deserialize(configFileReader);
+            configFileReader.Close();
 
-                return result;
-            }
-            catch
-            {
-                return new ConfigFile();
-            }
+            return result;
         }
     }
 
