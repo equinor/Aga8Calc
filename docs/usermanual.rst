@@ -48,7 +48,7 @@ They can be seen by running:
 
 This will produce this output:
 
-.. code-block::
+::
 
     Command-Line Reference
 
