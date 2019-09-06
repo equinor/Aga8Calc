@@ -11,9 +11,7 @@ Installation
 ------------
 
 Copy the Aga8Calc folder to `C:\Program Files`.
-Open cmd or Powershell and run the installation command:
-
-.. code-block:: powershell
+Open cmd or Powershell and run the installation command::
 
     PS C:\Program Files\Aga8Calc> .\Aga8CalcService.exe install
 
@@ -21,18 +19,14 @@ This will install Aga8Calc as a service that should start
 automatically when the computer starts.
 
 It is also possible to run Aga8Calc directly from the
-command line:
-
-.. code-block:: powershell
+command line::
 
     PS C:\Program Files\Aga8Calc> .\Aga8CalcService.exe
 
 Running from the command line could be useful for testing.
 
 To uninstall the Windows service run the Aga8CalcService.exe
-with the uninstall command.
-
-.. code-block:: powershell
+with the uninstall command::
 
     PS C:\Program Files\Aga8Calc> .\Aga8CalcService.exe uninstall
 
@@ -40,9 +34,7 @@ This should be done before installing a new version of
 Aga8Calc.
 
 There are several more options available to Aga8CalcService.exe.
-They can be seen by running:
-
-.. code-block:: powershell
+They can be seen by running::
 
     PS C:\Program Files\Aga8Calc> .\Aga8CalcService.exe --help
 
