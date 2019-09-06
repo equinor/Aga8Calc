@@ -292,6 +292,14 @@ A complete, minimal configuration file could look like this.
 > but the number of components must be exactly 21. And they must be in the
 > same order as shown here.
 
+## Files
+-   **aga8_2017.dll** Library that implements Aga8 Part 1 Detail
+    equation of state.
+-   **Aga8_Calc_Client.Config.xml** Config file for the OPC client.
+-   **Aga8CalcService.exe** Main program.
+-   **NLog.config** Configuration file for logging system.
+-   **Tag_Config.xml*** Main configuration file.
+
 
 
 ## Sequence Diagram
