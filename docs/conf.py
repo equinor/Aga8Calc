@@ -21,6 +21,12 @@ project = 'Aga8Calc'
 copyright = '2019, Equinor'
 author = 'Roy Vegard Ovesen'
 
+# The version info for the project you're documenting, acts as replacement for
+# |version| and |release|, also used in various other places throughout the
+# built documents.
+#
+# The short X.Y version.
+version = '0.2.0'
 
 # -- General configuration ---------------------------------------------------
 
