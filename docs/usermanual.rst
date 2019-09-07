@@ -113,11 +113,11 @@ The configuration file is structured like the example below.
 
     <?xml version="1.0" encoding="utf-8"?>
     <configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-    <opc_url>opc.tcp://lt-103009:62548/Quickstarts/DataAccessServer</opc_url>
-    <opc_user>xxx</opc_user>
-    <opc_password>xxx</opc_password>
-    <interval>1000</interval>
-    <config_list>
+      <opc_url>opc.tcp://lt-103009:62548/Quickstarts/DataAccessServer</opc_url>
+      <opc_user>xxx</opc_user>
+      <opc_password>xxx</opc_password>
+      <interval>1000</interval>
+      <config_list>
         <config>
         ...
         </config>
@@ -127,7 +127,7 @@ The configuration file is structured like the example below.
         <config>
         ...
         </config>
-    </config_list>
+      </config_list>
     </configuration>
 
 -   `<configuration>` is the root element. All other elements
@@ -241,14 +241,14 @@ A complete, minimal configuration file could look like this.
 
     <?xml version="1.0" encoding="utf-8"?>
     <configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-    <opc_url>opc.tcp://lt-103009:62548/Quickstarts/DataAccessServer</opc_url>
-    <opc_user>xxx</opc_user>
-    <opc_password>xxx</opc_password>
-    <interval>1000</interval>
-    <config_list>
+      <opc_url>opc.tcp://lt-103009:62548/Quickstarts/DataAccessServer</opc_url>
+      <opc_user>xxx</opc_user>
+      <opc_password>xxx</opc_password>
+      <interval>1000</interval>
+      <config_list>
         <config>
         <!-- Sort order is significant -->
-        <composition_tag>
+          <composition_tag>
             <!-- Methane -->
             <string>ns=2;s=ABB_800xA_Surrogate.S.24AI1234_A</string>
             <!-- Nitrogen -->
@@ -291,13 +291,13 @@ A complete, minimal configuration file could look like this.
             <string xsi:nil="true" />
             <!-- Argon -->
             <string xsi:nil="true" />
-        </composition_tag>
-        <pressure_tag>24PI1234</pressure_tag>
-        <temperature_tag>24TI1234</temperature_tag>
-        <calculation>Density</calculation>
-        <result_tag>24DI1234</result_tag>
+          </composition_tag>
+          <pressure_tag>24PI1234</pressure_tag>
+          <temperature_tag>24TI1234</temperature_tag>
+          <calculation>Density</calculation>
+          <result_tag>24DI1234</result_tag>
         </config>
-    </config_list>
+      </config_list>
     </configuration>
 
 .. note:: Not every component of the composition needs to have an item,
