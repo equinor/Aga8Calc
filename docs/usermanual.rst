@@ -17,23 +17,19 @@ Open cmd or Powershell and run the installation command::
 
     PS C:\Program Files\Aga8Calc> .\Aga8CalcService.exe install
 
-This will install Aga8Calc as a service that should start
-automatically when the computer starts.
+This will install Aga8Calc as a service that should start automatically when the computer starts.
 
-It is also possible to run Aga8Calc directly from the
-command line::
+It is also possible to run Aga8Calc directly from the command line::
 
     PS C:\Program Files\Aga8Calc> .\Aga8CalcService.exe
 
 Running from the command line could be useful for testing.
 
-To uninstall the Windows service run the Aga8CalcService.exe
-with the uninstall command::
+To uninstall the Windows service run the Aga8CalcService.exe with the uninstall command::
 
     PS C:\Program Files\Aga8Calc> .\Aga8CalcService.exe uninstall
 
-This should be done before installing a new version of
-Aga8Calc.
+This should be done before installing a new version of Aga8Calc.
 
 There are several more options available to Aga8CalcService.exe.
 They can be seen by running::
@@ -130,16 +126,15 @@ The configuration file is structured like the example below.
       </config_list>
     </configuration>
 
--   `<configuration>` is the root element. All other elements
-    live inside this one.
+-   `<configuration>` is the root element.
+    All other elements live inside this one.
 
 -   `<opc_url>` is used to select what OPC server to connect to.
 
--   `<opc_user>` and `<opc_password>` are used to select what user name
-    and password to use to connect to the OPC server.
+-   `<opc_user>` and `<opc_password>` are used to select what user name and password to use to connect to the OPC server.
 
--   `<interval>` is used to set the update interval of the calculation
-    task. The interval is set in milli seconds, so 1000 would be 1 second.
+-   `<interval>` is used to set the update interval of the calculation task.
+    The interval is set in milli seconds, so 1000 would be 1 second.
 
 -   `<config_list>` can contain one or more `<config>` elements.
 
@@ -199,24 +194,24 @@ Every `<config>` element is structured like below.
       <result_tag>24DI1234</result_tag>
     </config>
 
-This holds the values that is read from, and the result written back to the
-OPC server.
+This holds the values that is read from, and the result written back to the OPC server.
 
--   `<composition_tag>` contains several `<string>` elements where each one
-    contains the OPC item for one gas component. The sort order and number
-    of components is significant. The number of components shall be 21. No
-    more. No less. 21 shall be the number of components, and the number of
-    components shall be 21. It shall not be 22, nor shall it be 20.
+-   `<composition_tag>` contains several `<string>` elements where each one contains the OPC item for one gas component.
+    The sort order and number of components is significant.
+    The number of components shall be 21.
+    No more. No less.
+    21 shall be the number of components, and the number of components shall be 21.
+    It shall not be 22, nor shall it be 20.
     23 is right out.
 
--   `<pressure_tag>` is the OPC item for the pressure. The value of this item
-    is read from the OPC server.
+-   `<pressure_tag>` is the OPC item for the pressure.
+    The value of this item is read from the OPC server.
 
--   `<temperature_tag>` is the OPC item for the temperature. The value is read
-    from the OPC server.
+-   `<temperature_tag>` is the OPC item for the temperature.
+    The value is read from the OPC server.
 
--   `<calculation>` lets you select what type of result that will be put
-    into the `<result_tag>` element. The possible options are:
+-   `<calculation>` lets you select what type of result that will be put into the `<result_tag>` element.
+    The possible options are:
 
     - CompressibilityFactor
     - Density
@@ -232,8 +227,8 @@ OPC server.
     - MolarMass
     - SpeedOfSound
 
--   `<result_tag>` is the OPC item for the calculation result. The result value
-    will be written to this item on the OPC server.
+-   `<result_tag>` is the OPC item for the calculation result.
+    The result value will be written to this item on the OPC server.
 
 A complete, minimal configuration file could look like this.
 
@@ -301,14 +296,13 @@ A complete, minimal configuration file could look like this.
     </configuration>
 
 .. note:: Not every component of the composition needs to have an item,
-    but the number of components must be exactly 21. And they must be in the
-    same order as shown here.
+    but the number of components must be exactly 21.
+    And they must be in the same order as shown here.
 
 Files
 -----
 
--   **aga8_2017.dll** Library that implements Aga8 Part 1 Detail
-    equation of state.
+-   **aga8_2017.dll** Library that implements Aga8 Part 1 Detail equation of state.
 
 -   **Aga8_Calc_Client.Config.xml** Config file for the OPC client.
 
