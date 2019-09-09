@@ -1,7 +1,8 @@
 .. highlight:: none
 
-Aga8Calc
-========
+#############
+User's manual
+#############
 
 Getting Aga8Calc
 ----------------
