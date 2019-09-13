@@ -313,3 +313,28 @@ Files
 
 -   **Tag_Config.xml** Main configuration file.
 
+
+Sequence Diagram
+----------------
+
+.. uml::
+
+    @startuml
+    scale 1
+
+    == Init ==
+    Aga8Calc -> OpcServer : Connect request
+    OpcServer --> Aga8Calc : Connect granted
+
+    == Main loop ==
+    loop forever
+        Aga8Calc -> OpcServer : Poll pressure, temperature and composition
+        OpcServer --> Aga8Calc : Return pressure, temperature, composition
+
+        hnote over Aga8Calc : Calculate results
+
+        Aga8Calc -> OpcServer : Write results
+
+        hnote over Aga8Calc : Wait <interval> ms
+    end
+    @enduml
