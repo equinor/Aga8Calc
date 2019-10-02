@@ -96,6 +96,7 @@ namespace Aga8CalcService
         public string PressureTag { get; set; }
         [XmlElement("temperature_tag")]
         public string TemperatureTag { get; set; }
+        [XmlElement("calculation")]
         public Aga8ResultCode Calculation { get; set; }
 
         public Config()
