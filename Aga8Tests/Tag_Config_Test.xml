@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <opc_url>opc.tcp://lt-103009:62548/Quickstarts/DataAccessServer</opc_url>
+  <opc_user>username</opc_user>
+  <opc_password>password</opc_password>
+  <interval>42.0</interval>
+  <config_list>
+    <config>
+      <!-- Sort order is significant -->
+      <composition_tag>
+        <!-- Methane -->
+        <string>ns=2;s=ABB_800xA_Surrogate.S.24AI1234_A</string>
+        <!-- Nitrogen -->
+        <string>ns=2;s=ABB_800xA_Surrogate.S.24AI1234_J</string>
+        <!-- Carbon dioxide -->
+        <string>ns=2;s=ABB_800xA_Surrogate.S.24AI1234_K</string>
+        <!-- Ethane -->
+        <string>ns=2;s=ABB_800xA_Surrogate.S.24AI1234_B</string>
+        <!-- Propane -->
+        <string>ns=2;s=ABB_800xA_Surrogate.S.24AI1234_C</string>
+        <!-- Isobutane -->
+        <string>ns=2;s=ABB_800xA_Surrogate.S.24AI1234_D</string>
+        <!-- n-Butane -->
+        <string>ns=2;s=ABB_800xA_Surrogate.S.24AI1234_E</string>
+        <!-- Isopentane -->
+        <string>ns=2;s=ABB_800xA_Surrogate.S.24AI1234_F</string>
+        <!-- n-Pentane -->
+        <string>ns=2;s=ABB_800xA_Surrogate.S.24AI1234_G</string>
+        <!-- Hexane -->
+        <string>ns=2;s=ABB_800xA_Surrogate.S.24AI1234_I</string>
+        <!-- Heptane -->
+        <string xsi:nil="true" />
+        <!-- Octane -->
+        <string xsi:nil="true" />
+        <!-- Nonane -->
+        <string xsi:nil="true" />
+        <!-- Decane -->
+        <string xsi:nil="true" />
+        <!-- Hydrogen -->
+        <string xsi:nil="true" />
+        <!-- Oxygen -->
+        <string xsi:nil="true" />
+        <!-- Carbon monoxide -->
+        <string xsi:nil="true" />
+        <!-- Water -->
+        <string xsi:nil="true" />
+        <!-- Hydrogen sulfide -->
+        <string xsi:nil="true" />
+        <!-- Helium -->
+        <string xsi:nil="true" />
+        <!-- Argon -->
+        <string xsi:nil="true" />
+      </composition_tag>
+      <pressure_tag>24PI1234</pressure_tag>
+      <temperature_tag>24TI1234</temperature_tag>
+      <calculation>Density</calculation>
+      <result_tag>24DI1234</result_tag>
+    </config>
+  </config_list>
+</configuration>
