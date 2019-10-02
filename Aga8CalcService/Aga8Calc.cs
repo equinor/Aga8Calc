@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Runtime.InteropServices;
 using System.Xml;
 using System.Xml.Serialization;
@@ -74,11 +73,11 @@ namespace Aga8CalcService
         public string[] CompositionTag { get; set; } = (string[])Array.CreateInstance(typeof(string), 21);
 
         [XmlIgnore]
-        public double Pressure { get => Pressure; set => Pressure = value; }
+        public double Pressure { get; set; }
         [XmlIgnore]
         public double Temperature { get; set; }
         [XmlIgnore]
-        public double Result { get => Result; set => Result = value; }
+        public double Result { get; set; }
 
         public double[] GetComposition()
         {
@@ -103,10 +102,10 @@ namespace Aga8CalcService
         { }
     }
 
-    internal static class NativeMethods
+    public static class NativeMethods
     {
         [DllImport(@"aga8_2017.dll", EntryPoint = "aga8_2017")]
-        internal static extern double Aga8_2017(double[] composition, double pressure, double temperature, Config.Aga8ResultCode result);
+        public static extern double Aga8_2017(double[] composition, double pressure, double temperature, Config.Aga8ResultCode result);
 
     }
 }
