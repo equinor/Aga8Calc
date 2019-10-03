@@ -1,7 +1,6 @@
 ﻿using Opc.Ua;
 using System;
 using System.Globalization;
-using System.Threading;
 using System.Timers;
 
 namespace Aga8CalcService
@@ -42,15 +41,15 @@ namespace Aga8CalcService
                 foreach (Config c in conf.ConfigList.Item)
                 {
                     c.Pressure = Convert.ToDouble(_client.OpcSession.ReadValue(c.PressureTag).Value, CultureInfo.InvariantCulture) * 100.0;
-                    Console.WriteLine("Pressure: {0} kPa", c.Pressure);
+                    logger.Debug("Pressure: {0} kPa", c.Pressure);
                     c.Temperature = Convert.ToDouble(_client.OpcSession.ReadValue(c.TemperatureTag).Value, CultureInfo.InvariantCulture) + 273.15;
-                    Console.WriteLine("Temperature: {0} K", c.Temperature);
+                    logger.Debug("Temperature: {0} K", c.Temperature);
                     for (int i = 0; i < c.CompositionTag.Length; i++)
                     {
                         if (c.CompositionTag[i] != null)
                         {
                             c.GetComposition()[i] = Convert.ToDouble(_client.OpcSession.ReadValue(c.CompositionTag[i]).Value, CultureInfo.InvariantCulture) / 100.0;
-                            Console.WriteLine("{0}: {1} mole fraction", c.CompositionTag[i], c.GetComposition()[i]);
+                            logger.Debug("{0}: {1} mole fraction", c.CompositionTag[i], c.GetComposition()[i]);
                         }
                     }
                 }
@@ -58,7 +57,7 @@ namespace Aga8CalcService
                 foreach (Config c in conf.ConfigList.Item)
                 {
                     c.Result = NativeMethods.Aga8_2017(c.GetComposition(), c.Pressure, c.Temperature, c.Calculation);
-                    Console.WriteLine(c.Result);
+                    logger.Debug("Result: {0}: {1}", c.Calculation.ToString(), c.Result);
 
                     WriteValue wv = new WriteValue();
                     wv.NodeId = c.ResultTag;

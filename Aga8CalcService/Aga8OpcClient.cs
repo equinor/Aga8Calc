@@ -2,7 +2,6 @@
 using Opc.Ua.Client;
 using Opc.Ua.Configuration;
 using System;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Aga8CalcService
@@ -59,7 +58,7 @@ namespace Aga8CalcService
                 }
                 else
                 {
-                    Console.WriteLine("    WARN: missing application certificate, using unsecure connection.");
+                    logger.Warn("Missing application certificate, using unsecure connection.");
                 }
 
                 logger.Info($"Discover endpoints of { endpointUrl }.");
@@ -107,11 +106,11 @@ namespace Aga8CalcService
         {
             if (e.Status != null && ServiceResult.IsNotGood(e.Status))
             {
-                Console.WriteLine("{0} {1}/{2}", e.Status, sender.OutstandingRequestCount, sender.DefunctRequestCount);
+                logger.Info("{0} {1}/{2}", e.Status, sender.OutstandingRequestCount, sender.DefunctRequestCount);
 
                 if (reconnectHandler == null)
                 {
-                    Console.WriteLine("--- RECONNECTING ---");
+                    logger.Info("Reconnecting");
                     reconnectHandler = new SessionReconnectHandler();
                     reconnectHandler.BeginReconnect(sender, ReconnectPeriod * 1000, Client_ReconnectComplete);
                 }
@@ -130,7 +129,7 @@ namespace Aga8CalcService
             reconnectHandler.Dispose();
             reconnectHandler = null;
 
-            Console.WriteLine("--- RECONNECTED ---");
+            logger.Info("Reconnected");
         }
 
         private static void CertificateValidator_CertificateValidation(CertificateValidator validator, CertificateValidationEventArgs e)
@@ -140,11 +139,11 @@ namespace Aga8CalcService
                 e.Accept = autoAccept;
                 if (autoAccept)
                 {
-                    Console.WriteLine("Accepted Certificate: {0}", e.Certificate.Subject);
+                    logger.Info("Accepted Certificate: {0}", e.Certificate.Subject);
                 }
                 else
                 {
-                    Console.WriteLine("Rejected Certificate: {0}", e.Certificate.Subject);
+                    logger.Warn("Rejected Certificate: {0}", e.Certificate.Subject);
                 }
             }
         }
