@@ -2,7 +2,7 @@
 using System.Globalization;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Aga8CalcService;
-
+using System.Threading.Tasks;
 
 namespace Aga8Tests
 {
@@ -92,6 +92,23 @@ namespace Aga8Tests
             );
 
             Assert.AreEqual(12.807_924_036_488_01, conf.ConfigList.Item[0].Result, 1e-9);
+        }
+
+        // This test needs to have the OPC server mentioned
+        // in the configuration file running.
+        [TestMethod]
+        public async Task Aga8OpcClient_Constructor()
+        {
+            string TagConfFile = AppDomain.CurrentDomain.BaseDirectory.ToString(CultureInfo.InvariantCulture) + "\\Tag_Config_Test.xml";
+            ConfigFile conf = ConfigFile.ReadConfig(TagConfFile);
+            bool autoAccept = false;
+
+            Aga8OpcClient client = new Aga8OpcClient(conf.OpcUrl, autoAccept, conf.OpcUser, conf.OpcPassword);
+            Assert.IsNull(client.OpcSession);
+            await client.Connect();
+            Assert.IsNotNull(client.OpcSession);
+            Assert.IsTrue(client.OpcSession.Connected);
+            client.DisConnect();
         }
     }
 }
