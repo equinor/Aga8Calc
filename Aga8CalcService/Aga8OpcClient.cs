@@ -2,7 +2,7 @@
 using Opc.Ua.Client;
 using Opc.Ua.Configuration;
 using System;
-using System.Threading;
+using System.Globalization;
 using System.Threading.Tasks;
 
 namespace Aga8CalcService
@@ -17,11 +17,9 @@ namespace Aga8CalcService
         private readonly UserIdentity user;
         private static readonly NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
 
-        public Aga8OpcClient(string endpointUrl, bool autoAccept, string username, string password)
+        public Aga8OpcClient(string endpointUrl, string username, string password)
         {
             this.endpointUrl = endpointUrl;
-            Aga8OpcClient.autoAccept = autoAccept;
-
             user = new UserIdentity(username, password);
         }
 
@@ -59,13 +57,13 @@ namespace Aga8CalcService
                 }
                 else
                 {
-                    Console.WriteLine("    WARN: missing application certificate, using unsecure connection.");
+                    logger.Warn("Missing application certificate, using unsecure connection.");
                 }
 
                 logger.Info($"Discover endpoints of { endpointUrl }.");
                 var selectedEndpoint = CoreClientUtils.SelectEndpoint(endpointUrl, haveAppCertificate, 15000);
                
-                logger.Info("Selected endpoint uses: {0}",
+                logger.Info(CultureInfo.InvariantCulture, "Selected endpoint uses: {0}",
                     selectedEndpoint.SecurityPolicyUri.Substring(selectedEndpoint.SecurityPolicyUri.LastIndexOf('#') + 1));
 
                 logger.Info("Create a session with OPC UA server.");
@@ -107,11 +105,11 @@ namespace Aga8CalcService
         {
             if (e.Status != null && ServiceResult.IsNotGood(e.Status))
             {
-                Console.WriteLine("{0} {1}/{2}", e.Status, sender.OutstandingRequestCount, sender.DefunctRequestCount);
+                logger.Info("{0} {1}/{2}", e.Status, sender.OutstandingRequestCount, sender.DefunctRequestCount);
 
                 if (reconnectHandler == null)
                 {
-                    Console.WriteLine("--- RECONNECTING ---");
+                    logger.Info("Reconnecting");
                     reconnectHandler = new SessionReconnectHandler();
                     reconnectHandler.BeginReconnect(sender, ReconnectPeriod * 1000, Client_ReconnectComplete);
                 }
@@ -130,7 +128,7 @@ namespace Aga8CalcService
             reconnectHandler.Dispose();
             reconnectHandler = null;
 
-            Console.WriteLine("--- RECONNECTED ---");
+            logger.Info("Reconnected");
         }
 
         private static void CertificateValidator_CertificateValidation(CertificateValidator validator, CertificateValidationEventArgs e)
@@ -140,11 +138,11 @@ namespace Aga8CalcService
                 e.Accept = autoAccept;
                 if (autoAccept)
                 {
-                    Console.WriteLine("Accepted Certificate: {0}", e.Certificate.Subject);
+                    logger.Info(CultureInfo.InvariantCulture, "Accepted Certificate: {0}", e.Certificate.Subject);
                 }
                 else
                 {
-                    Console.WriteLine("Rejected Certificate: {0}", e.Certificate.Subject);
+                    logger.Warn(CultureInfo.InvariantCulture, "Rejected Certificate: {0}", e.Certificate.Subject);
                 }
             }
         }
