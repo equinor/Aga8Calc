@@ -4,6 +4,29 @@
 User's manual
 #############
 
+Introduction
+------------
+
+Aga8Calc is a Windows service that takes gas composition, pressure and temperature, and returns one of the Aga8 properties.
+It can return the following properties:
+
+    - CompressibilityFactor [-]
+    - Density [kg/m³]
+    - Enthalpy [J/mol]
+    - Entropy [J/(mol-K)]
+    - GibbsEnergy [J/mol]
+    - InternalEnergy [J/mol]
+    - IsentropicExponent [-]
+    - IsobaricHeatCapacity [J/(mol-K)]
+    - IsochoricHeatCapacity [J/(mol-K)]
+    - JouleThomsonCoefficient [K/kPa]
+    - MolarConcentration [mol/l]
+    - MolarMass [g/mol]
+    - SpeedOfSound [m/s]
+
+The gas composition, pressure and temperature are read from an OPC-UA server.
+The result is written back to the same OPC-UA server.
+
 Getting Aga8Calc
 ----------------
 
@@ -13,7 +36,7 @@ https://github.com/equinor/Aga8Calc/releases
 Installation
 ------------
 
-Copy the Aga8Calc folder to `C:\Program Files`.
+Copy the Aga8Calc folder to `C:\\Program Files`.
 Open cmd or Powershell and run the installation command::
 
     PS C:\Program Files\Aga8Calc> .\Aga8CalcService.exe install
