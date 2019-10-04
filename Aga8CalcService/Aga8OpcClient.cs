@@ -2,6 +2,7 @@
 using Opc.Ua.Client;
 using Opc.Ua.Configuration;
 using System;
+using System.Globalization;
 using System.Threading.Tasks;
 
 namespace Aga8CalcService
@@ -62,7 +63,7 @@ namespace Aga8CalcService
                 logger.Info($"Discover endpoints of { endpointUrl }.");
                 var selectedEndpoint = CoreClientUtils.SelectEndpoint(endpointUrl, haveAppCertificate, 15000);
                
-                logger.Info("Selected endpoint uses: {0}",
+                logger.Info(CultureInfo.InvariantCulture, "Selected endpoint uses: {0}",
                     selectedEndpoint.SecurityPolicyUri.Substring(selectedEndpoint.SecurityPolicyUri.LastIndexOf('#') + 1));
 
                 logger.Info("Create a session with OPC UA server.");
@@ -137,11 +138,11 @@ namespace Aga8CalcService
                 e.Accept = autoAccept;
                 if (autoAccept)
                 {
-                    logger.Info("Accepted Certificate: {0}", e.Certificate.Subject);
+                    logger.Info(CultureInfo.InvariantCulture, "Accepted Certificate: {0}", e.Certificate.Subject);
                 }
                 else
                 {
-                    logger.Warn("Rejected Certificate: {0}", e.Certificate.Subject);
+                    logger.Warn(CultureInfo.InvariantCulture, "Rejected Certificate: {0}", e.Certificate.Subject);
                 }
             }
         }

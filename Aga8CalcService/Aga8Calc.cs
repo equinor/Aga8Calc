@@ -44,7 +44,7 @@ namespace Aga8CalcService
     {
         public ConfigList() { Item = new List<Config>(); }
         [XmlElement("config")]
-        public List<Config> Item { get; set; }
+        public List<Config> Item { get; }
     }
 
     [XmlType("config")]
@@ -105,7 +105,6 @@ namespace Aga8CalcService
     public static class NativeMethods
     {
         [DllImport(@"aga8_2017.dll", EntryPoint = "aga8_2017")]
-        public static extern double Aga8_2017(double[] composition, double pressure, double temperature, Config.Aga8ResultCode result);
-
+        public static extern double Aga8(double[] composition, double pressure, double temperature, Config.Aga8ResultCode result);
     }
 }

@@ -47,7 +47,7 @@ namespace Aga8Tests
         }
 
         [TestMethod]
-        public void Aga8_2017_CalculatesDensity()
+        public void Aga8_CalculatesDensity()
         {
             string TagConfFile = AppDomain.CurrentDomain.BaseDirectory.ToString(CultureInfo.InvariantCulture) + "\\Tag_Config_Test.xml";
             ConfigFile conf = ConfigFile.ReadConfig(TagConfFile);
@@ -84,7 +84,7 @@ namespace Aga8Tests
             conf.ConfigList.Item[0].Temperature = temp;
             conf.ConfigList.Item[0].Calculation = Config.Aga8ResultCode.MolarConcentration;
 
-            conf.ConfigList.Item[0].Result = Aga8CalcService.NativeMethods.Aga8_2017(
+            conf.ConfigList.Item[0].Result = Aga8CalcService.NativeMethods.Aga8(
                 conf.ConfigList.Item[0].GetComposition(),
                 conf.ConfigList.Item[0].Pressure,
                 conf.ConfigList.Item[0].Temperature,
