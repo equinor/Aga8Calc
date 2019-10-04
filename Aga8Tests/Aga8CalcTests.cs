@@ -101,9 +101,8 @@ namespace Aga8Tests
         {
             string TagConfFile = AppDomain.CurrentDomain.BaseDirectory.ToString(CultureInfo.InvariantCulture) + "\\Tag_Config_Test.xml";
             ConfigFile conf = ConfigFile.ReadConfig(TagConfFile);
-            bool autoAccept = false;
 
-            Aga8OpcClient client = new Aga8OpcClient(conf.OpcUrl, autoAccept, conf.OpcUser, conf.OpcPassword);
+            Aga8OpcClient client = new Aga8OpcClient(conf.OpcUrl, conf.OpcUser, conf.OpcPassword);
             Assert.IsNull(client.OpcSession);
             await client.Connect();
             Assert.IsNotNull(client.OpcSession);

@@ -29,9 +29,7 @@ namespace Aga8CalcService
             _timer = new System.Timers.Timer(conf.Interval) { AutoReset = true };
             _timer.Elapsed += TimerElapsed;
 
-            bool autoAccept = false;
-
-            _client = new Aga8OpcClient(conf.OpcUrl, autoAccept, conf.OpcUser, conf.OpcPassword);
+            _client = new Aga8OpcClient(conf.OpcUrl, conf.OpcUser, conf.OpcPassword);
         }
 
         private void TimerElapsed(object sender, ElapsedEventArgs e)

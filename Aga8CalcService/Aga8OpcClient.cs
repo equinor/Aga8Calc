@@ -16,11 +16,9 @@ namespace Aga8CalcService
         private readonly UserIdentity user;
         private static readonly NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
 
-        public Aga8OpcClient(string endpointUrl, bool autoAccept, string username, string password)
+        public Aga8OpcClient(string endpointUrl, string username, string password)
         {
             this.endpointUrl = endpointUrl;
-            Aga8OpcClient.autoAccept = autoAccept;
-
             user = new UserIdentity(username, password);
         }
 
