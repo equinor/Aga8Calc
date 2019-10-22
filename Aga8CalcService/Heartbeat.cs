@@ -57,19 +57,20 @@ namespace Aga8CalcService
                     c.Result = NativeMethods.Aga8(c.GetComposition(), c.Pressure, c.Temperature, c.Calculation);
                     logger.Debug(CultureInfo.InvariantCulture, "Result: {0}: {1}", c.Calculation.ToString(), c.Result);
 
-                    WriteValue wv = new WriteValue();
-                    wv.NodeId = c.ResultTag;
-                    wv.AttributeId = Attributes.Value;
+                    WriteValue wv = new WriteValue
+                    {
+                        NodeId = c.ResultTag,
+                        AttributeId = Attributes.Value
+                    };
                     wv.Value.Value = c.Result;
                     wv.Value.StatusCode = StatusCodes.Good;
 
-                    WriteValueCollection wvc = new WriteValueCollection();
-                    wvc.Add(wv);
+                    WriteValueCollection wvc = new WriteValueCollection
+                    {
+                        wv
+                    };
 
-                    StatusCodeCollection results = null;
-                    DiagnosticInfoCollection diagnosticInfos = null;
-
-                    _client.OpcSession.Write(null, wvc, out results, out diagnosticInfos);
+                    _client.OpcSession.Write(null, wvc, out StatusCodeCollection results, out DiagnosticInfoCollection diagnosticInfos);
                 }
             }
             catch (Exception ex)

@@ -1,0 +1,15 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": ".NET Framework Launch",
+        "type": "clr",
+        "request": "launch",
+        "preLaunchTask": "build",
+        "program": "Aga8CalcService.exe",
+        "args": [],
+        "cwd": "${workspaceFolder}/Aga8CalcService/bin/Debug/",
+        "stopAtEntry": false
+      }
+    ]
+  }
