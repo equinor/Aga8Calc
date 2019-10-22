@@ -67,6 +67,18 @@ namespace Aga8CalcService
             Density = 15
         }
 
+        public enum PressureUnits : Int32
+        {
+            barg = 0,
+            bara = 1
+        }
+
+        public enum TemperatureUnits : Int32
+        {
+            C = 0,
+            K = 1
+        }
+
         private double[] Composition = (double[])Array.CreateInstance(typeof(double), 21);
 
         [XmlArray("composition_tag")]
@@ -89,12 +101,56 @@ namespace Aga8CalcService
             Composition = value;
         }
 
+        public double GetConvertedPressure(PressureUnits unit)
+        {
+            // Convert to kPa absolute
+            const double stdAtm = 1.01325;
+            double result = 0.0;
+            switch (unit)
+            {
+                case PressureUnits.barg:
+                    result = (Pressure + stdAtm) * 100.0;
+                    break;
+                case PressureUnits.bara:
+                    result = Pressure * 100.0;
+                    break;
+                default:
+                    break;
+            }
+
+            return (result);
+        }
+
+        public double GetConvertedTemperature(TemperatureUnits unit)
+        {
+            // Convert to K
+            const double zeroCelsius = 273.15;
+            double result = 0.0;
+            switch (unit)
+            {
+                case TemperatureUnits.C:
+                    result = Temperature + zeroCelsius;
+                    break;
+                case TemperatureUnits.K:
+                    result = Temperature;
+                    break;
+                default:
+                    break;
+            }
+
+            return (result);
+        }
+
         [XmlElement("result_tag")]
         public string ResultTag { get; set; }
         [XmlElement("pressure_tag")]
         public string PressureTag { get; set; }
+        [XmlElement("pressure_unit")]
+        public PressureUnits PressureUnit { get; set; }
         [XmlElement("temperature_tag")]
         public string TemperatureTag { get; set; }
+        [XmlElement("temperature_unit")]
+        public TemperatureUnits TemperatureUnit { get; set; }
         [XmlElement("calculation")]
         public Aga8ResultCode Calculation { get; set; }
 

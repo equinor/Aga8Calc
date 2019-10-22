@@ -41,7 +41,9 @@ namespace Aga8Tests
             Assert.IsNull(conf.ConfigList.Item[0].CompositionTag[19]);
             Assert.IsNull(conf.ConfigList.Item[0].CompositionTag[20]);
             Assert.AreEqual("24PI1234", conf.ConfigList.Item[0].PressureTag);
+            Assert.AreEqual(Config.PressureUnits.barg, conf.ConfigList.Item[0].PressureUnit);
             Assert.AreEqual("24TI1234", conf.ConfigList.Item[0].TemperatureTag);
+            Assert.AreEqual(Config.TemperatureUnits.C, conf.ConfigList.Item[0].TemperatureUnit);
             Assert.AreEqual("24DI1234", conf.ConfigList.Item[0].ResultTag);
             Assert.AreEqual(Config.Aga8ResultCode.Density, conf.ConfigList.Item[0].Calculation);
         }
@@ -75,10 +77,10 @@ namespace Aga8Tests
                 0.007_000, // Helium
                 0.001_000, // Argon
             };
-            // Set pressure in kPA
-            double press = 50_000.0;
-            // Set temperature in K
-            double temp = 400.0;
+            // Set pressure in barg
+            double press = 498.98675;
+            // Set temperature in C°
+            double temp = 126.85;
             conf.ConfigList.Item[0].SetComposition(composition);
             conf.ConfigList.Item[0].Pressure = press;
             conf.ConfigList.Item[0].Temperature = temp;
@@ -86,8 +88,8 @@ namespace Aga8Tests
 
             conf.ConfigList.Item[0].Result = Aga8CalcService.NativeMethods.Aga8(
                 conf.ConfigList.Item[0].GetComposition(),
-                conf.ConfigList.Item[0].Pressure,
-                conf.ConfigList.Item[0].Temperature,
+                conf.ConfigList.Item[0].GetConvertedPressure(conf.ConfigList.Item[0].PressureUnit),
+                conf.ConfigList.Item[0].GetConvertedTemperature(conf.ConfigList.Item[0].TemperatureUnit),
                 conf.ConfigList.Item[0].Calculation
             );
 
