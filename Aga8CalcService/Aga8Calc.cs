@@ -53,8 +53,8 @@ namespace Aga8CalcService
         public enum Aga8ResultCode : Int32
         {
             MolarConcentration = 0,
-            CompressibilityFactor = 1,
-            MolarMass = 2,
+            MolarMass = 1,
+            CompressibilityFactor = 2,
             InternalEnergy = 6,
             Enthalpy = 7,
             Entropy = 8,
@@ -84,6 +84,9 @@ namespace Aga8CalcService
         [XmlArray("composition_tag")]
         public string[] CompositionTag { get; set; } = (string[])Array.CreateInstance(typeof(string), 21);
 
+        [XmlArray("composition_scale")]
+        public double[] CompositionScale { get; set; } = (double[])Array.CreateInstance(typeof(double), 21);
+
         [XmlIgnore]
         public double Pressure { get; set; }
         [XmlIgnore]
@@ -94,6 +97,18 @@ namespace Aga8CalcService
         public double[] GetComposition()
         {
             return Composition;
+        }
+
+        public double[] GetScaledComposition()
+        {
+            double[] returnValue = (double[])Composition.Clone();
+
+            for (int i = 0; i < returnValue.Length; i++)
+            {
+                returnValue[i] *= CompositionScale[i];
+            }
+
+            return returnValue;
         }
 
         public void SetComposition(double[] value)

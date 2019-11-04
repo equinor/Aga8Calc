@@ -212,8 +212,33 @@ Every `<config>` element is structured like below.
         <!-- Argon -->
         <string xsi:nil="true" />
       </composition_tag>
+      <composition_scale>
+        <double>1.0</double>
+        <double>1.0</double>
+        <double>1.0</double>
+        <double>1.0</double>
+        <double>1.0</double>
+        <double>1.0</double>
+        <double>1.0</double>
+        <double>1.0</double>
+        <double>1.0</double>
+        <double>1.0</double>
+        <double>0.0</double>
+        <double>0.0</double>
+        <double>0.0</double>
+        <double>0.0</double>
+        <double>0.0</double>
+        <double>0.0</double>
+        <double>0.0</double>
+        <double>0.0</double>
+        <double>0.0</double>
+        <double>0.0</double>
+        <double>0.0</double>
+      </composition_scale>
       <pressure_tag>24PI1234</pressure_tag>
+      <pressure_unit>barg</pressure_unit>
       <temperature_tag>24TI1234</temperature_tag>
+      <temperature_unit>C</temperature_unit>
       <calculation>Density</calculation>
       <result_tag>24DI1234</result_tag>
     </config>
@@ -228,11 +253,28 @@ This holds the values that is read from, and the result written back to the OPC 
     It shall not be 22, nor shall it be 20.
     23 is right out.
 
+-   `<composition_scale>` contains the exact same number of `<double>` elements that `<composition_tag>` contains.
+    These scale factors are used to scale the individual component values into the mol fraction range from 0-1.
+
 -   `<pressure_tag>` is the OPC item for the pressure.
     The value of this item is read from the OPC server.
 
+-   `<pressure_unit>` is the expected engineering unit of the pressure value.
+    This is used to convert the pressure value to the unit needed for the Aga8 equation of state, namely [kPa].
+    The possible units are:
+
+    - barg (bar gauge)
+    - bara (bar absolute)
+
 -   `<temperature_tag>` is the OPC item for the temperature.
     The value is read from the OPC server.
+
+-   `<temperature_unit>` is the expected engineering unit of the temperature value.
+    This is used to convert the temperature to the proper unit - [K].
+    The possible temperature units are:
+
+    - C (degree Celsius)
+    - K (Kelvin)
 
 -   `<calculation>` lets you select what type of result that will be put into the `<result_tag>` element.
     The possible options are:
@@ -311,8 +353,33 @@ A complete, minimal configuration file could look like this.
             <!-- Argon -->
             <string xsi:nil="true" />
           </composition_tag>
+          <composition_scale>
+            <double>1.0</double>
+            <double>1.0</double>
+            <double>1.0</double>
+            <double>1.0</double>
+            <double>1.0</double>
+            <double>1.0</double>
+            <double>1.0</double>
+            <double>1.0</double>
+            <double>1.0</double>
+            <double>1.0</double>
+            <double>0.0</double>
+            <double>0.0</double>
+            <double>0.0</double>
+            <double>0.0</double>
+            <double>0.0</double>
+            <double>0.0</double>
+            <double>0.0</double>
+            <double>0.0</double>
+            <double>0.0</double>
+            <double>0.0</double>
+            <double>0.0</double>
+          </composition_scale>
           <pressure_tag>24PI1234</pressure_tag>
+          <pressure_unit>barg</pressure_unit>
           <temperature_tag>24TI1234</temperature_tag>
+          <temperature_unit>C</temperature_unit>
           <calculation>Density</calculation>
           <result_tag>24DI1234</result_tag>
         </config>
