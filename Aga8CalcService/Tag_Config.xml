@@ -51,70 +51,35 @@
         <!-- Argon -->
         <string xsi:nil="true" />
       </composition_tag>
+      <composition_scale>
+        <double>1.0</double>
+        <double>1.0</double>
+        <double>1.0</double>
+        <double>1.0</double>
+        <double>1.0</double>
+        <double>1.0</double>
+        <double>1.0</double>
+        <double>1.0</double>
+        <double>1.0</double>
+        <double>1.0</double>
+        <double>0.0</double>
+        <double>0.0</double>
+        <double>0.0</double>
+        <double>0.0</double>
+        <double>0.0</double>
+        <double>0.0</double>
+        <double>0.0</double>
+        <double>0.0</double>
+        <double>0.0</double>
+        <double>0.0</double>
+        <double>0.0</double>
+      </composition_scale>
       <pressure_tag>24PI1234</pressure_tag>
       <pressure_unit>barg</pressure_unit>
       <temperature_tag>24TI1234</temperature_tag>
       <temperature_unit>C</temperature_unit>
       <calculation>Density</calculation>
       <result_tag>24DI1234</result_tag>
-    </config>
-    <config>
-      <composition_tag>
-        <string xsi:nil="true" />
-        <string xsi:nil="true" />
-        <string xsi:nil="true" />
-        <string xsi:nil="true" />
-        <string xsi:nil="true" />
-        <string xsi:nil="true" />
-        <string xsi:nil="true" />
-        <string xsi:nil="true" />
-        <string xsi:nil="true" />
-        <string xsi:nil="true" />
-        <string xsi:nil="true" />
-        <string xsi:nil="true" />
-        <string xsi:nil="true" />
-        <string xsi:nil="true" />
-        <string xsi:nil="true" />
-        <string xsi:nil="true" />
-        <string xsi:nil="true" />
-        <string xsi:nil="true" />
-        <string xsi:nil="true" />
-        <string xsi:nil="true" />
-        <string xsi:nil="true" />
-      </composition_tag>
-      <pressure_tag>24PI1235</pressure_tag>
-      <temperature_tag>24TI1235</temperature_tag>
-      <calculation>Enthalpy</calculation>
-      <result_tag>24DI1235</result_tag>
-    </config>
-    <config>
-      <composition_tag>
-        <string xsi:nil="true" />
-        <string xsi:nil="true" />
-        <string xsi:nil="true" />
-        <string xsi:nil="true" />
-        <string xsi:nil="true" />
-        <string xsi:nil="true" />
-        <string xsi:nil="true" />
-        <string xsi:nil="true" />
-        <string xsi:nil="true" />
-        <string xsi:nil="true" />
-        <string xsi:nil="true" />
-        <string xsi:nil="true" />
-        <string xsi:nil="true" />
-        <string xsi:nil="true" />
-        <string xsi:nil="true" />
-        <string xsi:nil="true" />
-        <string xsi:nil="true" />
-        <string xsi:nil="true" />
-        <string xsi:nil="true" />
-        <string xsi:nil="true" />
-        <string xsi:nil="true" />
-      </composition_tag>
-      <pressure_tag>24PI1236</pressure_tag>
-      <temperature_tag>24TI1236</temperature_tag>
-      <calculation>Enthalpy</calculation>
-      <result_tag>24DI1236</result_tag>
     </config>
   </config_list>
 </configuration>

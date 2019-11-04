@@ -51,6 +51,29 @@
         <!-- Argon -->
         <string xsi:nil="true" />
       </composition_tag>
+      <composition_scale>
+        <double>1.0</double>
+        <double>2.0</double>
+        <double>3.1415</double>
+        <double>4.0</double>
+        <double>5.0</double>
+        <double>6.220</double>
+        <double>7.7</double>
+        <double>8.8</double>
+        <double>9.90</double>
+        <double>10.11</double>
+        <double>0.0</double>
+        <double>0.0</double>
+        <double>0.0</double>
+        <double>0.0</double>
+        <double>0.0</double>
+        <double>0.0</double>
+        <double>0.0</double>
+        <double>0.0</double>
+        <double>0.0</double>
+        <double>0.0</double>
+        <double>0.0</double>
+      </composition_scale>
       <pressure_tag>24PI1234</pressure_tag>
       <pressure_unit>barg</pressure_unit>
       <temperature_tag>24TI1234</temperature_tag>
