@@ -53,8 +53,8 @@ namespace Aga8CalcService
         public enum Aga8ResultCode : Int32
         {
             MolarConcentration = 0,
-            CompressibilityFactor = 1,
-            MolarMass = 2,
+            MolarMass = 1,
+            CompressibilityFactor = 2,
             InternalEnergy = 6,
             Enthalpy = 7,
             Entropy = 8,
