@@ -353,8 +353,33 @@ A complete, minimal configuration file could look like this.
             <!-- Argon -->
             <string xsi:nil="true" />
           </composition_tag>
+          <composition_scale>
+            <double>1.0</double>
+            <double>1.0</double>
+            <double>1.0</double>
+            <double>1.0</double>
+            <double>1.0</double>
+            <double>1.0</double>
+            <double>1.0</double>
+            <double>1.0</double>
+            <double>1.0</double>
+            <double>1.0</double>
+            <double>0.0</double>
+            <double>0.0</double>
+            <double>0.0</double>
+            <double>0.0</double>
+            <double>0.0</double>
+            <double>0.0</double>
+            <double>0.0</double>
+            <double>0.0</double>
+            <double>0.0</double>
+            <double>0.0</double>
+            <double>0.0</double>
+          </composition_scale>
           <pressure_tag>24PI1234</pressure_tag>
+          <pressure_unit>barg</pressure_unit>
           <temperature_tag>24TI1234</temperature_tag>
+          <temperature_unit>C</temperature_unit>
           <calculation>Density</calculation>
           <result_tag>24DI1234</result_tag>
         </config>
