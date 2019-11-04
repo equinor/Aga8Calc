@@ -136,13 +136,14 @@ namespace Aga8Tests
         [TestClass]
         public class ConfigTests
         {
-            double accuracy= 0.00001;
+            const double accuracy= 0.000_01;
+
             [TestMethod]
             public void GetConvertedTemperature_UnitIsCelsius_ReturnKelvin()
             {
                 var config = new Config();
-                double testTempCelsius = 446.30000;
-                config.Temperature = 173.15000;
+                double testTempCelsius = 446.3;
+                config.Temperature = 173.15;
 
                 double resultCelsius = config.GetConvertedTemperature(Config.TemperatureUnits.C);
                 Assert.AreEqual(testTempCelsius, resultCelsius,accuracy);
@@ -152,7 +153,7 @@ namespace Aga8Tests
             public void GetConvertedTemperature_UnitIsKelvin_ReturnKelvin()
             {
                 var config = new Config();
-                double testTempKelvin = 73.15000;
+                double testTempKelvin = 73.15;
                 config.Temperature = testTempKelvin;
 
                 double resultKelvin = config.GetConvertedTemperature(Config.TemperatureUnits.K);
@@ -163,18 +164,19 @@ namespace Aga8Tests
             public void GetConvertedPressure_UnitIsBarg_ReturnKPa()
             {
                 var config = new Config();
-                config.Pressure = 111.700;
-                double testPressureKPa = 11271.325;
+                double testPressureKPa = 11_271.325;
+                config.Pressure = 111.7;
 
                 double resultKPa = config.GetConvertedPressure(Config.PressureUnits.barg);
                 Assert.AreEqual(testPressureKPa, resultKPa, accuracy);
             }
+
             [TestMethod]
             public void GetConvertedPressure_UnitIsBara_ReturnKPa()
             {
                 var config = new Config();
-                config.Pressure = 157.7564;
-                double testPressureKPa = 15775.64;
+                double testPressureKPa = 15_775.64;
+                config.Pressure = 157.756_4;
 
                 double resultKPa = config.GetConvertedPressure(Config.PressureUnits.bara);
                 Assert.AreEqual(testPressureKPa, resultKPa, accuracy);
