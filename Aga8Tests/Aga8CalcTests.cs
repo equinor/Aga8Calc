@@ -142,11 +142,11 @@ namespace Aga8Tests
             public void GetConvertedTemperature_UnitIsCelsius_ReturnKelvin()
             {
                 var config = new Config();
-                double testTempCelsius = 446.3;
+                double testTempKelvin = 446.3;
                 config.Temperature = 173.15;
 
-                double resultCelsius = config.GetConvertedTemperature(Config.TemperatureUnits.C);
-                Assert.AreEqual(testTempCelsius, resultCelsius,accuracy);
+                double resultKelvin = config.GetConvertedTemperature(Config.TemperatureUnits.C);
+                Assert.AreEqual(testTempKelvin, resultKelvin,accuracy);
             }
 
             [TestMethod]
