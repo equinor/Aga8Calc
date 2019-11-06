@@ -38,38 +38,42 @@ namespace Aga8CalcService
             {
                 foreach (Config c in conf.ConfigList.Item)
                 {
-                    c.Pressure = Convert.ToDouble(_client.OpcSession.ReadValue(c.PressureTag).Value, CultureInfo.InvariantCulture) * 100.0;
-                    logger.Debug(CultureInfo.InvariantCulture, "Pressure: {0} kPa", c.Pressure);
-                    c.Temperature = Convert.ToDouble(_client.OpcSession.ReadValue(c.TemperatureTag).Value, CultureInfo.InvariantCulture) + 273.15;
-                    logger.Debug(CultureInfo.InvariantCulture, "Temperature: {0} K", c.Temperature);
+                    c.Pressure = Convert.ToDouble(_client.OpcSession.ReadValue(c.PressureTag).Value, CultureInfo.InvariantCulture);
+                    logger.Debug(CultureInfo.InvariantCulture, "Pressure: {0} kPa", c.GetConvertedPressure(c.PressureUnit));
+                    c.Temperature = Convert.ToDouble(_client.OpcSession.ReadValue(c.TemperatureTag).Value, CultureInfo.InvariantCulture);
+                    logger.Debug(CultureInfo.InvariantCulture, "Temperature: {0} K", c.GetConvertedTemperature(c.TemperatureUnit));
                     for (int i = 0; i < c.CompositionTag.Length; i++)
                     {
                         if (c.CompositionTag[i] != null)
                         {
-                            c.GetComposition()[i] = Convert.ToDouble(_client.OpcSession.ReadValue(c.CompositionTag[i]).Value, CultureInfo.InvariantCulture) / 100.0;
-                            logger.Debug(CultureInfo.InvariantCulture, "{0}: {1} mole fraction", c.CompositionTag[i], c.GetComposition()[i]);
+                            c.GetComposition()[i] = Convert.ToDouble(_client.OpcSession.ReadValue(c.CompositionTag[i]).Value, CultureInfo.InvariantCulture);
+                            logger.Debug(CultureInfo.InvariantCulture, "{0}: {1} mole fraction", c.CompositionTag[i], c.GetScaledComposition()[i]);
                         }
                     }
                 }
 
                 foreach (Config c in conf.ConfigList.Item)
                 {
-                    c.Result = NativeMethods.Aga8(c.GetComposition(), c.Pressure, c.Temperature, c.Calculation);
+                    c.Result = NativeMethods.Aga8(c.GetScaledComposition(),
+                        c.GetConvertedPressure(c.PressureUnit),
+                        c.GetConvertedTemperature(c.TemperatureUnit),
+                        c.Calculation);
                     logger.Debug(CultureInfo.InvariantCulture, "Result: {0}: {1}", c.Calculation.ToString(), c.Result);
 
-                    WriteValue wv = new WriteValue();
-                    wv.NodeId = c.ResultTag;
-                    wv.AttributeId = Attributes.Value;
+                    WriteValue wv = new WriteValue
+                    {
+                        NodeId = c.ResultTag,
+                        AttributeId = Attributes.Value
+                    };
                     wv.Value.Value = c.Result;
                     wv.Value.StatusCode = StatusCodes.Good;
 
-                    WriteValueCollection wvc = new WriteValueCollection();
-                    wvc.Add(wv);
+                    WriteValueCollection wvc = new WriteValueCollection
+                    {
+                        wv
+                    };
 
-                    StatusCodeCollection results = null;
-                    DiagnosticInfoCollection diagnosticInfos = null;
-
-                    _client.OpcSession.Write(null, wvc, out results, out diagnosticInfos);
+                    _client.OpcSession.Write(null, wvc, out StatusCodeCollection results, out DiagnosticInfoCollection diagnosticInfos);
                 }
             }
             catch (Exception ex)

@@ -16,12 +16,35 @@
                     <xsd:element name="composition_tag">
                       <xsd:complexType>
                         <xsd:sequence>
-                          <xsd:element maxOccurs="21" name="string" nillable="true" type="xsd:string" />
+                          <xsd:element maxOccurs="21" minOccurs="21" name="string" nillable="true" type="xsd:string" />
+                        </xsd:sequence>
+                      </xsd:complexType>
+                    </xsd:element>
+                    <xsd:element name="composition_scale">
+                      <xsd:complexType>
+                        <xsd:sequence>
+                          <xsd:element maxOccurs="21" minOccurs="21" name="double" nillable="false" type="xsd:double" />
                         </xsd:sequence>
                       </xsd:complexType>
                     </xsd:element>
                     <xsd:element name="pressure_tag" type="xsd:string" />
+                    <xsd:element name="pressure_unit" default="barg" minOccurs="0">
+                      <xsd:simpleType>
+                        <xsd:restriction base="xsd:string">
+                          <xsd:enumeration value="bara"/>
+                          <xsd:enumeration value="barg"/>
+                        </xsd:restriction>
+                      </xsd:simpleType>
+                    </xsd:element>
                     <xsd:element name="temperature_tag" type="xsd:string" />
+                    <xsd:element name="temperature_unit" default="C" minOccurs="0">
+                      <xsd:simpleType>
+                        <xsd:restriction base="xsd:string">
+                          <xsd:enumeration value="C"/>
+                          <xsd:enumeration value="K"/>
+                        </xsd:restriction>
+                      </xsd:simpleType>
+                    </xsd:element>
                     <xsd:element name="calculation" default="Density">
                       <xsd:simpleType>
                         <xsd:restriction base="xsd:string">

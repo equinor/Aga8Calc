@@ -40,8 +40,31 @@ namespace Aga8Tests
             Assert.IsNull(conf.ConfigList.Item[0].CompositionTag[18]);
             Assert.IsNull(conf.ConfigList.Item[0].CompositionTag[19]);
             Assert.IsNull(conf.ConfigList.Item[0].CompositionTag[20]);
+            Assert.AreEqual(1.0, conf.ConfigList.Item[0].CompositionScale[0], 1.0e-10);
+            Assert.AreEqual(2.0, conf.ConfigList.Item[0].CompositionScale[1], 1.0e-10);
+            Assert.AreEqual(3.1415, conf.ConfigList.Item[0].CompositionScale[2], 1.0e-10);
+            Assert.AreEqual(4.0, conf.ConfigList.Item[0].CompositionScale[3], 1.0e-10);
+            Assert.AreEqual(5.0, conf.ConfigList.Item[0].CompositionScale[4], 1.0e-10);
+            Assert.AreEqual(6.22, conf.ConfigList.Item[0].CompositionScale[5], 1.0e-10);
+            Assert.AreEqual(7.7, conf.ConfigList.Item[0].CompositionScale[6], 1.0e-10);
+            Assert.AreEqual(8.8, conf.ConfigList.Item[0].CompositionScale[7], 1.0e-10);
+            Assert.AreEqual(9.9, conf.ConfigList.Item[0].CompositionScale[8], 1.0e-10);
+            Assert.AreEqual(10.11, conf.ConfigList.Item[0].CompositionScale[9], 1.0e-10);
+            Assert.AreEqual(0.0, conf.ConfigList.Item[0].CompositionScale[10], 1.0e-10);
+            Assert.AreEqual(0.0, conf.ConfigList.Item[0].CompositionScale[11], 1.0e-10);
+            Assert.AreEqual(0.0, conf.ConfigList.Item[0].CompositionScale[12], 1.0e-10);
+            Assert.AreEqual(0.0, conf.ConfigList.Item[0].CompositionScale[13], 1.0e-10);
+            Assert.AreEqual(0.0, conf.ConfigList.Item[0].CompositionScale[14], 1.0e-10);
+            Assert.AreEqual(0.0, conf.ConfigList.Item[0].CompositionScale[15], 1.0e-10);
+            Assert.AreEqual(0.0, conf.ConfigList.Item[0].CompositionScale[16], 1.0e-10);
+            Assert.AreEqual(0.0, conf.ConfigList.Item[0].CompositionScale[17], 1.0e-10);
+            Assert.AreEqual(0.0, conf.ConfigList.Item[0].CompositionScale[18], 1.0e-10);
+            Assert.AreEqual(0.0, conf.ConfigList.Item[0].CompositionScale[19], 1.0e-10);
+            Assert.AreEqual(0.0, conf.ConfigList.Item[0].CompositionScale[20], 1.0e-10);
             Assert.AreEqual("24PI1234", conf.ConfigList.Item[0].PressureTag);
+            Assert.AreEqual(Config.PressureUnits.barg, conf.ConfigList.Item[0].PressureUnit);
             Assert.AreEqual("24TI1234", conf.ConfigList.Item[0].TemperatureTag);
+            Assert.AreEqual(Config.TemperatureUnits.C, conf.ConfigList.Item[0].TemperatureUnit);
             Assert.AreEqual("24DI1234", conf.ConfigList.Item[0].ResultTag);
             Assert.AreEqual(Config.Aga8ResultCode.Density, conf.ConfigList.Item[0].Calculation);
         }
@@ -75,10 +98,10 @@ namespace Aga8Tests
                 0.007_000, // Helium
                 0.001_000, // Argon
             };
-            // Set pressure in kPA
-            double press = 50_000.0;
-            // Set temperature in K
-            double temp = 400.0;
+            // Set pressure in barg
+            double press = 498.98675;
+            // Set temperature in C°
+            double temp = 126.85;
             conf.ConfigList.Item[0].SetComposition(composition);
             conf.ConfigList.Item[0].Pressure = press;
             conf.ConfigList.Item[0].Temperature = temp;
@@ -86,8 +109,8 @@ namespace Aga8Tests
 
             conf.ConfigList.Item[0].Result = Aga8CalcService.NativeMethods.Aga8(
                 conf.ConfigList.Item[0].GetComposition(),
-                conf.ConfigList.Item[0].Pressure,
-                conf.ConfigList.Item[0].Temperature,
+                conf.ConfigList.Item[0].GetConvertedPressure(conf.ConfigList.Item[0].PressureUnit),
+                conf.ConfigList.Item[0].GetConvertedTemperature(conf.ConfigList.Item[0].TemperatureUnit),
                 conf.ConfigList.Item[0].Calculation
             );
 
@@ -108,6 +131,56 @@ namespace Aga8Tests
             Assert.IsNotNull(client.OpcSession);
             Assert.IsTrue(client.OpcSession.Connected);
             client.DisConnect();
+        }
+
+        [TestClass]
+        public class ConfigTests
+        {
+            const double accuracy= 0.000_01;
+
+            [TestMethod]
+            public void GetConvertedTemperature_UnitIsCelsius_ReturnKelvin()
+            {
+                var config = new Config();
+                double testTempKelvin = 446.3;
+                config.Temperature = 173.15;
+
+                double resultKelvin = config.GetConvertedTemperature(Config.TemperatureUnits.C);
+                Assert.AreEqual(testTempKelvin, resultKelvin,accuracy);
+            }
+
+            [TestMethod]
+            public void GetConvertedTemperature_UnitIsKelvin_ReturnKelvin()
+            {
+                var config = new Config();
+                double testTempKelvin = 73.15;
+                config.Temperature = testTempKelvin;
+
+                double resultKelvin = config.GetConvertedTemperature(Config.TemperatureUnits.K);
+                Assert.AreEqual(testTempKelvin, resultKelvin,accuracy);
+            }
+
+            [TestMethod]
+            public void GetConvertedPressure_UnitIsBarg_ReturnKPa()
+            {
+                var config = new Config();
+                double testPressureKPa = 11_271.325;
+                config.Pressure = 111.7;
+
+                double resultKPa = config.GetConvertedPressure(Config.PressureUnits.barg);
+                Assert.AreEqual(testPressureKPa, resultKPa, accuracy);
+            }
+
+            [TestMethod]
+            public void GetConvertedPressure_UnitIsBara_ReturnKPa()
+            {
+                var config = new Config();
+                double testPressureKPa = 15_775.64;
+                config.Pressure = 157.756_4;
+
+                double resultKPa = config.GetConvertedPressure(Config.PressureUnits.bara);
+                Assert.AreEqual(testPressureKPa, resultKPa, accuracy);
+            }
         }
     }
 }
