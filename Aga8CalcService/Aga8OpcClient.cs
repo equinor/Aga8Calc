@@ -20,7 +20,15 @@ namespace Aga8CalcService
         public Aga8OpcClient(string endpointUrl, string username, string password)
         {
             this.endpointUrl = endpointUrl;
-            user = new UserIdentity(username, password);
+            if (username != "")
+            {
+                user = new UserIdentity(username, password);
+            }
+            else
+            {
+                // Empty usename means that we create an Anonymous token
+                user = new UserIdentity();
+            }
         }
 
         public async Task Connect()
