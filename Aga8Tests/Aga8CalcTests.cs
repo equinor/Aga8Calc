@@ -12,7 +12,7 @@ namespace Aga8Tests
         [TestMethod]
         public void ReadConfig_ReadsAConfigFile()
         {
-            string TagConfFile = AppDomain.CurrentDomain.BaseDirectory.ToString(CultureInfo.InvariantCulture) + "\\Tag_Config_Test.xml";
+            string TagConfFile = AppDomain.CurrentDomain.BaseDirectory.ToString(CultureInfo.InvariantCulture) + "Tag_Config_Test.xml";
             ConfigFile conf = ConfigFile.ReadConfig(TagConfFile);
 
             Assert.AreEqual("opc.tcp://lt-103009:62548/Quickstarts/DataAccessServer", conf.OpcUrl);
@@ -72,7 +72,7 @@ namespace Aga8Tests
         [TestMethod]
         public void Aga8_CalculatesDensity()
         {
-            string TagConfFile = AppDomain.CurrentDomain.BaseDirectory.ToString(CultureInfo.InvariantCulture) + "\\Tag_Config_Test.xml";
+            string TagConfFile = AppDomain.CurrentDomain.BaseDirectory.ToString(CultureInfo.InvariantCulture) + "Tag_Config_Test.xml";
             ConfigFile conf = ConfigFile.ReadConfig(TagConfFile);
 
             double[] composition = {
@@ -122,7 +122,7 @@ namespace Aga8Tests
         [TestMethod]
         public async Task Aga8OpcClient_Constructor()
         {
-            string TagConfFile = AppDomain.CurrentDomain.BaseDirectory.ToString(CultureInfo.InvariantCulture) + "\\Tag_Config_Test.xml";
+            string TagConfFile = AppDomain.CurrentDomain.BaseDirectory.ToString(CultureInfo.InvariantCulture) + "Tag_Config_Test.xml";
             ConfigFile conf = ConfigFile.ReadConfig(TagConfFile);
 
             Aga8OpcClient client = new Aga8OpcClient(conf.OpcUrl, conf.OpcUser, conf.OpcPassword);
