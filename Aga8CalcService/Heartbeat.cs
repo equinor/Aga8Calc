@@ -26,7 +26,7 @@ namespace Aga8CalcService
                 logger.Fatal(e, "Failed to read tag configuration.");
                 throw;
             }
-            _timer = new System.Timers.Timer(conf.Interval) { AutoReset = true };
+            _timer = new System.Timers.Timer(conf.Interval) { AutoReset = true, SynchronizingObject = null };
             _timer.Elapsed += TimerElapsed;
 
             _client = new Aga8OpcClient(conf.OpcUrl, conf.OpcUser, conf.OpcPassword);
@@ -60,12 +60,21 @@ namespace Aga8CalcService
                         c.Calculation);
                     logger.Debug(CultureInfo.InvariantCulture, "Result: {0}: {1}", c.Calculation.ToString(), c.Result);
 
+                    var resultType = _client.OpcSession.ReadValue(c.ResultTag).Value.GetType();
                     WriteValue wv = new WriteValue
                     {
                         NodeId = c.ResultTag,
                         AttributeId = Attributes.Value
                     };
-                    wv.Value.Value = c.Result;
+                    if (resultType == typeof(float))
+                    {
+                        wv.Value.Value = Convert.ToSingle(c.Result);
+                    }
+                    else if (resultType == typeof(double))
+                    {
+                        wv.Value.Value = Convert.ToDouble(c.Result);
+                    }
+                    
                     wv.Value.StatusCode = StatusCodes.Good;
 
                     WriteValueCollection wvc = new WriteValueCollection
