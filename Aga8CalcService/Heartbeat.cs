@@ -5,7 +5,7 @@ using System.Timers;
 
 namespace Aga8CalcService
 {
-    public class Heartbeat
+    public class Heartbeat : IDisposable
     {
         private readonly System.Timers.Timer _timer;
         private readonly Aga8OpcClient _client;
@@ -30,6 +30,12 @@ namespace Aga8CalcService
             _timer.Elapsed += TimerElapsed;
 
             _client = new Aga8OpcClient(conf.OpcUrl, conf.OpcUser, conf.OpcPassword);
+        }
+
+        public void Dispose()
+        {
+            _client.Dispose();
+            _timer.Dispose();
         }
 
         private void TimerElapsed(object sender, ElapsedEventArgs e)

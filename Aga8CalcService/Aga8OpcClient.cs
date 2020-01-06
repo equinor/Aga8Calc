@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Aga8CalcService
 {
-    public class Aga8OpcClient
+    public class Aga8OpcClient : IDisposable
     {
         private const int ReconnectPeriod = 10;
         public Session OpcSession { get; set; }
@@ -28,6 +28,15 @@ namespace Aga8CalcService
             {
                 // Empty usename means that we create an Anonymous token
                 user = new UserIdentity();
+            }
+        }
+
+        public void Dispose()
+        {
+            if (reconnectHandler != null)
+            {
+                reconnectHandler.Dispose();
+                reconnectHandler = null;
             }
         }
 
