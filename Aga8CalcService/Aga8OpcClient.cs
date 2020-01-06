@@ -20,14 +20,14 @@ namespace Aga8CalcService
         public Aga8OpcClient(string endpointUrl, string username, string password)
         {
             this.endpointUrl = endpointUrl;
-            if (username != "")
-            {
-                user = new UserIdentity(username, password);
-            }
-            else
+            if (string.IsNullOrEmpty(username))
             {
                 // Empty usename means that we create an Anonymous token
                 user = new UserIdentity();
+            }
+            else
+            {
+                user = new UserIdentity(username, password);
             }
         }
 
