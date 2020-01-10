@@ -1,5 +1,6 @@
 ﻿using Opc.Ua;
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Timers;
 
@@ -11,6 +12,7 @@ namespace Aga8CalcService
         private readonly Aga8OpcClient _client;
         private readonly ConfigModel conf;
         private static readonly NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
+        private readonly object WorkerLock = new object();
 
         public Heartbeat()
         {
@@ -27,7 +29,7 @@ namespace Aga8CalcService
                 throw;
             }
             _timer = new System.Timers.Timer(conf.Interval) { AutoReset = true, SynchronizingObject = null };
-            _timer.Elapsed += TimerElapsed;
+            _timer.Elapsed += Worker;
 
             _client = new Aga8OpcClient(conf.OpcUrl, conf.OpcUser, conf.OpcPassword);
         }
@@ -38,62 +40,135 @@ namespace Aga8CalcService
             _timer.Dispose();
         }
 
-        private void TimerElapsed(object sender, ElapsedEventArgs e)
+        private void Worker(object sender, ElapsedEventArgs ea)
         {
-            try
+            lock (WorkerLock)
             {
-                foreach (Config c in conf.ConfigList.Item)
+                ReadFromOPC();
+                Calculate();
+                WriteToOPC();
+            }
+        }
+
+        private void ReadFromOPC()
+        {
+            NodeIdCollection nodes = new NodeIdCollection();
+            List<Type> types = new List<Type>();
+            List<object> result = new List<object>();
+            List<ServiceResult> errors = new List<ServiceResult>();
+
+            // Make a list of all the OPC items that we want to read
+            foreach (var c in conf.ConfigList.Item)
+            {
+                foreach (Component comp in c.Composition.Item)
                 {
-                    c.Pressure = Convert.ToDouble(_client.OpcSession.ReadValue(c.PressureTag).Value, CultureInfo.InvariantCulture);
-                    logger.Debug(CultureInfo.InvariantCulture, "Pressure: {0} kPa", c.GetConvertedPressure(c.PressureUnit));
-                    c.Temperature = Convert.ToDouble(_client.OpcSession.ReadValue(c.TemperatureTag).Value, CultureInfo.InvariantCulture);
-                    logger.Debug(CultureInfo.InvariantCulture, "Temperature: {0} K", c.GetConvertedTemperature(c.TemperatureUnit));
-                    for (int i = 0; i < c.CompositionTag.Length; i++)
-                    {
-                        if (c.CompositionTag[i] != null)
-                        {
-                            c.GetComposition()[i] = Convert.ToDouble(_client.OpcSession.ReadValue(c.CompositionTag[i]).Value, CultureInfo.InvariantCulture);
-                            logger.Debug(CultureInfo.InvariantCulture, "{0}: {1} mole fraction", c.CompositionTag[i], c.GetScaledComposition()[i]);
-                        }
-                    }
+                    nodes.Add(comp.Tag); types.Add(typeof(object));
                 }
 
-                foreach (Config c in conf.ConfigList.Item)
+                foreach (PressureTemperature pt in c.PressureTemperatureList.Item)
                 {
-                    c.Result = NativeMethods.Aga8(c.GetScaledComposition(),
-                        c.GetConvertedPressure(c.PressureUnit),
-                        c.GetConvertedTemperature(c.TemperatureUnit),
-                        c.Calculation);
-                    logger.Debug(CultureInfo.InvariantCulture, "Result: {0}: {1}", c.Calculation.ToString(), c.Result);
-
-                    var resultType = _client.OpcSession.ReadValue(c.ResultTag).Value.GetType();
-                    WriteValue wv = new WriteValue
-                    {
-                        NodeId = c.ResultTag,
-                        AttributeId = Attributes.Value
-                    };
-                    if (resultType == typeof(float))
-                    {
-                        wv.Value.Value = Convert.ToSingle(c.Result);
-                    }
-                    else if (resultType == typeof(double))
-                    {
-                        wv.Value.Value = Convert.ToDouble(c.Result);
-                    }
-                    
-                    wv.Value.StatusCode = StatusCodes.Good;
-
-                    WriteValueCollection wvc = new WriteValueCollection
-                    {
-                        wv
-                    };
-
-                    _client.OpcSession.Write(null, wvc, out StatusCodeCollection results, out DiagnosticInfoCollection diagnosticInfos);
+                    nodes.Add(pt.Pressure.Tag); types.Add(typeof(object));
+                    nodes.Add(pt.Temperature.Tag); types.Add(typeof(object));
                 }
             }
-            catch (Exception ex)
+
+            foreach (var item in nodes)
             {
-                logger.Error(ex, "Opc error.");
+                logger.Debug(CultureInfo.InvariantCulture, "Item to read: \"{0}\"", item.ToString());
+            }
+
+            // Read all of the inputs
+            try
+            {
+                _client.OpcSession.ReadValues(nodes, types, out result, out errors);
+            }
+            catch (Exception e)
+            {
+                logger.Error(e, "Error reading values from OPC.");
+            }
+
+            int it = 0;
+            foreach (var c in conf.ConfigList.Item)
+            {
+                foreach (var component in c.Composition.Item)
+                {
+                    component.Value = Convert.ToDouble(result[it++], CultureInfo.InvariantCulture);
+                    logger.Debug(CultureInfo.InvariantCulture, "\"{0}\" Component Value: {1} Name: {2} Tag: \"{3}\"",
+                        c.Name, component.GetScaledValue(), component.Name, component.Tag);
+                }
+
+                foreach (var pt in c.PressureTemperatureList.Item)
+                {
+                    pt.Pressure.Value = Convert.ToDouble(result[it++], CultureInfo.InvariantCulture);
+                    logger.Debug(CultureInfo.InvariantCulture, "\"{0}\" Pressure Value: {1} Unit: \"{2}\" Tag: \"{3}\"",
+                        pt.Name, pt.Pressure.Value, pt.Pressure.Unit, pt.Pressure.Tag);
+                    pt.Temperature.Value = Convert.ToDouble(result[it++], CultureInfo.InvariantCulture);
+                    logger.Debug(CultureInfo.InvariantCulture, "\"{0}\" Temperature Value: {1} Unit: \"{2}\" Tag: \"{3}\"",
+                        pt.Name, pt.Temperature.Value, pt.Temperature.Unit, pt.Temperature.Tag);
+                }
+            }
+        }
+
+        private void Calculate()
+        {
+            foreach (var c in conf.ConfigList.Item)
+            {
+                foreach (var pt in c.PressureTemperatureList.Item)
+                {
+                    foreach (var property in pt.Properties.Item)
+                    {
+                        property.Value = NativeMethods.Aga8(c.Composition.GetScaledValues(), pt.Pressure.GetAGA8Converted(), pt.Temperature.GetAGA8Converted(), property.Property);
+                        logger.Debug(CultureInfo.InvariantCulture, "\"{0}\" Property: \"{1}\" Value: {2}",
+                            pt.Name, property.Property.ToString(), property.Value);
+                    }
+                }
+            }
+        }
+
+        private void WriteToOPC()
+        {
+            // Make a list of all the OPC items that we want to write
+            WriteValueCollection wvc = new WriteValueCollection();
+
+            foreach (var c in conf.ConfigList.Item)
+            {
+                foreach (var pt in c.PressureTemperatureList.Item)
+                {
+                    foreach (var property in pt.Properties.Item)
+                    {
+                        wvc.Add(new WriteValue
+                        {
+                            NodeId = property.Tag,
+                            AttributeId = Attributes.Value,
+                            Value = new DataValue { Value = property.GetTypedValue()}
+                        });
+                    }
+                }
+            }
+
+            foreach (var item in wvc)
+            {
+                logger.Debug(CultureInfo.InvariantCulture, "Item to write: \"{0}\" Value: {1}",
+                    item.NodeId.ToString(),
+                    item.Value.Value);
+            }
+
+            try
+            {
+                _client.OpcSession.Write(null, wvc, out StatusCodeCollection results, out DiagnosticInfoCollection diagnosticInfos);
+
+                for (int i = 0; i < results.Count; i++)
+                {
+                    if (results[i].Code != 0)
+                    {
+                        logger.Error(CultureInfo.InvariantCulture, "Write result: \"{0}\" Tag: \"{1}\" Value: \"{2}\" Type: \"{3}\"",
+                            results[i].ToString(), wvc[i].NodeId, wvc[i].Value.Value, wvc[i].Value.Value.GetType().ToString());
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                logger.Error(e, "Error writing OPC items");
             }
         }
 
@@ -102,16 +177,20 @@ namespace Aga8CalcService
             logger.Info("Starting service.");
             await _client.Connect();
             _timer.Start();
-
         }
 
         public void Stop()
         {
-            logger.Info("Stopping service.");
+            logger.Info("Stop service command received.");
             _timer.Stop();
-            _timer.Dispose();
-            _client.DisConnect();
+            logger.Info("Waiting for current worker.");
+            lock (WorkerLock)
+            {
+                logger.Info("Worker is done.");
+                logger.Info("Disconnecting from OPC server.");
+                _client.DisConnect();
+            }
+            logger.Info("Stopping service.");
         }
     }
-
 }
