@@ -9,7 +9,7 @@ namespace Aga8CalcService
     {
         private readonly System.Timers.Timer _timer;
         private readonly Aga8OpcClient _client;
-        private readonly ConfigFile conf;
+        private readonly ConfigModel conf;
         private static readonly NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
 
         public Heartbeat()
@@ -18,7 +18,7 @@ namespace Aga8CalcService
             string TagConfFile = AppDomain.CurrentDomain.BaseDirectory.ToString(CultureInfo.InvariantCulture) + "Tag_Config.xml";
             try
             {
-                conf = ConfigFile.ReadConfig(TagConfFile);
+                conf = ConfigModel.ReadConfig(TagConfFile);
 
             }
             catch (Exception e)

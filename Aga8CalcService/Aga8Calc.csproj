@@ -361,7 +361,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Aga8Calc.cs" />
+    <Compile Include="ConfigModel.cs" />
     <Compile Include="Aga8OpcClient.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Heartbeat.cs" />

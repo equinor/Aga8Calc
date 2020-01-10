@@ -7,7 +7,7 @@ using System.Xml.Serialization;
 namespace Aga8CalcService
 {
     [XmlRoot("configuration")]
-    public class ConfigFile
+    public class ConfigModel
     {
         [XmlElement("opc_url")]
         public string OpcUrl { get; set; }
@@ -22,7 +22,7 @@ namespace Aga8CalcService
         [XmlElement("config_list")]
         public ConfigList ConfigList = new ConfigList();
 
-        public static ConfigFile ReadConfig(string file)
+        public static ConfigModel ReadConfig(string file)
         {
             XmlReaderSettings readerSettings = new XmlReaderSettings
             {
@@ -32,8 +32,8 @@ namespace Aga8CalcService
             };
 
             XmlReader configFileReader = XmlReader.Create(file, readerSettings);
-            XmlSerializer configSerializer = new XmlSerializer(typeof(ConfigFile));
-            ConfigFile result = (ConfigFile)configSerializer.Deserialize(configFileReader);
+            XmlSerializer configSerializer = new XmlSerializer(typeof(ConfigModel));
+            ConfigModel result = (ConfigModel)configSerializer.Deserialize(configFileReader);
             configFileReader.Close();
 
             return result;
