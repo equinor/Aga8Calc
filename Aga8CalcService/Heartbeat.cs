@@ -17,7 +17,7 @@ namespace Aga8CalcService
         public Heartbeat()
         {
             logger.Info("Initializing service.");
-            string TagConfFile = AppDomain.CurrentDomain.BaseDirectory.ToString(CultureInfo.InvariantCulture) + "Tag_Config.xml";
+            string TagConfFile = AppDomain.CurrentDomain.BaseDirectory.ToString(CultureInfo.InvariantCulture) + "Aga8Calc.config";
             try
             {
                 conf = ConfigModel.ReadConfig(TagConfFile);
