@@ -202,27 +202,27 @@ This holds the values that is read from, and the result written back to the OPC 
 
     The sort order of the `<Component>` elements is significant.
     They must be in this order:
-      - Methane
-      - Nitrogen
-      - Carbon dioxide
-      - Ethane
-      - Propane
-      - Isobutane
-      - n-Butane
-      - Isopentane
-      - n-Pentane
-      - Hexane
-      - Heptane
-      - Octane
-      - Nonane
-      - Decane
-      - Hydrogen
-      - Oxygen
-      - Carbon monoxide
-      - Water
-      - Hydrogen sulfide
-      - Helium
-      - Argon
+    - Methane
+    - Nitrogen
+    - Carbon dioxide
+    - Ethane
+    - Propane
+    - Isobutane
+    - n-Butane
+    - Isopentane
+    - n-Pentane
+    - Hexane
+    - Heptane
+    - Octane
+    - Nonane
+    - Decane
+    - Hydrogen
+    - Oxygen
+    - Carbon monoxide
+    - Water
+    - Hydrogen sulfide
+    - Helium
+    - Argon
 
 -   `<PressureTemperatureList>` can contain several `<PressureTemperature>` elements.
     Every `<PressureTemperature>` element contains the pressure and temperature to read, and one or more properties that is to be written to the OPC server.
