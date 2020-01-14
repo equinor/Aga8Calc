@@ -130,12 +130,15 @@ namespace Aga8Tests
                 Property = ConfigModel.Aga8ResultCode.MolarConcentration
             });
 
-            conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Properties.Item[0].Value = Aga8CalcService.NativeMethods.Aga8(
-                conf.ConfigList.Item[0].Composition.GetValues(),
-                conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Pressure.GetAGA8Converted(),
-                conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Temperature.GetAGA8Converted(),
-                conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Properties.Item[0].Property
-            );
+            var aga = new AGA8Detail();
+            aga.Setup();
+            aga.SetComposition(conf.ConfigList.Item[0].Composition.GetValues());
+            aga.SetPressure(conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Pressure.GetAGA8Converted());
+            aga.SetTemperature(conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Temperature.GetAGA8Converted());
+            aga.CalculateDensity();
+            aga.CalculateProperties();
+
+            conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Properties.Item[0].Value = aga.GetProperty(conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Properties.Item[0].Property);
 
             Assert.AreEqual(12.807_924_036_488_01, conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Properties.Item[0].Value, 1e-9);
         }

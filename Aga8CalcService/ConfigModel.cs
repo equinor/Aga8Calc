@@ -332,11 +332,4 @@ namespace Aga8CalcService
         [XmlIgnore]
         public DateTime TimeStamp { get; set; }
     }
-
-
-    public static class NativeMethods
-    {
-        [DllImport(@"aga8_2017.dll", EntryPoint = "aga8_2017")]
-        public static extern double Aga8(double[] composition, double pressure, double temperature, ConfigModel.Aga8ResultCode result);
-    }
 }

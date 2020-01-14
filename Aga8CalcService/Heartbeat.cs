@@ -111,18 +111,30 @@ namespace Aga8CalcService
 
         private void Calculate()
         {
+            var aga = new AGA8Detail();
+            aga.Setup();
+
             foreach (var c in conf.ConfigList.Item)
             {
+                aga.SetComposition(c.Composition.GetScaledValues());
+
                 foreach (var pt in c.PressureTemperatureList.Item)
                 {
+                    aga.SetPressure(pt.Pressure.GetAGA8Converted());
+                    aga.SetTemperature(pt.Temperature.GetAGA8Converted());
+                    aga.CalculateDensity();
+                    aga.CalculateProperties();
+
                     foreach (var property in pt.Properties.Item)
                     {
-                        property.Value = NativeMethods.Aga8(c.Composition.GetScaledValues(), pt.Pressure.GetAGA8Converted(), pt.Temperature.GetAGA8Converted(), property.Property);
+                        property.Value = aga.GetProperty(property.Property);
                         logger.Debug(CultureInfo.InvariantCulture, "\"{0}\" Property: \"{1}\" Value: {2}",
                             pt.Name, property.Property.ToString(), property.Value);
                     }
                 }
             }
+
+            aga.Dispose();
         }
 
         private void WriteToOPC()

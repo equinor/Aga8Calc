@@ -371,10 +371,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Aga8.cs" />
     <Compile Include="ConfigModel.cs" />
     <Compile Include="Aga8OpcClient.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Heartbeat.cs" />
+    <Compile Include="NativeMethods.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -390,7 +392,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="aga8_2017.dll">
+    <Content Include="aga8.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Aga8_Calc_Client.Config.xml">
