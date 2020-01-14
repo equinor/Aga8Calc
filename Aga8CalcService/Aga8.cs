@@ -126,7 +126,7 @@ namespace Aga8CalcService
                 case ConfigModel.Aga8ResultCode.IsentropicExponent:
                     return ResultProperties.u;
                 case ConfigModel.Aga8ResultCode.Density:
-                    return ResultProperties.d / ResultProperties.mm;
+                    return ResultProperties.d * ResultProperties.mm; // g/l = kg/m³
                 default:
                     return ResultProperties.d;
             }
