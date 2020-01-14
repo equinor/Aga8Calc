@@ -1,0 +1,77 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xs="http://www.w3.org/2001/XMLSchema" attributeFormDefault="unqualified" elementFormDefault="qualified">
+  <xsd:element name="configuration">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="OpcUrl" type="xsd:string" />
+        <xsd:element name="OpcUser" type="xsd:string" />
+        <xsd:element name="OpcPassword" type="xsd:string" />
+        <xsd:element name="Interval" type="xsd:decimal" />
+        <xsd:element name="ConfigList">
+          <xsd:complexType>
+            <xsd:sequence>
+              <xsd:element maxOccurs="unbounded" name="Config">
+                <xsd:complexType>
+                  <xsd:sequence>
+                    <xsd:element name="Composition">
+                      <xsd:complexType>
+                        <xsd:sequence>
+                          <xsd:element maxOccurs="21" name="Component">
+                            <xsd:complexType>
+                              <xsd:attribute name="Name" type="xsd:string" use="required" />
+                              <xsd:attribute name="Tag" type="xsd:string" use="required" />
+                              <xsd:attribute name="ScaleFactor" type="xsd:decimal" use="required" />
+                            </xsd:complexType>
+                          </xsd:element>
+                        </xsd:sequence>
+                      </xsd:complexType>
+                    </xsd:element>
+                    <xsd:element name="PressureTemperatureList">
+                      <xsd:complexType>
+                        <xsd:sequence>
+                          <xsd:element name="PressureTemperature">
+                            <xsd:complexType>
+                              <xsd:sequence>
+                                <xsd:element name="Pressure">
+                                  <xsd:complexType>
+                                    <xsd:attribute name="Tag" type="xsd:string" use="required" />
+                                    <xsd:attribute name="Unit" type="xsd:string" use="required" />
+                                  </xsd:complexType>
+                                </xsd:element>
+                                <xsd:element name="Temperature">
+                                  <xsd:complexType>
+                                    <xsd:attribute name="Tag" type="xsd:string" use="required" />
+                                    <xsd:attribute name="Unit" type="xsd:string" use="required" />
+                                  </xsd:complexType>
+                                </xsd:element>
+                                <xsd:element name="Properties">
+                                  <xsd:complexType>
+                                    <xsd:sequence>
+                                      <xsd:element name="Property">
+                                        <xsd:complexType>
+                                          <xsd:attribute name="Tag" type="xsd:string" use="required" />
+                                          <xsd:attribute name="Property" type="xsd:string" use="required" />
+                                          <xsd:attribute name="Type" type="xsd:string" use="required" />
+                                        </xsd:complexType>
+                                      </xsd:element>
+                                    </xsd:sequence>
+                                  </xsd:complexType>
+                                </xsd:element>
+                              </xsd:sequence>
+                              <xsd:attribute name="Name" type="xsd:string" use="required" />
+                            </xsd:complexType>
+                          </xsd:element>
+                        </xsd:sequence>
+                      </xsd:complexType>
+                    </xsd:element>
+                  </xsd:sequence>
+                  <xsd:attribute name="Name" type="xsd:string" use="required" />
+                </xsd:complexType>
+              </xsd:element>
+            </xsd:sequence>
+          </xsd:complexType>
+        </xsd:element>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+</xs:schema>

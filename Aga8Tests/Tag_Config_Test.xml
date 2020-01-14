@@ -1,85 +1,44 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <opc_url>opc.tcp://lt-103009:62548/Quickstarts/DataAccessServer</opc_url>
-  <opc_user>username</opc_user>
-  <opc_password>password</opc_password>
-  <interval>42.0</interval>
-  <config_list>
-    <config>
-      <!-- Sort order is significant -->
-      <composition_tag>
-        <!-- Methane -->
-        <string>ns=2;s=ABB_800xA_Surrogate.S.24AI1234_A</string>
-        <!-- Nitrogen -->
-        <string>ns=2;s=ABB_800xA_Surrogate.S.24AI1234_J</string>
-        <!-- Carbon dioxide -->
-        <string>ns=2;s=ABB_800xA_Surrogate.S.24AI1234_K</string>
-        <!-- Ethane -->
-        <string>ns=2;s=ABB_800xA_Surrogate.S.24AI1234_B</string>
-        <!-- Propane -->
-        <string>ns=2;s=ABB_800xA_Surrogate.S.24AI1234_C</string>
-        <!-- Isobutane -->
-        <string>ns=2;s=ABB_800xA_Surrogate.S.24AI1234_D</string>
-        <!-- n-Butane -->
-        <string>ns=2;s=ABB_800xA_Surrogate.S.24AI1234_E</string>
-        <!-- Isopentane -->
-        <string>ns=2;s=ABB_800xA_Surrogate.S.24AI1234_F</string>
-        <!-- n-Pentane -->
-        <string>ns=2;s=ABB_800xA_Surrogate.S.24AI1234_G</string>
-        <!-- Hexane -->
-        <string>ns=2;s=ABB_800xA_Surrogate.S.24AI1234_I</string>
-        <!-- Heptane -->
-        <string xsi:nil="true" />
-        <!-- Octane -->
-        <string xsi:nil="true" />
-        <!-- Nonane -->
-        <string xsi:nil="true" />
-        <!-- Decane -->
-        <string xsi:nil="true" />
-        <!-- Hydrogen -->
-        <string xsi:nil="true" />
-        <!-- Oxygen -->
-        <string xsi:nil="true" />
-        <!-- Carbon monoxide -->
-        <string xsi:nil="true" />
-        <!-- Water -->
-        <string xsi:nil="true" />
-        <!-- Hydrogen sulfide -->
-        <string xsi:nil="true" />
-        <!-- Helium -->
-        <string xsi:nil="true" />
-        <!-- Argon -->
-        <string xsi:nil="true" />
-      </composition_tag>
-      <composition_scale>
-        <double>1.0</double>
-        <double>2.0</double>
-        <double>3.1415</double>
-        <double>4.0</double>
-        <double>5.0</double>
-        <double>6.220</double>
-        <double>7.7</double>
-        <double>8.8</double>
-        <double>9.90</double>
-        <double>10.11</double>
-        <double>0.0</double>
-        <double>0.0</double>
-        <double>0.0</double>
-        <double>0.0</double>
-        <double>0.0</double>
-        <double>0.0</double>
-        <double>0.0</double>
-        <double>0.0</double>
-        <double>0.0</double>
-        <double>0.0</double>
-        <double>0.0</double>
-      </composition_scale>
-      <pressure_tag>24PI1234</pressure_tag>
-      <pressure_unit>barg</pressure_unit>
-      <temperature_tag>24TI1234</temperature_tag>
-      <temperature_unit>C</temperature_unit>
-      <calculation>Density</calculation>
-      <result_tag>24DI1234</result_tag>
-    </config>
-  </config_list>
+  <OpcUrl>opc.tcp://lt-103009:62548/Quickstarts/DataAccessServer</OpcUrl>
+  <OpcUser>username</OpcUser>
+  <OpcPassword>password</OpcPassword>
+  <Interval>42.0</Interval>
+  <ConfigList>
+    <Config>
+      <Composition>
+        <Component Name="Methane" Tag="ns=2;s=1:AI1001?A" ScaleFactor="0.01" />
+        <Component Name="Methane" Tag="ns=2;s=1:AI1001?A" ScaleFactor="0" />
+        <Component Name="Nitrogen" Tag="ns=2;s=1:AI1001?A" ScaleFactor="0" />
+        <Component Name="Carbon dioxide" Tag="ns=2;s=1:AI1001?A" ScaleFactor="0" />
+        <Component Name="Ethane" Tag="ns=2;s=1:AI1001?A" ScaleFactor="0" />
+        <Component Name="Propane" Tag="ns=2;s=1:AI1001?A" ScaleFactor="0" />
+        <Component Name="Isobutane" Tag="ns=2;s=1:AI1001?A" ScaleFactor="0" />
+        <Component Name="n-Butane" Tag="ns=2;s=1:AI1001?A" ScaleFactor="0" />
+        <Component Name="Isopentane" Tag="ns=2;s=1:AI1001?A" ScaleFactor="0" />
+        <Component Name="n-Pentane" Tag="ns=2;s=1:AI1001?A" ScaleFactor="0" />
+        <Component Name="Hexane" Tag="ns=2;s=1:AI1001?A" ScaleFactor="0" />
+        <Component Name="Heptane" Tag="ns=2;s=1:AI1001?A" ScaleFactor="0" />
+        <Component Name="Octane" Tag="ns=2;s=1:AI1001?A" ScaleFactor="0" />
+        <Component Name="Nonane" Tag="ns=2;s=1:AI1001?A" ScaleFactor="0" />
+        <Component Name="Decane" Tag="ns=2;s=1:AI1001?A" ScaleFactor="0" />
+        <Component Name="Hydrogen" Tag="ns=2;s=1:AI1001?A" ScaleFactor="0" />
+        <Component Name="Oxygen" Tag="ns=2;s=1:AI1001?A" ScaleFactor="0" />
+        <Component Name="Carbon monoxide" Tag="ns=2;s=1:AI1001?A" ScaleFactor="0" />
+        <Component Name="Water" Tag="ns=2;s=1:AI1001?A" ScaleFactor="0" />
+        <Component Name="Hydrogen sulfide" Tag="ns=2;s=1:AI1001?A" ScaleFactor="0" />
+        <Component Name="Helium" Tag="ns=2;s=1:AI1001?A" ScaleFactor="0" />
+        <Component Name="Argon" Tag="ns=2;s=1:AI1001?A" ScaleFactor="0" />
+      </Composition>
+      <PressureTemperatureList>
+        <PressureTemperature>
+          <Pressure Tag="ns=2;s=1:AI1001?Pressure" Unit="barg" />
+          <Temperature Tag="ns=2;s=1:AI1001?Temperature" Unit="C" />
+          <Properties>
+            <Property Tag="ns=2;s=1:AI1001?Result" Property="MolarConcentration" />
+          </Properties>
+        </PressureTemperature>
+      </PressureTemperatureList>
+    </Config>
+  </ConfigList>
 </configuration>

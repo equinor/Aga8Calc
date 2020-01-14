@@ -133,168 +133,150 @@ The configuration file is structured like the example below.
 
     <?xml version="1.0" encoding="utf-8"?>
     <configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-      <opc_url>opc.tcp://lt-103009:62548/Quickstarts/DataAccessServer</opc_url>
-      <opc_user>xxx</opc_user>
-      <opc_password>xxx</opc_password>
-      <interval>1000</interval>
-      <config_list>
-        <config>
+      <OpcUrl>opc.tcp://lt-103009:62548/Quickstarts/DataAccessServer</OpcUrl>
+      <OpcUser>xxx</OpcUser>
+      <OpcPassword>xxx</OpcPassword>
+      <Interval>1000</Interval>
+      <ConfigList>
+        <Config>
         ...
-        </config>
-        <config>
+        </Config>
+        <Config>
         ...
-        </config>
-        <config>
+        </Config>
+        <Config>
         ...
-        </config>
-      </config_list>
+        </Config>
+      </ConfigList>
     </configuration>
 
 -   `<configuration>` is the root element.
     All other elements live inside this one.
 
--   `<opc_url>` is used to select what OPC server to connect to.
+-   `<OpcUrl>` is used to select what OPC server to connect to.
 
--   `<opc_user>` and `<opc_password>` are used to select what user name and password to use to connect to the OPC server.
+-   `<OpcUser>` and `<OpcPassword>` are used to select what user name and password to use to connect to the OPC server.
 
--   `<interval>` is used to set the update interval of the calculation task.
+-   `<Interval>` is used to set the update interval of the calculation task.
     The interval is set in milli seconds, so 1000 would be 1 second.
 
--   `<config_list>` can contain one or more `<config>` elements.
+-   `<ConfigList>` can contain one or more `<Config>` elements.
 
-Every `<config>` element is structured like below.
+Every `<Config>` element is structured like below.
 
 .. code-block:: xml
 
-    <config>
-      <!-- Sort order is significant -->
-      <composition_tag>
-        <!-- Methane -->
-        <string>ns=2;s=ABB_800xA_Surrogate.S.24AI1234_A</string>
-        <!-- Nitrogen -->
-        <string>ns=2;s=ABB_800xA_Surrogate.S.24AI1234_J</string>
-        <!-- Carbon dioxide -->
-        <string>ns=2;s=ABB_800xA_Surrogate.S.24AI1234_K</string>
-        <!-- Ethane -->
-        <string>ns=2;s=ABB_800xA_Surrogate.S.24AI1234_B</string>
-        <!-- Propane -->
-        <string>ns=2;s=ABB_800xA_Surrogate.S.24AI1234_C</string>
-        <!-- Isobutane -->
-        <string>ns=2;s=ABB_800xA_Surrogate.S.24AI1234_D</string>
-        <!-- n-Butane -->
-        <string>ns=2;s=ABB_800xA_Surrogate.S.24AI1234_E</string>
-        <!-- Isopentane -->
-        <string>ns=2;s=ABB_800xA_Surrogate.S.24AI1234_F</string>
-        <!-- n-Pentane -->
-        <string>ns=2;s=ABB_800xA_Surrogate.S.24AI1234_G</string>
-        <!-- Hexane -->
-        <string>ns=2;s=ABB_800xA_Surrogate.S.24AI1234_I</string>
-        <!-- Heptane -->
-        <string xsi:nil="true" />
-        <!-- Octane -->
-        <string xsi:nil="true" />
-        <!-- Nonane -->
-        <string xsi:nil="true" />
-        <!-- Decane -->
-        <string xsi:nil="true" />
-        <!-- Hydrogen -->
-        <string xsi:nil="true" />
-        <!-- Oxygen -->
-        <string xsi:nil="true" />
-        <!-- Carbon monoxide -->
-        <string xsi:nil="true" />
-        <!-- Water -->
-        <string xsi:nil="true" />
-        <!-- Hydrogen sulfide -->
-        <string xsi:nil="true" />
-        <!-- Helium -->
-        <string xsi:nil="true" />
-        <!-- Argon -->
-        <string xsi:nil="true" />
-      </composition_tag>
-      <composition_scale>
-        <double>1.0</double>
-        <double>1.0</double>
-        <double>1.0</double>
-        <double>1.0</double>
-        <double>1.0</double>
-        <double>1.0</double>
-        <double>1.0</double>
-        <double>1.0</double>
-        <double>1.0</double>
-        <double>1.0</double>
-        <double>0.0</double>
-        <double>0.0</double>
-        <double>0.0</double>
-        <double>0.0</double>
-        <double>0.0</double>
-        <double>0.0</double>
-        <double>0.0</double>
-        <double>0.0</double>
-        <double>0.0</double>
-        <double>0.0</double>
-        <double>0.0</double>
-      </composition_scale>
-      <pressure_tag>24PI1234</pressure_tag>
-      <pressure_unit>barg</pressure_unit>
-      <temperature_tag>24TI1234</temperature_tag>
-      <temperature_unit>C</temperature_unit>
-      <calculation>Density</calculation>
-      <result_tag>24DI1234</result_tag>
-    </config>
+    <Config Name="GC 1">
+      <Composition>
+        <Component Name="Methane" Tag="ns=2;s=1:AI1001?A" ScaleFactor="0.01" />
+        <Component Name="Nitrogen" Tag="ns=2;s=1:AI1001?J" ScaleFactor="0.01" />
+        <Component Name="Carbon dioxide" Tag="ns=2;s=1:AI1001?K" ScaleFactor="0.01" />
+        <Component Name="Ethane" Tag="ns=2;s=1:AI1001?B" ScaleFactor="0.01" />
+        <Component Name="Propane" Tag="ns=2;s=1:AI1001?C" ScaleFactor="0.01" />
+        <Component Name="Isobutane" Tag="ns=2;s=1:AI1001?D" ScaleFactor="0.01" />
+        <Component Name="n-Butane" Tag="ns=2;s=1:AI1001?E" ScaleFactor="0.01" />
+        <Component Name="Isopentane" Tag="ns=2;s=1:AI1001?F" ScaleFactor="0.01" />
+        <Component Name="n-Pentane" Tag="ns=2;s=1:AI1001?G" ScaleFactor="0.01" />
+        <Component Name="Hexane" Tag="ns=2;s=1:AI1001?I" ScaleFactor="0.01" />
+      </Composition>
+      <PressureTemperatureList>
+        <PressureTemperature Name="Point 1">
+          <Pressure Tag="ns=2;s=1:AI1001?Pressure" Unit="barg" />
+          <Temperature Tag="ns=2;s=1:AI1001?Temperature" Unit="C" />
+          <Properties>
+            <Property Tag="ns=2;s=1:AI1001?Result" Property="MolarConcentration" Type="single" />
+          </Properties>
+        </PressureTemperature>
+      </PressureTemperatureList>
+    </Config>
+
 
 This holds the values that is read from, and the result written back to the OPC server.
 
--   `<composition_tag>` contains several `<string>` elements where each one contains the OPC item for one gas component.
-    The sort order and number of components is significant.
-    The number of components shall be 21.
-    No more. No less.
-    21 shall be the number of components, and the number of components shall be 21.
-    It shall not be 22, nor shall it be 20.
-    23 is right out.
+-   `<Composition>` contains up to 21 `<Component>` elements where each one contains attributes for the component.
+    Attributes:
 
--   `<composition_scale>` contains the exact same number of `<double>` elements that `<composition_tag>` contains.
-    These scale factors are used to scale the individual component values into the mol fraction range from 0-1.
+    - `Name` is used to identify the component in the log files.
+    - `Tag` is the OPC item to read the value from.
+    - `ScaleFactor` is used to scale the individual component values into the mol fraction range from 0-1.
 
--   `<pressure_tag>` is the OPC item for the pressure.
-    The value of this item is read from the OPC server.
+    The sort order of the `<Component>` elements is significant.
+    They must be in this order:
 
--   `<pressure_unit>` is the expected engineering unit of the pressure value.
-    This is used to convert the pressure value to the unit needed for the Aga8 equation of state, namely [kPa].
-    The possible units are:
+      - Methane
+      - Nitrogen
+      - Carbon dioxide
+      - Ethane
+      - Propane
+      - Isobutane
+      - n-Butane
+      - Isopentane
+      - n-Pentane
+      - Hexane
+      - Heptane
+      - Octane
+      - Nonane
+      - Decane
+      - Hydrogen
+      - Oxygen
+      - Carbon monoxide
+      - Water
+      - Hydrogen sulfide
+      - Helium
+      - Argon
 
-    - barg (bar gauge)
-    - bara (bar absolute)
+-   `<PressureTemperatureList>` can contain several `<PressureTemperature>` elements.
+    Every `<PressureTemperature>` element contains the pressure and temperature to read, and one or more properties that is to be written to the OPC server.
 
--   `<temperature_tag>` is the OPC item for the temperature.
-    The value is read from the OPC server.
+-   `<Pressure>` is the pressure to be read.
+    Attributes:
 
--   `<temperature_unit>` is the expected engineering unit of the temperature value.
-    This is used to convert the temperature to the proper unit - [K].
-    The possible temperature units are:
+    - `Tag` is the OPC item to read.
+    - `Unit` is the expected engineering unit of the pressure value.
+      This is used to convert the pressure value to the unit needed for the Aga8 equation of state, namely [kPa].
+      The possible units are:
 
-    - C (degree Celsius)
-    - K (Kelvin)
+      - barg (bar gauge)
+      - bara (bar absolute)
 
--   `<calculation>` lets you select what type of result that will be put into the `<result_tag>` element.
-    The possible options are:
+-   `<Temperature>` is the temperature to read.
+    Attributes:
 
-    - CompressibilityFactor
-    - Density
-    - Enthalpy
-    - Entropy
-    - GibbsEnergy
-    - InternalEnergy
-    - IsentropicExponent
-    - IsobaricHeatCapacity
-    - IsochoricHeatCapacity
-    - JouleThomsonCoefficient
-    - MolarConcentration
-    - MolarMass
-    - SpeedOfSound
+    - `Tag` is the OPC item to read.
+    - `Unit` is the expected engineering unit of the temperature value.
+      This is used to convert the temperature to the proper unit - [K].
+      The possible temperature units are:
 
--   `<result_tag>` is the OPC item for the calculation result.
-    The result value will be written to this item on the OPC server.
+      - C (degree Celsius)
+      - K (Kelvin)
+
+-   `<Properties>` contains one or more `<Property>` elements.
+    These are the results that will be written to the OPC server.
+    The Attributes of the `<Property>` element are:
+
+    - `Tag` is the OPC item to write to.
+    - `Property` is the result that will be written to the OPC item.
+      The possible options are:
+
+      - CompressibilityFactor
+      - Density
+      - Enthalpy
+      - Entropy
+      - GibbsEnergy
+      - InternalEnergy
+      - IsentropicExponent
+      - IsobaricHeatCapacity
+      - IsochoricHeatCapacity
+      - JouleThomsonCoefficient
+      - MolarConcentration
+      - MolarMass
+      - SpeedOfSound
+
+    - `Type` is the datatype that the OPC server expects for the item.
+      Possible types are:
+
+      - `single` a 32-bit floating point type.
+      - `double` a 64-bit floating point type.
 
 A complete, minimal configuration file could look like this.
 
@@ -302,98 +284,41 @@ A complete, minimal configuration file could look like this.
 
     <?xml version="1.0" encoding="utf-8"?>
     <configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-      <opc_url>opc.tcp://lt-103009:62548/Quickstarts/DataAccessServer</opc_url>
-      <opc_user>xxx</opc_user>
-      <opc_password>xxx</opc_password>
-      <interval>1000</interval>
-      <config_list>
-        <config>
-        <!-- Sort order is significant -->
-          <composition_tag>
-            <!-- Methane -->
-            <string>ns=2;s=ABB_800xA_Surrogate.S.24AI1234_A</string>
-            <!-- Nitrogen -->
-            <string>ns=2;s=ABB_800xA_Surrogate.S.24AI1234_J</string>
-            <!-- Carbon dioxide -->
-            <string>ns=2;s=ABB_800xA_Surrogate.S.24AI1234_K</string>
-            <!-- Ethane -->
-            <string>ns=2;s=ABB_800xA_Surrogate.S.24AI1234_B</string>
-            <!-- Propane -->
-            <string>ns=2;s=ABB_800xA_Surrogate.S.24AI1234_C</string>
-            <!-- Isobutane -->
-            <string>ns=2;s=ABB_800xA_Surrogate.S.24AI1234_D</string>
-            <!-- n-Butane -->
-            <string>ns=2;s=ABB_800xA_Surrogate.S.24AI1234_E</string>
-            <!-- Isopentane -->
-            <string>ns=2;s=ABB_800xA_Surrogate.S.24AI1234_F</string>
-            <!-- n-Pentane -->
-            <string>ns=2;s=ABB_800xA_Surrogate.S.24AI1234_G</string>
-            <!-- Hexane -->
-            <string>ns=2;s=ABB_800xA_Surrogate.S.24AI1234_I</string>
-            <!-- Heptane -->
-            <string xsi:nil="true" />
-            <!-- Octane -->
-            <string xsi:nil="true" />
-            <!-- Nonane -->
-            <string xsi:nil="true" />
-            <!-- Decane -->
-            <string xsi:nil="true" />
-            <!-- Hydrogen -->
-            <string xsi:nil="true" />
-            <!-- Oxygen -->
-            <string xsi:nil="true" />
-            <!-- Carbon monoxide -->
-            <string xsi:nil="true" />
-            <!-- Water -->
-            <string xsi:nil="true" />
-            <!-- Hydrogen sulfide -->
-            <string xsi:nil="true" />
-            <!-- Helium -->
-            <string xsi:nil="true" />
-            <!-- Argon -->
-            <string xsi:nil="true" />
-          </composition_tag>
-          <composition_scale>
-            <double>1.0</double>
-            <double>1.0</double>
-            <double>1.0</double>
-            <double>1.0</double>
-            <double>1.0</double>
-            <double>1.0</double>
-            <double>1.0</double>
-            <double>1.0</double>
-            <double>1.0</double>
-            <double>1.0</double>
-            <double>0.0</double>
-            <double>0.0</double>
-            <double>0.0</double>
-            <double>0.0</double>
-            <double>0.0</double>
-            <double>0.0</double>
-            <double>0.0</double>
-            <double>0.0</double>
-            <double>0.0</double>
-            <double>0.0</double>
-            <double>0.0</double>
-          </composition_scale>
-          <pressure_tag>24PI1234</pressure_tag>
-          <pressure_unit>barg</pressure_unit>
-          <temperature_tag>24TI1234</temperature_tag>
-          <temperature_unit>C</temperature_unit>
-          <calculation>Density</calculation>
-          <result_tag>24DI1234</result_tag>
-        </config>
-      </config_list>
+      <OpcUrl>opc.tcp://lt-103009:62548/Quickstarts/DataAccessServer</OpcUrl>
+      <OpcUser>username</OpcUser>
+      <OpcPassword>password</OpcPassword>
+      <Interval>10000.0</Interval>
+      <ConfigList>
+        <Config Name="GC 1">
+          <Composition>
+            <Component Name="Methane" Tag="ns=2;s=1:AI1001?A" ScaleFactor="0.01" />
+            <Component Name="Nitrogen" Tag="ns=2;s=1:AI1001?J" ScaleFactor="0.01" />
+            <Component Name="Carbon dioxide" Tag="ns=2;s=1:AI1001?K" ScaleFactor="0.01" />
+            <Component Name="Ethane" Tag="ns=2;s=1:AI1001?B" ScaleFactor="0.01" />
+            <Component Name="Propane" Tag="ns=2;s=1:AI1001?C" ScaleFactor="0.01" />
+            <Component Name="Isobutane" Tag="ns=2;s=1:AI1001?D" ScaleFactor="0.01" />
+            <Component Name="n-Butane" Tag="ns=2;s=1:AI1001?E" ScaleFactor="0.01" />
+            <Component Name="Isopentane" Tag="ns=2;s=1:AI1001?F" ScaleFactor="0.01" />
+            <Component Name="n-Pentane" Tag="ns=2;s=1:AI1001?G" ScaleFactor="0.01" />
+            <Component Name="Hexane" Tag="ns=2;s=1:AI1001?I" ScaleFactor="0.01" />
+          </Composition>
+          <PressureTemperatureList>
+            <PressureTemperature Name="Point 1">
+              <Pressure Tag="ns=2;s=1:AI1001?Pressure" Unit="barg" />
+              <Temperature Tag="ns=2;s=1:AI1001?Temperature" Unit="C" />
+              <Properties>
+                <Property Tag="ns=2;s=1:AI1001?Result" Property="MolarConcentration" Type="single" />
+              </Properties>
+            </PressureTemperature>
+          </PressureTemperatureList>
+        </Config>
+      </ConfigList>
     </configuration>
-
-.. note:: Not every component of the composition needs to have an item,
-    but the number of components must be exactly 21.
-    And they must be in the same order as shown here.
 
 Files
 -----
 
--   **aga8_2017.dll** Library that implements Aga8 Part 1 Detail equation of state.
+-   **aga8.dll** Library that implements Aga8 Part 1 Detail equation of state.
 
 -   **Aga8_Calc_Client.Config.xml** Config file for the OPC client.
 
@@ -401,7 +326,7 @@ Files
 
 -   **NLog.config** Configuration file for logging system.
 
--   **Tag_Config.xml** Main configuration file.
+-   **Aga8Calc.config** Main configuration file.
 
 
 Sequence Diagram
