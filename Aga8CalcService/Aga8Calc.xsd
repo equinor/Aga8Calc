@@ -32,16 +32,32 @@
                           <xsd:element name="PressureTemperature">
                             <xsd:complexType>
                               <xsd:sequence>
-                                <xsd:element name="Pressure">
+                                <xsd:element name="PressureFunction">
                                   <xsd:complexType>
-                                    <xsd:attribute name="Tag" type="xsd:string" use="required" />
-                                    <xsd:attribute name="Unit" type="xsd:string" use="required" />
+                                    <xsd:sequence>
+                                      <xsd:element maxOccurs="unbounded" name="Pressure">
+                                        <xsd:complexType>
+                                          <xsd:attribute name="Name" type="xsd:string" use="optional" />
+                                          <xsd:attribute name="Tag" type="xsd:string" use="required" />
+                                          <xsd:attribute name="Unit" type="xsd:string" use="required" />
+                                        </xsd:complexType>
+                                      </xsd:element>
+                                    </xsd:sequence>
+                                    <xsd:attribute name="MathFunction" type="xsd:string" use="optional" />
                                   </xsd:complexType>
                                 </xsd:element>
-                                <xsd:element name="Temperature">
+                                <xsd:element name="TemperatureFunction">
                                   <xsd:complexType>
-                                    <xsd:attribute name="Tag" type="xsd:string" use="required" />
-                                    <xsd:attribute name="Unit" type="xsd:string" use="required" />
+                                    <xsd:sequence>
+                                      <xsd:element maxOccurs="unbounded" name="Temperature">
+                                        <xsd:complexType>
+                                          <xsd:attribute name="Name" type="xsd:string" use="optional" />
+                                          <xsd:attribute name="Tag" type="xsd:string" use="required" />
+                                          <xsd:attribute name="Unit" type="xsd:string" use="required" />
+                                        </xsd:complexType>
+                                      </xsd:element>
+                                    </xsd:sequence>
+                                    <xsd:attribute name="MathFunction" type="xsd:string" use="optional" />
                                   </xsd:complexType>
                                 </xsd:element>
                                 <xsd:element name="Properties">
@@ -58,14 +74,14 @@
                                   </xsd:complexType>
                                 </xsd:element>
                               </xsd:sequence>
-                              <xsd:attribute name="Name" type="xsd:string" use="required" />
+                              <xsd:attribute name="Name" type="xsd:string" use="optional" />
                             </xsd:complexType>
                           </xsd:element>
                         </xsd:sequence>
                       </xsd:complexType>
                     </xsd:element>
                   </xsd:sequence>
-                  <xsd:attribute name="Name" type="xsd:string" use="required" />
+                  <xsd:attribute name="Name" type="xsd:string" use="optional" />
                 </xsd:complexType>
               </xsd:element>
             </xsd:sequence>

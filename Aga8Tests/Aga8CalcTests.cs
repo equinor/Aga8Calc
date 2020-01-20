@@ -52,6 +52,31 @@ namespace Aga8Tests
                 Temperature = new TemperatureMeasurement { Tag = "ns=2;s=1:AI1001?Temperature" }
             });
 
+
+            config.ConfigList.Item[0].PressureTemperatureList.Item[0].PressureFunction.Item.Add(new PressureMeasurement
+            {
+                Name = "PF 1",
+                Tag = "ns=2;s=1:AI1001?Pressure",
+            });
+
+            config.ConfigList.Item[0].PressureTemperatureList.Item[0].PressureFunction.Item.Add(new PressureMeasurement
+            {
+                Name = "PF 2",
+                Tag = "ns=2;s=1:AI1002?Pressure",
+            });
+
+            config.ConfigList.Item[0].PressureTemperatureList.Item[0].TemperatureFunction.Item.Add(new TemperatureMeasurement
+            {
+                Name = "PF 1",
+                Tag = "ns=2;s=1:AI1001?Temperature",
+            });
+
+            config.ConfigList.Item[0].PressureTemperatureList.Item[0].TemperatureFunction.Item.Add(new TemperatureMeasurement
+            {
+                Name = "PF 2",
+                Tag = "ns=2;s=1:AI1002?Temperature",
+            });
+
             config.ConfigList.Item[0].PressureTemperatureList.Item[0].Properties.Item.Add(new PropertyMeasurement
             {
                 Property = ConfigModel.Aga8ResultCode.MolarConcentration
@@ -260,6 +285,98 @@ namespace Aga8Tests
 
                 double resultBara = pressure.GetUnitConverted();
                 Assert.AreEqual(testPressureBara, resultBara, 1.0e-10);
+            }
+
+            [TestMethod]
+            public void PressureFunction_GetValue_Min()
+            {
+                var pressure = new PressureFunction { MathFunction = Func.Min };
+                pressure.Item.Add(new PressureMeasurement
+                {
+                    Unit = ConfigModel.PressureUnit.barg,
+                    Value = 3.14
+                });
+                pressure.Item.Add(new PressureMeasurement
+                {
+                    Unit = ConfigModel.PressureUnit.barg,
+                    Value = 4.14
+                });
+                pressure.Item.Add(new PressureMeasurement
+                {
+                    Unit = ConfigModel.PressureUnit.barg,
+                    Value = 5.14
+                });
+
+                Assert.AreEqual(415.325, pressure.GetValue(), 1.0e-10);
+            }
+
+            [TestMethod]
+            public void PressureFunction_GetValue_Max()
+            {
+                var pressure = new PressureFunction { MathFunction = Func.Max };
+                pressure.Item.Add(new PressureMeasurement
+                {
+                    Unit = ConfigModel.PressureUnit.barg,
+                    Value = 3.14
+                });
+                pressure.Item.Add(new PressureMeasurement
+                {
+                    Unit = ConfigModel.PressureUnit.barg,
+                    Value = 4.14
+                });
+                pressure.Item.Add(new PressureMeasurement
+                {
+                    Unit = ConfigModel.PressureUnit.barg,
+                    Value = 5.14
+                });
+
+                Assert.AreEqual(615.325, pressure.GetValue(), 1.0e-10);
+            }
+
+            [TestMethod]
+            public void TemperatureFunction_GetValue_Min()
+            {
+                var temperature = new TemperatureFunction{ MathFunction = Func.Min };
+                temperature.Item.Add(new TemperatureMeasurement
+                {
+                    Unit = ConfigModel.TemperatureUnit.K,
+                    Value = 3.14
+                });
+                temperature.Item.Add(new TemperatureMeasurement
+                {
+                    Unit = ConfigModel.TemperatureUnit.K,
+                    Value = 4.14
+                });
+                temperature.Item.Add(new TemperatureMeasurement
+                {
+                    Unit = ConfigModel.TemperatureUnit.K,
+                    Value = 5.14
+                });
+
+                Assert.AreEqual(3.14, temperature.GetValue(), 1.0e-10);
+            }
+
+            [TestMethod]
+            public void TemperatureFunction_GetValue_Max()
+            {
+                var temperature = new TemperatureFunction { MathFunction = Func.Max };
+                temperature.Item.Add(new TemperatureMeasurement
+                {
+                    Unit = ConfigModel.TemperatureUnit.K,
+                    Value = 3.14
+                });
+                temperature.Item.Add(new TemperatureMeasurement
+                {
+                    Unit = ConfigModel.TemperatureUnit.K,
+                    Value = 4.14
+                });
+                temperature.Item.Add(new TemperatureMeasurement
+                {
+                    Unit = ConfigModel.TemperatureUnit.K,
+                    Value = 5.14
+                });
+
+                Assert.AreEqual(5.14, temperature.GetValue(), 1.0e-10);
             }
         }
     }

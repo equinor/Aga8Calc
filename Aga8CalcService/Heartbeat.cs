@@ -67,8 +67,14 @@ namespace Aga8CalcService
 
                 foreach (PressureTemperature pt in c.PressureTemperatureList.Item)
                 {
-                    nodes.Add(pt.Pressure.Tag); types.Add(typeof(object));
-                    nodes.Add(pt.Temperature.Tag); types.Add(typeof(object));
+                    foreach (PressureMeasurement pm in pt.PressureFunction.Item)
+                    {
+                        nodes.Add(pm.Tag); types.Add(typeof(object));
+                    }
+                    foreach (TemperatureMeasurement tm in pt.TemperatureFunction.Item)
+                    {
+                        nodes.Add(tm.Tag); types.Add(typeof(object));
+                    }
                 }
             }
 
@@ -92,19 +98,62 @@ namespace Aga8CalcService
             {
                 foreach (var component in c.Composition.Item)
                 {
-                    component.Value = Convert.ToDouble(result[it++], CultureInfo.InvariantCulture);
-                    logger.Debug(CultureInfo.InvariantCulture, "\"{0}\" Component Value: {1} Name: {2} Tag: \"{3}\"",
-                        c.Name, component.GetScaledValue(), component.Name, component.Tag);
+                    if (StatusCode.IsGood(errors[it].StatusCode))
+                    {
+                        component.Value = Convert.ToDouble(result[it], CultureInfo.InvariantCulture);
+                        logger.Debug(CultureInfo.InvariantCulture, "\"{0}\" Component Value: {1} Name: {2} Tag: \"{3}\"",
+                            c.Name, component.GetScaledValue(), component.Name, component.Tag);
+                    }
+                    else
+                    {
+                        logger.Warn(CultureInfo.InvariantCulture, "\"{0}\" Tag: \"{1}\" Quality: \"{2}\"",
+                            c.Name, component.Tag, errors[it].ToString());
+                    }
+
+                    it++;
                 }
 
                 foreach (var pt in c.PressureTemperatureList.Item)
                 {
-                    pt.Pressure.Value = Convert.ToDouble(result[it++], CultureInfo.InvariantCulture);
-                    logger.Debug(CultureInfo.InvariantCulture, "\"{0}\" Pressure Value: {1} Unit: \"{2}\" Tag: \"{3}\"",
-                        pt.Name, pt.Pressure.Value, pt.Pressure.Unit, pt.Pressure.Tag);
-                    pt.Temperature.Value = Convert.ToDouble(result[it++], CultureInfo.InvariantCulture);
-                    logger.Debug(CultureInfo.InvariantCulture, "\"{0}\" Temperature Value: {1} Unit: \"{2}\" Tag: \"{3}\"",
-                        pt.Name, pt.Temperature.Value, pt.Temperature.Unit, pt.Temperature.Tag);
+                    foreach (PressureMeasurement pm in pt.PressureFunction.Item)
+                    {
+                        if (StatusCode.IsGood(errors[it].StatusCode))
+                        {
+                            pm.Value = Convert.ToDouble(result[it], CultureInfo.InvariantCulture);
+                            logger.Debug(CultureInfo.InvariantCulture, "\"{0}\" PressureFunc Value: {1} Unit: \"{2}\" Tag: \"{3}\"",
+                                pm.Name, pm.Value, pm.Unit, pm.Tag);
+                        }
+                        else
+                        {
+                            logger.Warn(CultureInfo.InvariantCulture, "\"{0}\" Tag: \"{1}\" Quality: \"{2}\"",
+                                pm.Name, pm.Tag, errors[it].ToString());
+                        }
+
+                        it++;
+                    }
+
+                    logger.Debug(CultureInfo.InvariantCulture, "\"{0}\" Pressure function: \"{1}\" Result value: {2} kPa",
+                        pt.Name, pt.PressureFunction.MathFunction.ToString(), pt.PressureFunction.GetValue());
+
+                    foreach (TemperatureMeasurement tm in pt.TemperatureFunction.Item)
+                    {
+                        if (StatusCode.IsGood(errors[it].StatusCode))
+                        {
+                            tm.Value = Convert.ToDouble(result[it], CultureInfo.InvariantCulture);
+                            logger.Debug(CultureInfo.InvariantCulture, "\"{0}\" TemperatureFunc Value: {1} Unit: \"{2}\" Tag: \"{3}\"",
+                                tm.Name, tm.Value, tm.Unit, tm.Tag);
+                        }
+                        else
+                        {
+                            logger.Warn(CultureInfo.InvariantCulture, "\"{0}\" Tag: \"{1}\" Quality: \"{2}\"",
+                                tm.Name, tm.Tag, errors[it].ToString());
+                        }
+
+                        it++;
+                    }
+
+                    logger.Debug(CultureInfo.InvariantCulture, "\"{0}\" Temperature function: \"{1}\" Result value: {2} K",
+                        pt.Name, pt.TemperatureFunction.MathFunction.ToString(), pt.TemperatureFunction.GetValue());
                 }
             }
         }
@@ -120,8 +169,8 @@ namespace Aga8CalcService
 
                 foreach (var pt in c.PressureTemperatureList.Item)
                 {
-                    aga.SetPressure(pt.Pressure.GetAGA8Converted());
-                    aga.SetTemperature(pt.Temperature.GetAGA8Converted());
+                    aga.SetPressure(pt.PressureFunction.GetValue());
+                    aga.SetTemperature(pt.TemperatureFunction.GetValue());
                     aga.CalculateDensity();
                     aga.CalculateProperties();
 

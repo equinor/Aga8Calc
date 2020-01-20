@@ -129,6 +129,97 @@ namespace Aga8CalcService
         public List<PressureTemperature> Item { get; }
     }
 
+    public enum Func : int
+    {
+        Min = 0,
+        Max = 1
+    }
+
+    public class PressureFunction
+    {
+        public PressureFunction() { Item = new List<PressureMeasurement>(); }
+        [XmlElement("Pressure")]
+        public List<PressureMeasurement> Item { get; }
+
+        [XmlAttribute]
+        public Func MathFunction { get; set; }
+
+        public double GetValue()
+        {
+            double value = 0.0;
+            switch (MathFunction)
+            {
+                case Func.Max:
+                    value = double.MinValue;
+                    foreach (var it in Item)
+                    {
+                        if (it.GetAGA8Converted() > value)
+                        { 
+                            value = it.GetAGA8Converted();
+                        }
+                    }
+                    break;
+                case Func.Min:
+                    value = double.MaxValue;
+                    foreach (var it in Item)
+                    {
+                        if (it.GetAGA8Converted() < value)
+                        {
+                            value = it.GetAGA8Converted();
+                        }
+                    }
+                    break;
+                default:
+                    break;
+            }
+
+            return value;
+        }
+    }
+
+    public class TemperatureFunction
+    {
+        public TemperatureFunction() { Item = new List<TemperatureMeasurement>(); }
+        [XmlElement("Temperature")]
+        public List<TemperatureMeasurement> Item { get; }
+
+        [XmlAttribute]
+        public Func MathFunction { get; set; }
+
+        public double GetValue()
+        {
+            double value = 0.0;
+            switch (MathFunction)
+            {
+                case Func.Max:
+                    value = double.MinValue;
+                    foreach (var it in Item)
+                    {
+                        if (it.GetAGA8Converted() > value)
+                        {
+                            value = it.GetAGA8Converted();
+                        }
+                    }
+                    break;
+                case Func.Min:
+                    value = double.MaxValue;
+                    foreach (var it in Item)
+                    {
+                        if (it.GetAGA8Converted() < value)
+                        {
+                            value = it.GetAGA8Converted();
+                        }
+                    }
+                    break;
+                default:
+                    break;
+            }
+
+            return value;
+        }
+    }
+
+
     public class PressureTemperature
     {
         [XmlAttribute]
@@ -138,6 +229,12 @@ namespace Aga8CalcService
         public PressureMeasurement Pressure { get; set; } = new PressureMeasurement();
         [XmlElement]
         public TemperatureMeasurement Temperature { get; set; } = new TemperatureMeasurement();
+
+        [XmlElement]
+        public PressureFunction PressureFunction { get; set; } = new PressureFunction();
+
+        [XmlElement]
+        public TemperatureFunction TemperatureFunction { get; set; } = new TemperatureFunction();
 
         [XmlElement]
         public PropertyList Properties { get; set; } = new PropertyList();

@@ -32,6 +32,14 @@
       </Composition>
       <PressureTemperatureList>
         <PressureTemperature>
+          <PressureFunction MathFunction="Min">
+            <Pressure Name="PF 1" Tag="ns=2;s=1:AI1001?Pressure" Unit="barg" />
+            <Pressure Name="PF 2" Tag="ns=2;s=1:AI1002?Pressure" Unit="barg" />
+          </PressureFunction>
+          <TemperatureFunction MathFunction="Min">
+            <Pressure Name="PF 1" Tag="ns=2;s=1:AI1001?Temperature" Unit="C" />
+            <Pressure Name="PF 2" Tag="ns=2;s=1:AI1002?Temperature" Unit="C" />
+          </TemperatureFunction>
           <Pressure Tag="ns=2;s=1:AI1001?Pressure" Unit="barg" />
           <Temperature Tag="ns=2;s=1:AI1001?Temperature" Unit="C" />
           <Properties>
