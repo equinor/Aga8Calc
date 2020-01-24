@@ -132,7 +132,9 @@ namespace Aga8CalcService
     public enum Func : int
     {
         Min = 0,
-        Max = 1
+        Max = 1,
+        Average = 2,
+        Median = 3
     }
 
     public class PressureFunction
@@ -167,6 +169,40 @@ namespace Aga8CalcService
                         {
                             value = it.GetAGA8Converted();
                         }
+                    }
+                    break;
+                case Func.Average:
+                    value = 0.0;
+                    foreach (var it in Item)
+                    {
+                        value += it.GetAGA8Converted();
+                    }
+                    value /= (double)Item.Count;
+                    break;
+                case Func.Median:
+                    value = 0.0;
+                    List<double> v = new List<double>();
+                    foreach (var it in Item)
+                    {
+                        v.Add(it.GetAGA8Converted());
+                    }
+                    v.Sort();
+
+                    if (v.Count == 1)
+                    {
+                        value = v[0];
+                    }
+                    else if (v.Count % 2 == 0)
+                    {
+                        // An even number of values
+                        value += v[v.Count / 2 - 1];
+                        value += v[v.Count / 2];
+                        value /= 2.0;
+                    }
+                    else
+                    {
+                        // An odd number of values
+                        value = v[v.Count / 2];
                     }
                     break;
                 default:
@@ -209,6 +245,40 @@ namespace Aga8CalcService
                         {
                             value = it.GetAGA8Converted();
                         }
+                    }
+                    break;
+                case Func.Average:
+                    value = 0.0;
+                    foreach (var it in Item)
+                    {
+                        value += it.GetAGA8Converted();
+                    }
+                    value /= (double)Item.Count;
+                    break;
+                case Func.Median:
+                    value = 0.0;
+                    List<double> v = new List<double>();
+                    foreach (var it in Item)
+                    {
+                        v.Add(it.GetAGA8Converted());
+                    }
+                    v.Sort();
+
+                    if (v.Count == 1)
+                    {
+                        value = v[0];
+                    }
+                    else if (v.Count % 2 == 0)
+                    {
+                        // An even number of values
+                        value += v[v.Count / 2 - 1];
+                        value += v[v.Count / 2];
+                        value /= 2.0;
+                    }
+                    else
+                    {
+                        // An odd number of values
+                        value = v[v.Count / 2];
                     }
                     break;
                 default:

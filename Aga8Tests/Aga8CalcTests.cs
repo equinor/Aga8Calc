@@ -334,6 +334,93 @@ namespace Aga8Tests
             }
 
             [TestMethod]
+            public void PressureFunction_GetValue_Average()
+            {
+                var pressure = new PressureFunction { MathFunction = Func.Average };
+                pressure.Item.Add(new PressureMeasurement
+                {
+                    Unit = ConfigModel.PressureUnit.barg,
+                    Value = 3.14
+                });
+                pressure.Item.Add(new PressureMeasurement
+                {
+                    Unit = ConfigModel.PressureUnit.barg,
+                    Value = 4.14
+                });
+                pressure.Item.Add(new PressureMeasurement
+                {
+                    Unit = ConfigModel.PressureUnit.barg,
+                    Value = 5.14
+                });
+
+                Assert.AreEqual(515.325, pressure.GetValue(), 1.0e-10);
+            }
+
+            [TestMethod]
+            public void PressureFunction_GetValue_Median_Even()
+            {
+                var pressure = new PressureFunction { MathFunction = Func.Median };
+                pressure.Item.Add(new PressureMeasurement
+                {
+                    Unit = ConfigModel.PressureUnit.barg,
+                    Value = 3.14
+                });
+                pressure.Item.Add(new PressureMeasurement
+                {
+                    Unit = ConfigModel.PressureUnit.barg,
+                    Value = 4.14
+                });
+                pressure.Item.Add(new PressureMeasurement
+                {
+                    Unit = ConfigModel.PressureUnit.barg,
+                    Value = 5.14
+                });
+                pressure.Item.Add(new PressureMeasurement
+                {
+                    Unit = ConfigModel.PressureUnit.barg,
+                    Value = 6.14
+                });
+
+                Assert.AreEqual(565.325, pressure.GetValue(), 1.0e-10);
+            }
+
+            [TestMethod]
+            public void PressureFunction_GetValue_Median_Odd()
+            {
+                var pressure = new PressureFunction { MathFunction = Func.Median };
+                pressure.Item.Add(new PressureMeasurement
+                {
+                    Unit = ConfigModel.PressureUnit.barg,
+                    Value = 3.14
+                });
+                pressure.Item.Add(new PressureMeasurement
+                {
+                    Unit = ConfigModel.PressureUnit.barg,
+                    Value = 4.14
+                });
+                pressure.Item.Add(new PressureMeasurement
+                {
+                    Unit = ConfigModel.PressureUnit.barg,
+                    Value = 6.14
+                });
+
+                Assert.AreEqual(515.325, pressure.GetValue(), 1.0e-10);
+            }
+
+            [TestMethod]
+            public void PressureFunction_GetValue_Median_Single()
+            {
+                var pressure = new PressureFunction { MathFunction = Func.Median };
+                pressure.Item.Add(new PressureMeasurement
+                {
+                    Unit = ConfigModel.PressureUnit.barg,
+                    Value = 3.14
+                });
+
+                Assert.AreEqual(415.325, pressure.GetValue(), 1.0e-10);
+            }
+
+            [TestMethod]
             public void TemperatureFunction_GetValue_Min()
             {
                 var temperature = new TemperatureFunction{ MathFunction = Func.Min };
@@ -377,6 +464,93 @@ namespace Aga8Tests
                 });
 
                 Assert.AreEqual(5.14, temperature.GetValue(), 1.0e-10);
+            }
+
+            [TestMethod]
+            public void TemperatureFunction_GetValue_Average()
+            {
+                var temperature = new TemperatureFunction { MathFunction = Func.Average };
+                temperature.Item.Add(new TemperatureMeasurement
+                {
+                    Unit = ConfigModel.TemperatureUnit.K,
+                    Value = 3.14
+                });
+                temperature.Item.Add(new TemperatureMeasurement
+                {
+                    Unit = ConfigModel.TemperatureUnit.K,
+                    Value = 4.14
+                });
+                temperature.Item.Add(new TemperatureMeasurement
+                {
+                    Unit = ConfigModel.TemperatureUnit.K,
+                    Value = 5.14
+                });
+
+                Assert.AreEqual(4.14, temperature.GetValue(), 1.0e-10);
+            }
+
+            [TestMethod]
+            public void TemperatureFunction_GetValue_Median_Even()
+            {
+                var temperature = new TemperatureFunction { MathFunction = Func.Median };
+                temperature.Item.Add(new TemperatureMeasurement
+                {
+                    Unit = ConfigModel.TemperatureUnit.K,
+                    Value = 3.14
+                });
+                temperature.Item.Add(new TemperatureMeasurement
+                {
+                    Unit = ConfigModel.TemperatureUnit.K,
+                    Value = 4.14
+                });
+                temperature.Item.Add(new TemperatureMeasurement
+                {
+                    Unit = ConfigModel.TemperatureUnit.K,
+                    Value = 5.14
+                });
+                temperature.Item.Add(new TemperatureMeasurement
+                {
+                    Unit = ConfigModel.TemperatureUnit.K,
+                    Value = 7.14
+                });
+
+                Assert.AreEqual(4.64, temperature.GetValue(), 1.0e-10);
+            }
+
+            [TestMethod]
+            public void TemperatureFunction_GetValue_Median_Odd()
+            {
+                var temperature = new TemperatureFunction { MathFunction = Func.Median };
+                temperature.Item.Add(new TemperatureMeasurement
+                {
+                    Unit = ConfigModel.TemperatureUnit.K,
+                    Value = 3.14
+                });
+                temperature.Item.Add(new TemperatureMeasurement
+                {
+                    Unit = ConfigModel.TemperatureUnit.K,
+                    Value = 4.14
+                });
+                temperature.Item.Add(new TemperatureMeasurement
+                {
+                    Unit = ConfigModel.TemperatureUnit.K,
+                    Value = 5.14
+                });
+
+                Assert.AreEqual(4.14, temperature.GetValue(), 1.0e-10);
+            }
+
+            [TestMethod]
+            public void TemperatureFunction_GetValue_Median_Single()
+            {
+                var temperature = new TemperatureFunction { MathFunction = Func.Median };
+                temperature.Item.Add(new TemperatureMeasurement
+                {
+                    Unit = ConfigModel.TemperatureUnit.K,
+                    Value = 3.14
+                });
+
+                Assert.AreEqual(3.14, temperature.GetValue(), 1.0e-10);
             }
         }
     }
