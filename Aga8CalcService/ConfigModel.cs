@@ -38,6 +38,14 @@ namespace Aga8CalcService
             K = 1,
         }
 
+        public enum Func : int
+        {
+            Min = 0,
+            Max = 1,
+            Average = 2,
+            Median = 3
+        }
+
 
         [XmlElement]
         public string OpcUrl { get; set; }
@@ -129,14 +137,6 @@ namespace Aga8CalcService
         public List<PressureTemperature> Item { get; }
     }
 
-    public enum Func : int
-    {
-        Min = 0,
-        Max = 1,
-        Average = 2,
-        Median = 3
-    }
-
     public class PressureFunction
     {
         public PressureFunction() { Item = new List<PressureMeasurement>(); }
@@ -144,14 +144,14 @@ namespace Aga8CalcService
         public List<PressureMeasurement> Item { get; }
 
         [XmlAttribute]
-        public Func MathFunction { get; set; }
+        public ConfigModel.Func MathFunction { get; set; }
 
         public double GetValue()
         {
             double value = 0.0;
             switch (MathFunction)
             {
-                case Func.Max:
+                case ConfigModel.Func.Max:
                     value = double.MinValue;
                     foreach (var it in Item)
                     {
@@ -161,7 +161,7 @@ namespace Aga8CalcService
                         }
                     }
                     break;
-                case Func.Min:
+                case ConfigModel.Func.Min:
                     value = double.MaxValue;
                     foreach (var it in Item)
                     {
@@ -171,7 +171,7 @@ namespace Aga8CalcService
                         }
                     }
                     break;
-                case Func.Average:
+                case ConfigModel.Func.Average:
                     value = 0.0;
                     foreach (var it in Item)
                     {
@@ -179,7 +179,7 @@ namespace Aga8CalcService
                     }
                     value /= (double)Item.Count;
                     break;
-                case Func.Median:
+                case ConfigModel.Func.Median:
                     value = 0.0;
                     List<double> v = new List<double>();
                     foreach (var it in Item)
@@ -220,14 +220,14 @@ namespace Aga8CalcService
         public List<TemperatureMeasurement> Item { get; }
 
         [XmlAttribute]
-        public Func MathFunction { get; set; }
+        public ConfigModel.Func MathFunction { get; set; }
 
         public double GetValue()
         {
             double value = 0.0;
             switch (MathFunction)
             {
-                case Func.Max:
+                case ConfigModel.Func.Max:
                     value = double.MinValue;
                     foreach (var it in Item)
                     {
@@ -237,7 +237,7 @@ namespace Aga8CalcService
                         }
                     }
                     break;
-                case Func.Min:
+                case ConfigModel.Func.Min:
                     value = double.MaxValue;
                     foreach (var it in Item)
                     {
@@ -247,7 +247,7 @@ namespace Aga8CalcService
                         }
                     }
                     break;
-                case Func.Average:
+                case ConfigModel.Func.Average:
                     value = 0.0;
                     foreach (var it in Item)
                     {
@@ -255,7 +255,7 @@ namespace Aga8CalcService
                     }
                     value /= (double)Item.Count;
                     break;
-                case Func.Median:
+                case ConfigModel.Func.Median:
                     value = 0.0;
                     List<double> v = new List<double>();
                     foreach (var it in Item)

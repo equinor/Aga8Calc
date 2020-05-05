@@ -290,7 +290,7 @@ namespace Aga8Tests
             [TestMethod]
             public void PressureFunction_GetValue_Min()
             {
-                var pressure = new PressureFunction { MathFunction = Func.Min };
+                var pressure = new PressureFunction { MathFunction = ConfigModel.Func.Min };
                 pressure.Item.Add(new PressureMeasurement
                 {
                     Unit = ConfigModel.PressureUnit.barg,
@@ -313,7 +313,7 @@ namespace Aga8Tests
             [TestMethod]
             public void PressureFunction_GetValue_Max()
             {
-                var pressure = new PressureFunction { MathFunction = Func.Max };
+                var pressure = new PressureFunction { MathFunction = ConfigModel.Func.Max };
                 pressure.Item.Add(new PressureMeasurement
                 {
                     Unit = ConfigModel.PressureUnit.barg,
@@ -336,7 +336,7 @@ namespace Aga8Tests
             [TestMethod]
             public void PressureFunction_GetValue_Average()
             {
-                var pressure = new PressureFunction { MathFunction = Func.Average };
+                var pressure = new PressureFunction { MathFunction = ConfigModel.Func.Average };
                 pressure.Item.Add(new PressureMeasurement
                 {
                     Unit = ConfigModel.PressureUnit.barg,
@@ -359,7 +359,7 @@ namespace Aga8Tests
             [TestMethod]
             public void PressureFunction_GetValue_Median_Even()
             {
-                var pressure = new PressureFunction { MathFunction = Func.Median };
+                var pressure = new PressureFunction { MathFunction = ConfigModel.Func.Median };
                 pressure.Item.Add(new PressureMeasurement
                 {
                     Unit = ConfigModel.PressureUnit.barg,
@@ -387,7 +387,7 @@ namespace Aga8Tests
             [TestMethod]
             public void PressureFunction_GetValue_Median_Odd()
             {
-                var pressure = new PressureFunction { MathFunction = Func.Median };
+                var pressure = new PressureFunction { MathFunction = ConfigModel.Func.Median };
                 pressure.Item.Add(new PressureMeasurement
                 {
                     Unit = ConfigModel.PressureUnit.barg,
@@ -410,7 +410,7 @@ namespace Aga8Tests
             [TestMethod]
             public void PressureFunction_GetValue_Median_Single()
             {
-                var pressure = new PressureFunction { MathFunction = Func.Median };
+                var pressure = new PressureFunction { MathFunction = ConfigModel.Func.Median };
                 pressure.Item.Add(new PressureMeasurement
                 {
                     Unit = ConfigModel.PressureUnit.barg,
@@ -423,7 +423,7 @@ namespace Aga8Tests
             [TestMethod]
             public void TemperatureFunction_GetValue_Min()
             {
-                var temperature = new TemperatureFunction{ MathFunction = Func.Min };
+                var temperature = new TemperatureFunction{ MathFunction = ConfigModel.Func.Min };
                 temperature.Item.Add(new TemperatureMeasurement
                 {
                     Unit = ConfigModel.TemperatureUnit.K,
@@ -446,7 +446,7 @@ namespace Aga8Tests
             [TestMethod]
             public void TemperatureFunction_GetValue_Max()
             {
-                var temperature = new TemperatureFunction { MathFunction = Func.Max };
+                var temperature = new TemperatureFunction { MathFunction = ConfigModel.Func.Max };
                 temperature.Item.Add(new TemperatureMeasurement
                 {
                     Unit = ConfigModel.TemperatureUnit.K,
@@ -469,7 +469,7 @@ namespace Aga8Tests
             [TestMethod]
             public void TemperatureFunction_GetValue_Average()
             {
-                var temperature = new TemperatureFunction { MathFunction = Func.Average };
+                var temperature = new TemperatureFunction { MathFunction = ConfigModel.Func.Average };
                 temperature.Item.Add(new TemperatureMeasurement
                 {
                     Unit = ConfigModel.TemperatureUnit.K,
@@ -492,7 +492,7 @@ namespace Aga8Tests
             [TestMethod]
             public void TemperatureFunction_GetValue_Median_Even()
             {
-                var temperature = new TemperatureFunction { MathFunction = Func.Median };
+                var temperature = new TemperatureFunction { MathFunction = ConfigModel.Func.Median };
                 temperature.Item.Add(new TemperatureMeasurement
                 {
                     Unit = ConfigModel.TemperatureUnit.K,
@@ -520,7 +520,7 @@ namespace Aga8Tests
             [TestMethod]
             public void TemperatureFunction_GetValue_Median_Odd()
             {
-                var temperature = new TemperatureFunction { MathFunction = Func.Median };
+                var temperature = new TemperatureFunction { MathFunction = ConfigModel.Func.Median };
                 temperature.Item.Add(new TemperatureMeasurement
                 {
                     Unit = ConfigModel.TemperatureUnit.K,
@@ -543,7 +543,7 @@ namespace Aga8Tests
             [TestMethod]
             public void TemperatureFunction_GetValue_Median_Single()
             {
-                var temperature = new TemperatureFunction { MathFunction = Func.Median };
+                var temperature = new TemperatureFunction { MathFunction = ConfigModel.Func.Median };
                 temperature.Item.Add(new TemperatureMeasurement
                 {
                     Unit = ConfigModel.TemperatureUnit.K,
