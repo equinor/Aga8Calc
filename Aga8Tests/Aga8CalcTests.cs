@@ -48,8 +48,6 @@ namespace Aga8Tests
             config.ConfigList.Item[0].PressureTemperatureList.Item.Add(new PressureTemperature
             {
                 Name = "Point 1",
-                Pressure = new PressureMeasurement { Tag = "ns=2;s=1:AI1001?Pressure" },
-                Temperature = new TemperatureMeasurement { Tag = "ns=2;s=1:AI1001?Temperature" }
             });
 
 
@@ -146,8 +144,23 @@ namespace Aga8Tests
 
             conf.ConfigList.Item[0].PressureTemperatureList.Item.Add(new PressureTemperature
             {
-                Pressure = new PressureMeasurement { Value = 498.98675, Unit = ConfigModel.PressureUnit.barg },
-                Temperature = new TemperatureMeasurement { Value = 126.85, Unit = ConfigModel.TemperatureUnit.C }
+                Name = "Point 1",
+            });
+
+            conf.ConfigList.Item[0].PressureTemperatureList.Item[0].PressureFunction.Item.Add(new PressureMeasurement
+            {
+                Name = "PF 1",
+                Tag = "ns=2;s=1:AI1001?Pressure",
+                Value = 498.98675,
+                Unit = ConfigModel.PressureUnit.barg
+            });
+
+            conf.ConfigList.Item[0].PressureTemperatureList.Item[0].TemperatureFunction.Item.Add(new TemperatureMeasurement
+            {
+                Name = "PF 1",
+                Tag = "ns=2;s=1:AI1001?Temperature",
+                Value = 126.85,
+                Unit = ConfigModel.TemperatureUnit.C
             });
 
             conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Properties.Item.Add(new PropertyMeasurement
@@ -158,8 +171,8 @@ namespace Aga8Tests
             var aga = new AGA8Detail();
             aga.Setup();
             aga.SetComposition(conf.ConfigList.Item[0].Composition.GetValues());
-            aga.SetPressure(conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Pressure.GetAGA8Converted());
-            aga.SetTemperature(conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Temperature.GetAGA8Converted());
+            aga.SetPressure(conf.ConfigList.Item[0].PressureTemperatureList.Item[0].PressureFunction.GetValue());
+            aga.SetTemperature(conf.ConfigList.Item[0].PressureTemperatureList.Item[0].TemperatureFunction.GetValue());
             aga.CalculateDensity();
             aga.CalculateProperties();
 

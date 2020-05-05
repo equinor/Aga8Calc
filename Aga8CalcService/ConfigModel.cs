@@ -296,11 +296,6 @@ namespace Aga8CalcService
         public string Name { get; set; }
 
         [XmlElement]
-        public PressureMeasurement Pressure { get; set; } = new PressureMeasurement();
-        [XmlElement]
-        public TemperatureMeasurement Temperature { get; set; } = new TemperatureMeasurement();
-
-        [XmlElement]
         public PressureFunction PressureFunction { get; set; } = new PressureFunction();
 
         [XmlElement]
@@ -308,38 +303,6 @@ namespace Aga8CalcService
 
         [XmlElement]
         public PropertyList Properties { get; set; } = new PropertyList();
-
-        public object GetTemperature()
-        {
-            if (Temperature.Type == "single")
-            {
-                return Convert.ToSingle(Temperature.GetUnitConverted());
-            }
-            else if (Temperature.Type == "double")
-            {
-                return Convert.ToDouble(Temperature.GetUnitConverted());
-            }
-            else
-            {
-                return Convert.ToDouble(Temperature.GetUnitConverted());
-            }
-        }
-
-        public object GetPressure()
-        {
-            if (Pressure.Type == "single")
-            {
-                return Convert.ToSingle(Pressure.GetUnitConverted());
-            }
-            else if (Pressure.Type == "double")
-            {
-                return Convert.ToDouble(Pressure.GetUnitConverted());
-            }
-            else
-            {
-                return Convert.ToDouble(Pressure.GetUnitConverted());
-            }
-        }
     }
 
     public class PropertyList
