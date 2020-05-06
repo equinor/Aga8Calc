@@ -90,7 +90,7 @@ namespace Aga8Tests
             writer.Close();
 
             string file = AppDomain.CurrentDomain.BaseDirectory.ToString(CultureInfo.InvariantCulture) + "\\aga8calc.xml";
-            ConfigModel readConfig = ConfigModel.ReadConfig(file);
+            ConfigModel.ReadConfig(file);
         }
 
         /*
@@ -116,7 +116,6 @@ namespace Aga8Tests
         [TestMethod]
         public void Aga8_CalculatesDensity()
         {
-            string TagConfFile = AppDomain.CurrentDomain.BaseDirectory.ToString(CultureInfo.InvariantCulture) + "\\Tag_Config_Test.xml";
             ConfigModel conf = new ConfigModel();
 
             conf.ConfigList.Item.Add(new Config());

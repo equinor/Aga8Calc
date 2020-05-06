@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Aga8CalcService
 {
-    public class Aga8OpcClient : IDisposable
+    public sealed class Aga8OpcClient : IDisposable
     {
         private const int ReconnectPeriod = 10;
         public Session OpcSession { get; set; }

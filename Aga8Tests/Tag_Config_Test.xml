@@ -8,7 +8,6 @@
     <Config>
       <Composition>
         <Component Name="Methane" Tag="ns=2;s=1:AI1001?A" ScaleFactor="0.01" />
-        <Component Name="Methane" Tag="ns=2;s=1:AI1001?A" ScaleFactor="0" />
         <Component Name="Nitrogen" Tag="ns=2;s=1:AI1001?A" ScaleFactor="0" />
         <Component Name="Carbon dioxide" Tag="ns=2;s=1:AI1001?A" ScaleFactor="0" />
         <Component Name="Ethane" Tag="ns=2;s=1:AI1001?A" ScaleFactor="0" />
@@ -37,13 +36,11 @@
             <Pressure Name="PF 2" Tag="ns=2;s=1:AI1002?Pressure" Unit="barg" />
           </PressureFunction>
           <TemperatureFunction MathFunction="Min">
-            <Pressure Name="PF 1" Tag="ns=2;s=1:AI1001?Temperature" Unit="C" />
-            <Pressure Name="PF 2" Tag="ns=2;s=1:AI1002?Temperature" Unit="C" />
+            <Temperature Name="PF 1" Tag="ns=2;s=1:AI1001?Temperature" Unit="C" />
+            <Temperature Name="PF 2" Tag="ns=2;s=1:AI1002?Temperature" Unit="C" />
           </TemperatureFunction>
-          <Pressure Tag="ns=2;s=1:AI1001?Pressure" Unit="barg" />
-          <Temperature Tag="ns=2;s=1:AI1001?Temperature" Unit="C" />
           <Properties>
-            <Property Tag="ns=2;s=1:AI1001?Result" Property="MolarConcentration" />
+            <Property Tag="ns=2;s=1:AI1001?Result" Property="MolarConcentration" Type="double" />
           </Properties>
         </PressureTemperature>
       </PressureTemperatureList>

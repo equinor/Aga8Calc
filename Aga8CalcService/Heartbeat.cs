@@ -6,7 +6,7 @@ using System.Timers;
 
 namespace Aga8CalcService
 {
-    public class Heartbeat : IDisposable
+    public sealed class Heartbeat : IDisposable
     {
         private readonly System.Timers.Timer _timer;
         private readonly Aga8OpcClient _client;

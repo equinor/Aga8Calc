@@ -39,7 +39,7 @@ namespace Aga8CalcService
         }
     }
 
-    public class AGA8Detail : IDisposable
+    public sealed class AGA8Detail : IDisposable
     {
         private readonly AGA8DetailHandle aga8;
         private Aga8Properties ResultProperties;
@@ -155,7 +155,7 @@ namespace Aga8CalcService
         }
     }
 
-    public class Gerg : IDisposable
+    public sealed class Gerg : IDisposable
     {
         private readonly GergHandle gerg;
         private Aga8Properties ResultProperties;
