@@ -150,7 +150,7 @@ namespace Aga8CalcService
 
         protected override bool ReleaseHandle()
         {
-            NativeMethods.GergFfree(handle);
+            NativeMethods.GergFree(handle);
             return true;
         }
     }

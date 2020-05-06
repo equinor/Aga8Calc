@@ -33,7 +33,7 @@ namespace Aga8CalcService
         [DllImport("aga8", EntryPoint = "gerg_new")]
         internal static extern Gerg2008Handle GergNnew();
         [DllImport("aga8", EntryPoint = "gerg_free")]
-        internal static extern void GergFfree(IntPtr gerg);
+        internal static extern void GergFree(IntPtr gerg);
         [DllImport("aga8", EntryPoint = "gerg_setup")]
         internal static extern void GergSetup(Gerg2008Handle gerg);
         [DllImport("aga8", EntryPoint = "gerg_set_composition")]
