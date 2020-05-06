@@ -20,6 +20,8 @@ namespace Aga8Tests
                 OpcUrl = "opc.tcp://localhost:62548/Quickstarts/DataAccessServer",
                 OpcUser = "user",
                 OpcPassword = "password",
+                Interval = 1000,
+                EquationOfState = ConfigModel.Equation.Gerg2008
             };
 
             config.ConfigList.Item.Add(new Config { Name = "GC name" });
@@ -180,8 +182,22 @@ namespace Aga8Tests
 
             conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Properties.Item[0].Value = aga.GetProperty(ConfigModel.Aga8ResultCode.Density);
             Assert.AreEqual(263.117_416_628_546, conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Properties.Item[0].Value, 1e-9);
+
+            var gerg = new Gerg();
+            gerg.Setup();
+            gerg.SetComposition(conf.ConfigList.Item[0].Composition.GetValues());
+            gerg.SetPressure(conf.ConfigList.Item[0].PressureTemperatureList.Item[0].PressureFunction.GetValue());
+            gerg.SetTemperature(conf.ConfigList.Item[0].PressureTemperatureList.Item[0].TemperatureFunction.GetValue());
+            gerg.CalculateDensity();
+            gerg.CalculateProperties();
+
+            conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Properties.Item[0].Value = gerg.GetProperty(conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Properties.Item[0].Property);
+            Assert.AreEqual(12.798_286_260_820_6, conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Properties.Item[0].Value, 1e-9);
+
+            conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Properties.Item[0].Value = gerg.GetProperty(ConfigModel.Aga8ResultCode.Density);
+            Assert.AreEqual(262.911_924_714_376, conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Properties.Item[0].Value, 1e-9);
         }
-        
+
         // This test needs to have the OPC server mentioned
         // in the configuration file running.
         [TestMethod]

@@ -160,30 +160,68 @@ namespace Aga8CalcService
 
         private void Calculate()
         {
-            var aga = new AGA8Detail();
-            aga.Setup();
-
-            foreach (var c in conf.ConfigList.Item)
+            //TODO: Implement this with interfaces, maybe.
+            switch (conf.EquationOfState)
             {
-                aga.SetComposition(c.Composition.GetScaledValues());
+                case ConfigModel.Equation.AGA8Detail:
+                    var aga = new AGA8Detail();
 
-                foreach (var pt in c.PressureTemperatureList.Item)
-                {
-                    aga.SetPressure(pt.PressureFunction.GetValue());
-                    aga.SetTemperature(pt.TemperatureFunction.GetValue());
-                    aga.CalculateDensity();
-                    aga.CalculateProperties();
+                    aga.Setup();
 
-                    foreach (var property in pt.Properties.Item)
+                    foreach (var c in conf.ConfigList.Item)
                     {
-                        property.Value = aga.GetProperty(property.Property);
-                        logger.Debug(CultureInfo.InvariantCulture, "\"{0}\" Property: \"{1}\" Value: {2}",
-                            pt.Name, property.Property.ToString(), property.Value);
-                    }
-                }
-            }
+                        aga.SetComposition(c.Composition.GetScaledValues());
 
-            aga.Dispose();
+                        foreach (var pt in c.PressureTemperatureList.Item)
+                        {
+                            aga.SetPressure(pt.PressureFunction.GetValue());
+                            aga.SetTemperature(pt.TemperatureFunction.GetValue());
+                            aga.CalculateDensity();
+                            aga.CalculateProperties();
+
+                            foreach (var property in pt.Properties.Item)
+                            {
+                                property.Value = aga.GetProperty(property.Property);
+                                logger.Debug(CultureInfo.InvariantCulture, "\"{0}\" Property: \"{1}\" Value: {2}",
+                                    pt.Name, property.Property.ToString(), property.Value);
+                            }
+                        }
+                    }
+
+                    aga.Dispose();
+
+                    break;
+                case ConfigModel.Equation.Gerg2008:
+                    var gerg = new Gerg();
+
+                    gerg.Setup();
+
+                    foreach (var c in conf.ConfigList.Item)
+                    {
+                        gerg.SetComposition(c.Composition.GetScaledValues());
+
+                        foreach (var pt in c.PressureTemperatureList.Item)
+                        {
+                            gerg .SetPressure(pt.PressureFunction.GetValue());
+                            gerg .SetTemperature(pt.TemperatureFunction.GetValue());
+                            gerg .CalculateDensity();
+                            gerg.CalculateProperties();
+
+                            foreach (var property in pt.Properties.Item)
+                            {
+                                property.Value = gerg.GetProperty(property.Property);
+                                logger.Debug(CultureInfo.InvariantCulture, "\"{0}\" Property: \"{1}\" Value: {2}",
+                                    pt.Name, property.Property.ToString(), property.Value);
+                            }
+                        }
+                    }
+
+                    gerg.Dispose();
+
+                    break;
+                default:
+                    break;
+            }
         }
 
         private void WriteToOPC()

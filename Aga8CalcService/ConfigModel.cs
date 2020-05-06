@@ -46,6 +46,12 @@ namespace Aga8CalcService
             Median = 3
         }
 
+        public enum Equation : int
+        {
+            AGA8Detail = 0,
+            Gerg2008 = 1
+        }
+
 
         [XmlElement]
         public string OpcUrl { get; set; }
@@ -56,6 +62,9 @@ namespace Aga8CalcService
 
         [XmlElement]
         public double Interval { get; set; }
+
+        [XmlElement]
+        public Equation EquationOfState { get; set; }
 
         [XmlElement]
         public ConfigList ConfigList { get; set; } = new ConfigList();
