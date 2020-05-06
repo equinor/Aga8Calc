@@ -31,25 +31,25 @@ namespace Aga8CalcService
             double temperature);
 
         [DllImport("aga8", EntryPoint = "gerg_new")]
-        internal static extern GergHandle GergNnew();
+        internal static extern Gerg2008Handle GergNnew();
         [DllImport("aga8", EntryPoint = "gerg_free")]
         internal static extern void GergFfree(IntPtr gerg);
         [DllImport("aga8", EntryPoint = "gerg_setup")]
-        internal static extern void GergSetup(GergHandle gerg);
+        internal static extern void GergSetup(Gerg2008Handle gerg);
         [DllImport("aga8", EntryPoint = "gerg_set_composition")]
-        internal static extern void GergSetComposition(GergHandle gerg, double[] composition);
+        internal static extern void GergSetComposition(Gerg2008Handle gerg, double[] composition);
         [DllImport("aga8", EntryPoint = "gerg_set_pressure")]
-        internal static extern void GergSetPressure(GergHandle gerg, double pressure);
+        internal static extern void GergSetPressure(Gerg2008Handle gerg, double pressure);
         [DllImport("aga8", EntryPoint = "gerg_set_temperature")]
-        internal static extern void GergSetTemperature(GergHandle gerg, double temperature);
+        internal static extern void GergSetTemperature(Gerg2008Handle gerg, double temperature);
         [DllImport("aga8", EntryPoint = "gerg_calculate_density")]
-        internal static extern void GergCalculateDensity(GergHandle gerg);
+        internal static extern void GergCalculateDensity(Gerg2008Handle gerg);
         [DllImport("aga8", EntryPoint = "gerg_get_density")]
-        internal static extern double GergGetDensity(GergHandle aggerga8);
+        internal static extern double GergGetDensity(Gerg2008Handle aggerga8);
         [DllImport("aga8", EntryPoint = "gerg_calculate_properties")]
-        internal static extern void GergCalculateProperties(GergHandle gerg);
+        internal static extern void GergCalculateProperties(Gerg2008Handle gerg);
         [DllImport("aga8", EntryPoint = "gerg_get_properties")]
-        internal static extern Aga8Properties GergGetProperties(GergHandle gerg);
+        internal static extern Aga8Properties GergGetProperties(Gerg2008Handle gerg);
 
         [DllImport("aga8", EntryPoint = "gerg_2008")]
         internal static extern Aga8Properties Gerg2008(double[] composition, double pressure,

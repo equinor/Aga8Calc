@@ -139,9 +139,9 @@ namespace Aga8CalcService
 
     }
 
-    internal class GergHandle : SafeHandle
+    internal class Gerg2008Handle : SafeHandle
     {
-        public GergHandle() : base(IntPtr.Zero, true) { }
+        public Gerg2008Handle() : base(IntPtr.Zero, true) { }
 
         public override bool IsInvalid
         {
@@ -155,12 +155,12 @@ namespace Aga8CalcService
         }
     }
 
-    public sealed class Gerg : IDisposable
+    public sealed class Gerg2008 : IDisposable
     {
-        private readonly GergHandle gerg;
+        private readonly Gerg2008Handle gerg;
         private Aga8Properties ResultProperties;
 
-        public Gerg()
+        public Gerg2008()
         {
             gerg = NativeMethods.GergNnew();
         }

@@ -192,7 +192,7 @@ namespace Aga8CalcService
 
                     break;
                 case ConfigModel.Equation.Gerg2008:
-                    var gerg = new Gerg();
+                    var gerg = new Gerg2008();
 
                     gerg.Setup();
 

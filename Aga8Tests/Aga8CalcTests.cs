@@ -183,7 +183,7 @@ namespace Aga8Tests
             conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Properties.Item[0].Value = aga.GetProperty(ConfigModel.Aga8ResultCode.Density);
             Assert.AreEqual(263.117_416_628_546, conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Properties.Item[0].Value, 1e-9);
 
-            var gerg = new Gerg();
+            var gerg = new Gerg2008();
             gerg.Setup();
             gerg.SetComposition(conf.ConfigList.Item[0].Composition.GetValues());
             gerg.SetPressure(conf.ConfigList.Item[0].PressureTemperatureList.Item[0].PressureFunction.GetValue());
