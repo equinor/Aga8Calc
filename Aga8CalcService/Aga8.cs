@@ -39,14 +39,20 @@ namespace Aga8CalcService
         }
     }
 
-    public sealed class AGA8Detail : IDisposable
+    public class AGA8Detail : IDisposable
     {
         private readonly AGA8DetailHandle aga8;
         private Aga8Properties ResultProperties;
+        private bool disposed = false;
 
         public AGA8Detail()
         {
             aga8 = NativeMethods.Aga8New();
+        }
+
+        ~AGA8Detail()
+        {
+            Dispose(false);
         }
 
         public void Setup()
@@ -134,9 +140,23 @@ namespace Aga8CalcService
 
         public void Dispose()
         {
-            aga8.Dispose();
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposed)
+                return;
+
+            if (disposing)
+            {
+                // free managed objects
+            }
+
+            aga8.Close();
+            disposed = true;
+        }
     }
 
     internal class Gerg2008Handle : SafeHandle
@@ -155,14 +175,20 @@ namespace Aga8CalcService
         }
     }
 
-    public sealed class Gerg2008 : IDisposable
+    public class Gerg2008 : IDisposable
     {
         private readonly Gerg2008Handle gerg;
         private Aga8Properties ResultProperties;
+        private bool disposed = false;
 
         public Gerg2008()
         {
             gerg = NativeMethods.GergNnew();
+        }
+
+        ~Gerg2008()
+        {
+            Dispose(false);
         }
 
         public void Setup()
@@ -250,7 +276,22 @@ namespace Aga8CalcService
 
         public void Dispose()
         {
-            gerg.Dispose();
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposed)
+                return;
+
+            if (disposing)
+            {
+                // Free managed objects
+            }
+
+            gerg.Close();
+            disposed = true;
         }
     }
 }
