@@ -169,19 +169,22 @@ namespace Aga8Tests
                 Property = ConfigModel.Aga8ResultCode.MolarConcentration
             });
 
-            var aga = new AGA8Detail();
-            aga.Setup();
-            aga.SetComposition(conf.ConfigList.Item[0].Composition.GetValues());
-            aga.SetPressure(conf.ConfigList.Item[0].PressureTemperatureList.Item[0].PressureFunction.GetValue());
-            aga.SetTemperature(conf.ConfigList.Item[0].PressureTemperatureList.Item[0].TemperatureFunction.GetValue());
-            aga.CalculateDensity();
-            aga.CalculateProperties();
+            using (var aga = new AGA8Detail())
+            {
+                aga.Setup();
+                aga.SetComposition(conf.ConfigList.Item[0].Composition.GetValues());
+                aga.SetPressure(conf.ConfigList.Item[0].PressureTemperatureList.Item[0].PressureFunction.GetValue());
+                aga.SetTemperature(conf.ConfigList.Item[0].PressureTemperatureList.Item[0].TemperatureFunction.GetValue());
+                aga.CalculateDensity();
+                aga.CalculateProperties();
 
-            conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Properties.Item[0].Value = aga.GetProperty(conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Properties.Item[0].Property);
-            Assert.AreEqual(12.807_924_036_488_01, conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Properties.Item[0].Value, 1e-9);
+                conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Properties.Item[0].Value = aga.GetProperty(conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Properties.Item[0].Property);
+                Assert.AreEqual(12.807_924_036_488_01, conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Properties.Item[0].Value, 1e-9);
+                Assert.AreEqual(12.807_924_036_488_01, aga.GetDensity(), 1e-9);
 
-            conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Properties.Item[0].Value = aga.GetProperty(ConfigModel.Aga8ResultCode.Density);
-            Assert.AreEqual(263.117_416_628_546, conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Properties.Item[0].Value, 1e-9);
+                conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Properties.Item[0].Value = aga.GetProperty(ConfigModel.Aga8ResultCode.Density);
+                Assert.AreEqual(263.117_416_628_546, conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Properties.Item[0].Value, 1e-9);
+            }
 
             var gerg = new Gerg2008();
             gerg.Setup();
@@ -193,9 +196,102 @@ namespace Aga8Tests
 
             conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Properties.Item[0].Value = gerg.GetProperty(conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Properties.Item[0].Property);
             Assert.AreEqual(12.798_286_260_820_6, conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Properties.Item[0].Value, 1e-9);
+            Assert.AreEqual(12.798_286_260_820_6, gerg.GetDensity(), 1e-9);
 
             conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Properties.Item[0].Value = gerg.GetProperty(ConfigModel.Aga8ResultCode.Density);
             Assert.AreEqual(262.911_924_714_376, conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Properties.Item[0].Value, 1e-9);
+        }
+
+        [TestMethod]
+        public void Aga8_Test_Memory()
+        {
+            ConfigModel conf = new ConfigModel();
+
+            conf.ConfigList.Item.Add(new Config());
+            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Methane", Tag = "ns=2;s=1:AI1001?A", Value = 0.778_240 });
+            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Nitrogen", Tag = "ns=2;s=1:AI1001?A", Value = 0.020_000 });
+            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Carbon dioxide", Tag = "ns=2;s=1:AI1001?A", Value = 0.060_000 });
+            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Ethane", Tag = "ns=2;s=1:AI1001?A", Value = 0.080_000 });
+            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Propane", Tag = "ns=2;s=1:AI1001?A", Value = 0.030_000 });
+            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Isobutane", Tag = "ns=2;s=1:AI1001?A", Value = 0.001_500 });
+            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "n-Butane", Tag = "ns=2;s=1:AI1001?A", Value = 0.003_000 });
+            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Isopentane", Tag = "ns=2;s=1:AI1001?A", Value = 0.000_500 });
+            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "n-Pentane", Tag = "ns=2;s=1:AI1001?A", Value = 0.001_650 });
+            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Hexane", Tag = "ns=2;s=1:AI1001?A", Value = 0.002_150 });
+            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Heptane", Tag = "ns=2;s=1:AI1001?A", Value = 0.000_880 });
+            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Octane", Tag = "ns=2;s=1:AI1001?A", Value = 0.000_240 });
+            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Nonane", Tag = "ns=2;s=1:AI1001?A", Value = 0.000_150 });
+            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Decane", Tag = "ns=2;s=1:AI1001?A", Value = 0.000_090 });
+            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Hydrogen", Tag = "ns=2;s=1:AI1001?A", Value = 0.004_000 });
+            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Oxygen", Tag = "ns=2;s=1:AI1001?A", Value = 0.005_000 });
+            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Carbon monoxide", Tag = "ns=2;s=1:AI1001?A", Value = 0.002_000 });
+            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Water", Tag = "ns=2;s=1:AI1001?A", Value = 0.000_100 });
+            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Hydrogen sulfide", Tag = "ns=2;s=1:AI1001?A", Value = 0.002_500 });
+            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Helium", Tag = "ns=2;s=1:AI1001?A", Value = 0.007_000 });
+            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Argon", Tag = "ns=2;s=1:AI1001?A", Value = 0.001_000 });
+
+            conf.ConfigList.Item[0].PressureTemperatureList.Item.Add(new PressureTemperature
+            {
+                Name = "Point 1",
+            });
+
+            conf.ConfigList.Item[0].PressureTemperatureList.Item[0].PressureFunction.Item.Add(new PressureMeasurement
+            {
+                Name = "PF 1",
+                Tag = "ns=2;s=1:AI1001?Pressure",
+                Value = 498.98675,
+                Unit = ConfigModel.PressureUnit.barg
+            });
+
+            conf.ConfigList.Item[0].PressureTemperatureList.Item[0].TemperatureFunction.Item.Add(new TemperatureMeasurement
+            {
+                Name = "PF 1",
+                Tag = "ns=2;s=1:AI1001?Temperature",
+                Value = 126.85,
+                Unit = ConfigModel.TemperatureUnit.C
+            });
+
+            conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Properties.Item.Add(new PropertyMeasurement
+            {
+                Property = ConfigModel.Aga8ResultCode.MolarConcentration
+            });
+
+            for (int i = 0; i < 1000; i++)
+            {
+                using (var aga = new AGA8Detail())
+                {
+                    aga.Setup();
+                    aga.SetComposition(conf.ConfigList.Item[0].Composition.GetValues());
+                    aga.SetPressure(conf.ConfigList.Item[0].PressureTemperatureList.Item[0].PressureFunction.GetValue());
+                    aga.SetTemperature(conf.ConfigList.Item[0].PressureTemperatureList.Item[0].TemperatureFunction.GetValue());
+                    aga.CalculateDensity();
+                    aga.CalculateProperties();
+
+                    conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Properties.Item[0].Value = aga.GetProperty(conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Properties.Item[0].Property);
+                    Assert.AreEqual(12.807_924_036_488_01, conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Properties.Item[0].Value, 1e-9);
+                    Assert.AreEqual(12.807_924_036_488_01, aga.GetDensity(), 1e-9);
+
+                    conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Properties.Item[0].Value = aga.GetProperty(ConfigModel.Aga8ResultCode.Density);
+                    Assert.AreEqual(263.117_416_628_546, conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Properties.Item[0].Value, 1e-9);
+                }
+
+                using (var gerg = new Gerg2008())
+                {
+                    gerg.Setup();
+                    gerg.SetComposition(conf.ConfigList.Item[0].Composition.GetValues());
+                    gerg.SetPressure(conf.ConfigList.Item[0].PressureTemperatureList.Item[0].PressureFunction.GetValue());
+                    gerg.SetTemperature(conf.ConfigList.Item[0].PressureTemperatureList.Item[0].TemperatureFunction.GetValue());
+                    gerg.CalculateDensity();
+                    gerg.CalculateProperties();
+
+                    conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Properties.Item[0].Value = gerg.GetProperty(conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Properties.Item[0].Property);
+                    Assert.AreEqual(12.798_286_260_820_6, conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Properties.Item[0].Value, 1e-9);
+                    Assert.AreEqual(12.798_286_260_820_6, gerg.GetDensity(), 1e-9);
+
+                    conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Properties.Item[0].Value = gerg.GetProperty(ConfigModel.Aga8ResultCode.Density);
+                    Assert.AreEqual(262.911_924_714_376, conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Properties.Item[0].Value, 1e-9);
+                }
+            }
         }
 
         // This test needs to have the OPC server mentioned
