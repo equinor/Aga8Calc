@@ -219,9 +219,9 @@ namespace Aga8CalcService
 
                         foreach (var pt in c.PressureTemperatureList.Item)
                         {
-                            gerg .SetPressure(pt.PressureFunction.GetValue());
-                            gerg .SetTemperature(pt.TemperatureFunction.GetValue());
-                            gerg .CalculateDensity();
+                            gerg.SetPressure(pt.PressureFunction.GetValue());
+                            gerg.SetTemperature(pt.TemperatureFunction.GetValue());
+                            gerg.CalculateDensity();
                             gerg.CalculateProperties();
 
                             foreach (var property in pt.Properties.Item)

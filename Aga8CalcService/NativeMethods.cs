@@ -31,7 +31,7 @@ namespace Aga8CalcService
             double temperature);
 
         [DllImport("aga8", EntryPoint = "gerg_new")]
-        internal static extern Gerg2008Handle GergNnew();
+        internal static extern Gerg2008Handle GergNew();
         [DllImport("aga8", EntryPoint = "gerg_free")]
         internal static extern void GergFree(IntPtr gerg);
         [DllImport("aga8", EntryPoint = "gerg_setup")]

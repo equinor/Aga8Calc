@@ -183,7 +183,7 @@ namespace Aga8CalcService
 
         public Gerg2008()
         {
-            gerg = NativeMethods.GergNnew();
+            gerg = NativeMethods.GergNew();
         }
 
         ~Gerg2008()
@@ -210,7 +210,7 @@ namespace Aga8CalcService
                 comp[i] = composition[i];
             }
 
-            NativeMethods.GergSetComposition(gerg, composition);
+            NativeMethods.GergSetComposition(gerg, comp);
         }
 
         public void SetPressure(double pressure)
