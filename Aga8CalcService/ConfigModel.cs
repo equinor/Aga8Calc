@@ -331,6 +331,12 @@ namespace Aga8CalcService
         [XmlIgnore]
         public double Value { get; set; }
 
+        public Component()
+        {
+            ScaleFactor = 1.0;
+            Value = 0.0;
+        }
+
         public double GetScaledValue()
         {
             return Value * ScaleFactor;
