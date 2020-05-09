@@ -1,6 +1,7 @@
 ﻿using Opc.Ua;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Timers;
 
@@ -13,6 +14,7 @@ namespace Aga8CalcService
         private readonly ConfigModel conf;
         private static readonly NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
         private readonly object WorkerLock = new object();
+        private bool working = false;
 
         public Heartbeat()
         {
@@ -42,12 +44,27 @@ namespace Aga8CalcService
 
         private void Worker(object sender, ElapsedEventArgs ea)
         {
+            logger.Debug(CultureInfo.InvariantCulture, "Worker triggered.");
+
+            if (working)
+            {
+                logger.Warn(CultureInfo.InvariantCulture, "Worker not completed within Interval. Interval might be too short.");
+            }
+
+            Stopwatch watch = Stopwatch.StartNew();
+
             lock (WorkerLock)
             {
+                working = true;
                 ReadFromOPC();
                 Calculate();
                 WriteToOPC();
+                working = false;
             }
+
+            watch.Stop();
+
+            logger.Debug(CultureInfo.InvariantCulture, "Worker elapsed time: {0} ms.", watch.ElapsedMilliseconds);
         }
 
         private void ReadFromOPC()
