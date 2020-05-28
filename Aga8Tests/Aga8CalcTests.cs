@@ -20,6 +20,8 @@ namespace Aga8Tests
                 OpcUrl = "opc.tcp://localhost:62548/Quickstarts/DataAccessServer",
                 OpcUser = "user",
                 OpcPassword = "password",
+                Interval = 1000,
+                EquationOfState = ConfigModel.Equation.Gerg2008
             };
 
             config.ConfigList.Item.Add(new Config { Name = "GC name" });
@@ -48,8 +50,31 @@ namespace Aga8Tests
             config.ConfigList.Item[0].PressureTemperatureList.Item.Add(new PressureTemperature
             {
                 Name = "Point 1",
-                Pressure = new PressureMeasurement { Tag = "ns=2;s=1:AI1001?Pressure" },
-                Temperature = new TemperatureMeasurement { Tag = "ns=2;s=1:AI1001?Temperature" }
+            });
+
+
+            config.ConfigList.Item[0].PressureTemperatureList.Item[0].PressureFunction.Item.Add(new PressureMeasurement
+            {
+                Name = "PF 1",
+                Tag = "ns=2;s=1:AI1001?Pressure",
+            });
+
+            config.ConfigList.Item[0].PressureTemperatureList.Item[0].PressureFunction.Item.Add(new PressureMeasurement
+            {
+                Name = "PF 2",
+                Tag = "ns=2;s=1:AI1002?Pressure",
+            });
+
+            config.ConfigList.Item[0].PressureTemperatureList.Item[0].TemperatureFunction.Item.Add(new TemperatureMeasurement
+            {
+                Name = "PF 1",
+                Tag = "ns=2;s=1:AI1001?Temperature",
+            });
+
+            config.ConfigList.Item[0].PressureTemperatureList.Item[0].TemperatureFunction.Item.Add(new TemperatureMeasurement
+            {
+                Name = "PF 2",
+                Tag = "ns=2;s=1:AI1002?Temperature",
             });
 
             config.ConfigList.Item[0].PressureTemperatureList.Item[0].Properties.Item.Add(new PropertyMeasurement
@@ -67,7 +92,7 @@ namespace Aga8Tests
             writer.Close();
 
             string file = AppDomain.CurrentDomain.BaseDirectory.ToString(CultureInfo.InvariantCulture) + "\\aga8calc.xml";
-            ConfigModel readConfig = ConfigModel.ReadConfig(file);
+            ConfigModel.ReadConfig(file);
         }
 
         /*
@@ -93,7 +118,6 @@ namespace Aga8Tests
         [TestMethod]
         public void Aga8_CalculatesDensity()
         {
-            string TagConfFile = AppDomain.CurrentDomain.BaseDirectory.ToString(CultureInfo.InvariantCulture) + "\\Tag_Config_Test.xml";
             ConfigModel conf = new ConfigModel();
 
             conf.ConfigList.Item.Add(new Config());
@@ -121,8 +145,23 @@ namespace Aga8Tests
 
             conf.ConfigList.Item[0].PressureTemperatureList.Item.Add(new PressureTemperature
             {
-                Pressure = new PressureMeasurement { Value = 498.98675, Unit = ConfigModel.PressureUnit.barg },
-                Temperature = new TemperatureMeasurement { Value = 126.85, Unit = ConfigModel.TemperatureUnit.C }
+                Name = "Point 1",
+            });
+
+            conf.ConfigList.Item[0].PressureTemperatureList.Item[0].PressureFunction.Item.Add(new PressureMeasurement
+            {
+                Name = "PF 1",
+                Tag = "ns=2;s=1:AI1001?Pressure",
+                Value = 498.98675,
+                Unit = ConfigModel.PressureUnit.barg
+            });
+
+            conf.ConfigList.Item[0].PressureTemperatureList.Item[0].TemperatureFunction.Item.Add(new TemperatureMeasurement
+            {
+                Name = "PF 1",
+                Tag = "ns=2;s=1:AI1001?Temperature",
+                Value = 126.85,
+                Unit = ConfigModel.TemperatureUnit.C
             });
 
             conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Properties.Item.Add(new PropertyMeasurement
@@ -130,21 +169,205 @@ namespace Aga8Tests
                 Property = ConfigModel.Aga8ResultCode.MolarConcentration
             });
 
-            var aga = new AGA8Detail();
-            aga.Setup();
-            aga.SetComposition(conf.ConfigList.Item[0].Composition.GetValues());
-            aga.SetPressure(conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Pressure.GetAGA8Converted());
-            aga.SetTemperature(conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Temperature.GetAGA8Converted());
-            aga.CalculateDensity();
-            aga.CalculateProperties();
+            using (var aga = new AGA8Detail())
+            {
+                aga.Setup();
+                aga.SetComposition(conf.ConfigList.Item[0].Composition.GetScaledValues());
+                aga.SetPressure(conf.ConfigList.Item[0].PressureTemperatureList.Item[0].PressureFunction.GetValue());
+                aga.SetTemperature(conf.ConfigList.Item[0].PressureTemperatureList.Item[0].TemperatureFunction.GetValue());
+                aga.CalculateDensity();
+                aga.CalculateProperties();
 
-            conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Properties.Item[0].Value = aga.GetProperty(conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Properties.Item[0].Property);
-            Assert.AreEqual(12.807_924_036_488_01, conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Properties.Item[0].Value, 1e-9);
+                conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Properties.Item[0].Value = aga.GetProperty(conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Properties.Item[0].Property);
+                Assert.AreEqual(12.807_924_036_488_01, conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Properties.Item[0].Value, 1e-9);
+                Assert.AreEqual(12.807_924_036_488_01, aga.GetDensity(), 1e-9);
 
-            conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Properties.Item[0].Value = aga.GetProperty(ConfigModel.Aga8ResultCode.Density);
-            Assert.AreEqual(263.117_416_628_546, conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Properties.Item[0].Value, 1e-9);
+                conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Properties.Item[0].Value = aga.GetProperty(ConfigModel.Aga8ResultCode.Density);
+                Assert.AreEqual(263.117_416_628_546, conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Properties.Item[0].Value, 1e-9);
+            }
+
+            using (var gerg = new Gerg2008())
+            {
+                gerg.Setup();
+                gerg.SetComposition(conf.ConfigList.Item[0].Composition.GetScaledValues());
+                gerg.SetPressure(conf.ConfigList.Item[0].PressureTemperatureList.Item[0].PressureFunction.GetValue());
+                gerg.SetTemperature(conf.ConfigList.Item[0].PressureTemperatureList.Item[0].TemperatureFunction.GetValue());
+                gerg.CalculateDensity();
+                gerg.CalculateProperties();
+
+                conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Properties.Item[0].Value = gerg.GetProperty(conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Properties.Item[0].Property);
+                Assert.AreEqual(12.798_286_260_820_6, conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Properties.Item[0].Value, 1e-9);
+                Assert.AreEqual(12.798_286_260_820_6, gerg.GetDensity(), 1e-9);
+
+                conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Properties.Item[0].Value = gerg.GetProperty(ConfigModel.Aga8ResultCode.Density);
+                Assert.AreEqual(262.911_924_714_376, conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Properties.Item[0].Value, 1e-9);
+            }
+
+            conf.ConfigList.Item.Add(new Config());
+            conf.ConfigList.Item[1].Composition.Item.Add(new Component { Name = "Methane", Tag = "ns=2;s=1:AI1001?A", Value = 96.5, ScaleFactor = 0.01 });
+            conf.ConfigList.Item[1].Composition.Item.Add(new Component { Name = "Nitrogen", Tag = "ns=2;s=1:AI1001?A", Value = 0.3, ScaleFactor = 0.01 });
+            conf.ConfigList.Item[1].Composition.Item.Add(new Component { Name = "Carbon dioxide", Tag = "ns=2;s=1:AI1001?A", Value = 0.6, ScaleFactor = 0.01 });
+            conf.ConfigList.Item[1].Composition.Item.Add(new Component { Name = "Ethane", Tag = "ns=2;s=1:AI1001?A", Value = 1.8, ScaleFactor = 0.01 });
+            conf.ConfigList.Item[1].Composition.Item.Add(new Component { Name = "Propane", Tag = "ns=2;s=1:AI1001?A", Value = 0.45, ScaleFactor = 0.01 });
+            conf.ConfigList.Item[1].Composition.Item.Add(new Component { Name = "Isobutane", Tag = "ns=2;s=1:AI1001?A", Value = 0.1, ScaleFactor = 0.01 });
+            conf.ConfigList.Item[1].Composition.Item.Add(new Component { Name = "n-Butane", Tag = "ns=2;s=1:AI1001?A", Value = 0.1, ScaleFactor = 0.01 });
+            conf.ConfigList.Item[1].Composition.Item.Add(new Component { Name = "Isopentane", Tag = "ns=2;s=1:AI1001?A", Value = 0.05, ScaleFactor = 0.01 });
+            conf.ConfigList.Item[1].Composition.Item.Add(new Component { Name = "n-Pentane", Tag = "ns=2;s=1:AI1001?A", Value = 0.03, ScaleFactor = 0.01 });
+            conf.ConfigList.Item[1].Composition.Item.Add(new Component { Name = "Hexane", Tag = "ns=2;s=1:AI1001?A", Value = 0.07, ScaleFactor = 0.01 });
+
+            conf.ConfigList.Item[1].PressureTemperatureList.Item.Add(new PressureTemperature
+            {
+                Name = "Point 1",
+            });
+
+            conf.ConfigList.Item[1].PressureTemperatureList.Item[0].PressureFunction.Item.Add(new PressureMeasurement
+            {
+                Name = "PF 1",
+                Tag = "ns=2;s=1:AI1001?Pressure",
+                Value = 145,
+                Unit = ConfigModel.PressureUnit.barg
+            });
+
+            conf.ConfigList.Item[1].PressureTemperatureList.Item[0].TemperatureFunction.Item.Add(new TemperatureMeasurement
+            {
+                Name = "PF 1",
+                Tag = "ns=2;s=1:AI1001?Temperature",
+                Value = 18,
+                Unit = ConfigModel.TemperatureUnit.C
+            });
+
+            conf.ConfigList.Item[1].PressureTemperatureList.Item[0].Properties.Item.Add(new PropertyMeasurement
+            {
+                Property = ConfigModel.Aga8ResultCode.MolarConcentration
+            });
+
+            using (var aga = new AGA8Detail())
+            {
+                aga.Setup();
+                aga.SetComposition(conf.ConfigList.Item[1].Composition.GetScaledValues());
+                aga.SetPressure(conf.ConfigList.Item[1].PressureTemperatureList.Item[0].PressureFunction.GetValue());
+                aga.SetTemperature(conf.ConfigList.Item[1].PressureTemperatureList.Item[0].TemperatureFunction.GetValue());
+                aga.CalculateDensity();
+                aga.CalculateProperties();
+
+                conf.ConfigList.Item[1].PressureTemperatureList.Item[0].Properties.Item[0].Value = aga.GetProperty(conf.ConfigList.Item[1].PressureTemperatureList.Item[0].Properties.Item[0].Property);
+                Assert.AreEqual(7.731_358_744_220_41, conf.ConfigList.Item[1].PressureTemperatureList.Item[0].Properties.Item[0].Value, 1e-9);
+                Assert.AreEqual(7.731_358_744_220_41, aga.GetDensity(), 1e-9);
+
+                conf.ConfigList.Item[1].PressureTemperatureList.Item[0].Properties.Item[0].Value = aga.GetProperty(ConfigModel.Aga8ResultCode.Density);
+                Assert.AreEqual(129.914_519_856_789, conf.ConfigList.Item[1].PressureTemperatureList.Item[0].Properties.Item[0].Value, 1e-9);
+            }
+
+            using (var gerg = new Gerg2008())
+            {
+                gerg.Setup();
+                gerg.SetComposition(conf.ConfigList.Item[1].Composition.GetScaledValues());
+                gerg.SetPressure(conf.ConfigList.Item[1].PressureTemperatureList.Item[0].PressureFunction.GetValue());
+                gerg.SetTemperature(conf.ConfigList.Item[1].PressureTemperatureList.Item[0].TemperatureFunction.GetValue());
+                gerg.CalculateDensity();
+                gerg.CalculateProperties();
+
+                conf.ConfigList.Item[1].PressureTemperatureList.Item[0].Properties.Item[0].Value = gerg.GetProperty(conf.ConfigList.Item[1].PressureTemperatureList.Item[0].Properties.Item[0].Property);
+                Assert.AreEqual(7.730_483_295_277_39, conf.ConfigList.Item[1].PressureTemperatureList.Item[0].Properties.Item[0].Value, 1e-9);
+                Assert.AreEqual(7.730_483_295_277_39, gerg.GetDensity(), 1e-9);
+
+                conf.ConfigList.Item[1].PressureTemperatureList.Item[0].Properties.Item[0].Value = gerg.GetProperty(ConfigModel.Aga8ResultCode.Density);
+                Assert.AreEqual(129.895_544_935_963, conf.ConfigList.Item[1].PressureTemperatureList.Item[0].Properties.Item[0].Value, 1e-9);
+            }
         }
-        
+
+        [TestMethod]
+        public void Aga8_Test_Memory()
+        {
+            ConfigModel conf = new ConfigModel();
+
+            conf.ConfigList.Item.Add(new Config());
+            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Methane", Tag = "ns=2;s=1:AI1001?A", Value = 0.778_240 });
+            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Nitrogen", Tag = "ns=2;s=1:AI1001?A", Value = 0.020_000 });
+            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Carbon dioxide", Tag = "ns=2;s=1:AI1001?A", Value = 0.060_000 });
+            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Ethane", Tag = "ns=2;s=1:AI1001?A", Value = 0.080_000 });
+            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Propane", Tag = "ns=2;s=1:AI1001?A", Value = 0.030_000 });
+            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Isobutane", Tag = "ns=2;s=1:AI1001?A", Value = 0.001_500 });
+            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "n-Butane", Tag = "ns=2;s=1:AI1001?A", Value = 0.003_000 });
+            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Isopentane", Tag = "ns=2;s=1:AI1001?A", Value = 0.000_500 });
+            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "n-Pentane", Tag = "ns=2;s=1:AI1001?A", Value = 0.001_650 });
+            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Hexane", Tag = "ns=2;s=1:AI1001?A", Value = 0.002_150 });
+            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Heptane", Tag = "ns=2;s=1:AI1001?A", Value = 0.000_880 });
+            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Octane", Tag = "ns=2;s=1:AI1001?A", Value = 0.000_240 });
+            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Nonane", Tag = "ns=2;s=1:AI1001?A", Value = 0.000_150 });
+            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Decane", Tag = "ns=2;s=1:AI1001?A", Value = 0.000_090 });
+            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Hydrogen", Tag = "ns=2;s=1:AI1001?A", Value = 0.004_000 });
+            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Oxygen", Tag = "ns=2;s=1:AI1001?A", Value = 0.005_000 });
+            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Carbon monoxide", Tag = "ns=2;s=1:AI1001?A", Value = 0.002_000 });
+            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Water", Tag = "ns=2;s=1:AI1001?A", Value = 0.000_100 });
+            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Hydrogen sulfide", Tag = "ns=2;s=1:AI1001?A", Value = 0.002_500 });
+            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Helium", Tag = "ns=2;s=1:AI1001?A", Value = 0.007_000 });
+            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Argon", Tag = "ns=2;s=1:AI1001?A", Value = 0.001_000 });
+
+            conf.ConfigList.Item[0].PressureTemperatureList.Item.Add(new PressureTemperature
+            {
+                Name = "Point 1",
+            });
+
+            conf.ConfigList.Item[0].PressureTemperatureList.Item[0].PressureFunction.Item.Add(new PressureMeasurement
+            {
+                Name = "PF 1",
+                Tag = "ns=2;s=1:AI1001?Pressure",
+                Value = 498.98675,
+                Unit = ConfigModel.PressureUnit.barg
+            });
+
+            conf.ConfigList.Item[0].PressureTemperatureList.Item[0].TemperatureFunction.Item.Add(new TemperatureMeasurement
+            {
+                Name = "PF 1",
+                Tag = "ns=2;s=1:AI1001?Temperature",
+                Value = 126.85,
+                Unit = ConfigModel.TemperatureUnit.C
+            });
+
+            conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Properties.Item.Add(new PropertyMeasurement
+            {
+                Property = ConfigModel.Aga8ResultCode.MolarConcentration
+            });
+
+            for (int i = 0; i < 1000; i++)
+            {
+                using (var aga = new AGA8Detail())
+                {
+                    aga.Setup();
+                    aga.SetComposition(conf.ConfigList.Item[0].Composition.GetValues());
+                    aga.SetPressure(conf.ConfigList.Item[0].PressureTemperatureList.Item[0].PressureFunction.GetValue());
+                    aga.SetTemperature(conf.ConfigList.Item[0].PressureTemperatureList.Item[0].TemperatureFunction.GetValue());
+                    aga.CalculateDensity();
+                    aga.CalculateProperties();
+
+                    conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Properties.Item[0].Value = aga.GetProperty(conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Properties.Item[0].Property);
+                    Assert.AreEqual(12.807_924_036_488_01, conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Properties.Item[0].Value, 1e-9);
+                    Assert.AreEqual(12.807_924_036_488_01, aga.GetDensity(), 1e-9);
+
+                    conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Properties.Item[0].Value = aga.GetProperty(ConfigModel.Aga8ResultCode.Density);
+                    Assert.AreEqual(263.117_416_628_546, conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Properties.Item[0].Value, 1e-9);
+                }
+
+                using (var gerg = new Gerg2008())
+                {
+                    gerg.Setup();
+                    gerg.SetComposition(conf.ConfigList.Item[0].Composition.GetValues());
+                    gerg.SetPressure(conf.ConfigList.Item[0].PressureTemperatureList.Item[0].PressureFunction.GetValue());
+                    gerg.SetTemperature(conf.ConfigList.Item[0].PressureTemperatureList.Item[0].TemperatureFunction.GetValue());
+                    gerg.CalculateDensity();
+                    gerg.CalculateProperties();
+
+                    conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Properties.Item[0].Value = gerg.GetProperty(conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Properties.Item[0].Property);
+                    Assert.AreEqual(12.798_286_260_820_6, conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Properties.Item[0].Value, 1e-9);
+                    Assert.AreEqual(12.798_286_260_820_6, gerg.GetDensity(), 1e-9);
+
+                    conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Properties.Item[0].Value = gerg.GetProperty(ConfigModel.Aga8ResultCode.Density);
+                    Assert.AreEqual(262.911_924_714_376, conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Properties.Item[0].Value, 1e-9);
+                }
+            }
+        }
+
         // This test needs to have the OPC server mentioned
         // in the configuration file running.
         [TestMethod]
@@ -260,6 +483,272 @@ namespace Aga8Tests
 
                 double resultBara = pressure.GetUnitConverted();
                 Assert.AreEqual(testPressureBara, resultBara, 1.0e-10);
+            }
+
+            [TestMethod]
+            public void PressureFunction_GetValue_Min()
+            {
+                var pressure = new PressureFunction { MathFunction = ConfigModel.Func.Min };
+                pressure.Item.Add(new PressureMeasurement
+                {
+                    Unit = ConfigModel.PressureUnit.barg,
+                    Value = 3.14
+                });
+                pressure.Item.Add(new PressureMeasurement
+                {
+                    Unit = ConfigModel.PressureUnit.barg,
+                    Value = 4.14
+                });
+                pressure.Item.Add(new PressureMeasurement
+                {
+                    Unit = ConfigModel.PressureUnit.barg,
+                    Value = 5.14
+                });
+
+                Assert.AreEqual(415.325, pressure.GetValue(), 1.0e-10);
+            }
+
+            [TestMethod]
+            public void PressureFunction_GetValue_Max()
+            {
+                var pressure = new PressureFunction { MathFunction = ConfigModel.Func.Max };
+                pressure.Item.Add(new PressureMeasurement
+                {
+                    Unit = ConfigModel.PressureUnit.barg,
+                    Value = 3.14
+                });
+                pressure.Item.Add(new PressureMeasurement
+                {
+                    Unit = ConfigModel.PressureUnit.barg,
+                    Value = 4.14
+                });
+                pressure.Item.Add(new PressureMeasurement
+                {
+                    Unit = ConfigModel.PressureUnit.barg,
+                    Value = 5.14
+                });
+
+                Assert.AreEqual(615.325, pressure.GetValue(), 1.0e-10);
+            }
+
+            [TestMethod]
+            public void PressureFunction_GetValue_Average()
+            {
+                var pressure = new PressureFunction { MathFunction = ConfigModel.Func.Average };
+                pressure.Item.Add(new PressureMeasurement
+                {
+                    Unit = ConfigModel.PressureUnit.barg,
+                    Value = 3.14
+                });
+                pressure.Item.Add(new PressureMeasurement
+                {
+                    Unit = ConfigModel.PressureUnit.barg,
+                    Value = 4.14
+                });
+                pressure.Item.Add(new PressureMeasurement
+                {
+                    Unit = ConfigModel.PressureUnit.barg,
+                    Value = 5.14
+                });
+
+                Assert.AreEqual(515.325, pressure.GetValue(), 1.0e-10);
+            }
+
+            [TestMethod]
+            public void PressureFunction_GetValue_Median_Even()
+            {
+                var pressure = new PressureFunction { MathFunction = ConfigModel.Func.Median };
+                pressure.Item.Add(new PressureMeasurement
+                {
+                    Unit = ConfigModel.PressureUnit.barg,
+                    Value = 3.14
+                });
+                pressure.Item.Add(new PressureMeasurement
+                {
+                    Unit = ConfigModel.PressureUnit.barg,
+                    Value = 4.14
+                });
+                pressure.Item.Add(new PressureMeasurement
+                {
+                    Unit = ConfigModel.PressureUnit.barg,
+                    Value = 5.14
+                });
+                pressure.Item.Add(new PressureMeasurement
+                {
+                    Unit = ConfigModel.PressureUnit.barg,
+                    Value = 6.14
+                });
+
+                Assert.AreEqual(565.325, pressure.GetValue(), 1.0e-10);
+            }
+
+            [TestMethod]
+            public void PressureFunction_GetValue_Median_Odd()
+            {
+                var pressure = new PressureFunction { MathFunction = ConfigModel.Func.Median };
+                pressure.Item.Add(new PressureMeasurement
+                {
+                    Unit = ConfigModel.PressureUnit.barg,
+                    Value = 3.14
+                });
+                pressure.Item.Add(new PressureMeasurement
+                {
+                    Unit = ConfigModel.PressureUnit.barg,
+                    Value = 4.14
+                });
+                pressure.Item.Add(new PressureMeasurement
+                {
+                    Unit = ConfigModel.PressureUnit.barg,
+                    Value = 6.14
+                });
+
+                Assert.AreEqual(515.325, pressure.GetValue(), 1.0e-10);
+            }
+
+            [TestMethod]
+            public void PressureFunction_GetValue_Median_Single()
+            {
+                var pressure = new PressureFunction { MathFunction = ConfigModel.Func.Median };
+                pressure.Item.Add(new PressureMeasurement
+                {
+                    Unit = ConfigModel.PressureUnit.barg,
+                    Value = 3.14
+                });
+
+                Assert.AreEqual(415.325, pressure.GetValue(), 1.0e-10);
+            }
+
+            [TestMethod]
+            public void TemperatureFunction_GetValue_Min()
+            {
+                var temperature = new TemperatureFunction{ MathFunction = ConfigModel.Func.Min };
+                temperature.Item.Add(new TemperatureMeasurement
+                {
+                    Unit = ConfigModel.TemperatureUnit.K,
+                    Value = 3.14
+                });
+                temperature.Item.Add(new TemperatureMeasurement
+                {
+                    Unit = ConfigModel.TemperatureUnit.K,
+                    Value = 4.14
+                });
+                temperature.Item.Add(new TemperatureMeasurement
+                {
+                    Unit = ConfigModel.TemperatureUnit.K,
+                    Value = 5.14
+                });
+
+                Assert.AreEqual(3.14, temperature.GetValue(), 1.0e-10);
+            }
+
+            [TestMethod]
+            public void TemperatureFunction_GetValue_Max()
+            {
+                var temperature = new TemperatureFunction { MathFunction = ConfigModel.Func.Max };
+                temperature.Item.Add(new TemperatureMeasurement
+                {
+                    Unit = ConfigModel.TemperatureUnit.K,
+                    Value = 3.14
+                });
+                temperature.Item.Add(new TemperatureMeasurement
+                {
+                    Unit = ConfigModel.TemperatureUnit.K,
+                    Value = 4.14
+                });
+                temperature.Item.Add(new TemperatureMeasurement
+                {
+                    Unit = ConfigModel.TemperatureUnit.K,
+                    Value = 5.14
+                });
+
+                Assert.AreEqual(5.14, temperature.GetValue(), 1.0e-10);
+            }
+
+            [TestMethod]
+            public void TemperatureFunction_GetValue_Average()
+            {
+                var temperature = new TemperatureFunction { MathFunction = ConfigModel.Func.Average };
+                temperature.Item.Add(new TemperatureMeasurement
+                {
+                    Unit = ConfigModel.TemperatureUnit.K,
+                    Value = 3.14
+                });
+                temperature.Item.Add(new TemperatureMeasurement
+                {
+                    Unit = ConfigModel.TemperatureUnit.K,
+                    Value = 4.14
+                });
+                temperature.Item.Add(new TemperatureMeasurement
+                {
+                    Unit = ConfigModel.TemperatureUnit.K,
+                    Value = 5.14
+                });
+
+                Assert.AreEqual(4.14, temperature.GetValue(), 1.0e-10);
+            }
+
+            [TestMethod]
+            public void TemperatureFunction_GetValue_Median_Even()
+            {
+                var temperature = new TemperatureFunction { MathFunction = ConfigModel.Func.Median };
+                temperature.Item.Add(new TemperatureMeasurement
+                {
+                    Unit = ConfigModel.TemperatureUnit.K,
+                    Value = 3.14
+                });
+                temperature.Item.Add(new TemperatureMeasurement
+                {
+                    Unit = ConfigModel.TemperatureUnit.K,
+                    Value = 4.14
+                });
+                temperature.Item.Add(new TemperatureMeasurement
+                {
+                    Unit = ConfigModel.TemperatureUnit.K,
+                    Value = 5.14
+                });
+                temperature.Item.Add(new TemperatureMeasurement
+                {
+                    Unit = ConfigModel.TemperatureUnit.K,
+                    Value = 7.14
+                });
+
+                Assert.AreEqual(4.64, temperature.GetValue(), 1.0e-10);
+            }
+
+            [TestMethod]
+            public void TemperatureFunction_GetValue_Median_Odd()
+            {
+                var temperature = new TemperatureFunction { MathFunction = ConfigModel.Func.Median };
+                temperature.Item.Add(new TemperatureMeasurement
+                {
+                    Unit = ConfigModel.TemperatureUnit.K,
+                    Value = 3.14
+                });
+                temperature.Item.Add(new TemperatureMeasurement
+                {
+                    Unit = ConfigModel.TemperatureUnit.K,
+                    Value = 4.14
+                });
+                temperature.Item.Add(new TemperatureMeasurement
+                {
+                    Unit = ConfigModel.TemperatureUnit.K,
+                    Value = 5.14
+                });
+
+                Assert.AreEqual(4.14, temperature.GetValue(), 1.0e-10);
+            }
+
+            [TestMethod]
+            public void TemperatureFunction_GetValue_Median_Single()
+            {
+                var temperature = new TemperatureFunction { MathFunction = ConfigModel.Func.Median };
+                temperature.Item.Add(new TemperatureMeasurement
+                {
+                    Unit = ConfigModel.TemperatureUnit.K,
+                    Value = 3.14
+                });
+
+                Assert.AreEqual(3.14, temperature.GetValue(), 1.0e-10);
             }
         }
     }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using System.Xml;
 using System.Xml.Serialization;
 
@@ -38,6 +37,20 @@ namespace Aga8CalcService
             K = 1,
         }
 
+        public enum Func : int
+        {
+            Min = 0,
+            Max = 1,
+            Average = 2,
+            Median = 3
+        }
+
+        public enum Equation : int
+        {
+            AGA8Detail = 0,
+            Gerg2008 = 1
+        }
+
 
         [XmlElement]
         public string OpcUrl { get; set; }
@@ -48,6 +61,9 @@ namespace Aga8CalcService
 
         [XmlElement]
         public double Interval { get; set; }
+
+        [XmlElement]
+        public Equation EquationOfState { get; set; }
 
         [XmlElement]
         public ConfigList ConfigList { get; set; } = new ConfigList();
@@ -129,50 +145,172 @@ namespace Aga8CalcService
         public List<PressureTemperature> Item { get; }
     }
 
+    public class PressureFunction
+    {
+        public PressureFunction() { Item = new List<PressureMeasurement>(); }
+        [XmlElement("Pressure")]
+        public List<PressureMeasurement> Item { get; }
+
+        [XmlAttribute]
+        public ConfigModel.Func MathFunction { get; set; }
+
+        public double GetValue()
+        {
+            double value = 0.0;
+            switch (MathFunction)
+            {
+                case ConfigModel.Func.Max:
+                    value = double.MinValue;
+                    foreach (var it in Item)
+                    {
+                        if (it.GetAGA8Converted() > value)
+                        { 
+                            value = it.GetAGA8Converted();
+                        }
+                    }
+                    break;
+                case ConfigModel.Func.Min:
+                    value = double.MaxValue;
+                    foreach (var it in Item)
+                    {
+                        if (it.GetAGA8Converted() < value)
+                        {
+                            value = it.GetAGA8Converted();
+                        }
+                    }
+                    break;
+                case ConfigModel.Func.Average:
+                    value = 0.0;
+                    foreach (var it in Item)
+                    {
+                        value += it.GetAGA8Converted();
+                    }
+                    value /= (double)Item.Count;
+                    break;
+                case ConfigModel.Func.Median:
+                    value = 0.0;
+                    List<double> v = new List<double>();
+                    foreach (var it in Item)
+                    {
+                        v.Add(it.GetAGA8Converted());
+                    }
+                    v.Sort();
+
+                    if (v.Count == 1)
+                    {
+                        value = v[0];
+                    }
+                    else if (v.Count % 2 == 0)
+                    {
+                        // An even number of values
+                        value += v[v.Count / 2 - 1];
+                        value += v[v.Count / 2];
+                        value /= 2.0;
+                    }
+                    else
+                    {
+                        // An odd number of values
+                        value = v[v.Count / 2];
+                    }
+                    break;
+                default:
+                    break;
+            }
+
+            return value;
+        }
+    }
+
+    public class TemperatureFunction
+    {
+        public TemperatureFunction() { Item = new List<TemperatureMeasurement>(); }
+        [XmlElement("Temperature")]
+        public List<TemperatureMeasurement> Item { get; }
+
+        [XmlAttribute]
+        public ConfigModel.Func MathFunction { get; set; }
+
+        public double GetValue()
+        {
+            double value = 0.0;
+            switch (MathFunction)
+            {
+                case ConfigModel.Func.Max:
+                    value = double.MinValue;
+                    foreach (var it in Item)
+                    {
+                        if (it.GetAGA8Converted() > value)
+                        {
+                            value = it.GetAGA8Converted();
+                        }
+                    }
+                    break;
+                case ConfigModel.Func.Min:
+                    value = double.MaxValue;
+                    foreach (var it in Item)
+                    {
+                        if (it.GetAGA8Converted() < value)
+                        {
+                            value = it.GetAGA8Converted();
+                        }
+                    }
+                    break;
+                case ConfigModel.Func.Average:
+                    value = 0.0;
+                    foreach (var it in Item)
+                    {
+                        value += it.GetAGA8Converted();
+                    }
+                    value /= (double)Item.Count;
+                    break;
+                case ConfigModel.Func.Median:
+                    value = 0.0;
+                    List<double> v = new List<double>();
+                    foreach (var it in Item)
+                    {
+                        v.Add(it.GetAGA8Converted());
+                    }
+                    v.Sort();
+
+                    if (v.Count == 1)
+                    {
+                        value = v[0];
+                    }
+                    else if (v.Count % 2 == 0)
+                    {
+                        // An even number of values
+                        value += v[v.Count / 2 - 1];
+                        value += v[v.Count / 2];
+                        value /= 2.0;
+                    }
+                    else
+                    {
+                        // An odd number of values
+                        value = v[v.Count / 2];
+                    }
+                    break;
+                default:
+                    break;
+            }
+
+            return value;
+        }
+    }
+
+
     public class PressureTemperature
     {
         [XmlAttribute]
         public string Name { get; set; }
 
         [XmlElement]
-        public PressureMeasurement Pressure { get; set; } = new PressureMeasurement();
+        public PressureFunction PressureFunction { get; set; } = new PressureFunction();
+
         [XmlElement]
-        public TemperatureMeasurement Temperature { get; set; } = new TemperatureMeasurement();
+        public TemperatureFunction TemperatureFunction { get; set; } = new TemperatureFunction();
 
         [XmlElement]
         public PropertyList Properties { get; set; } = new PropertyList();
-
-        public object GetTemperature()
-        {
-            if (Temperature.Type == "single")
-            {
-                return Convert.ToSingle(Temperature.GetUnitConverted());
-            }
-            else if (Temperature.Type == "double")
-            {
-                return Convert.ToDouble(Temperature.GetUnitConverted());
-            }
-            else
-            {
-                return Convert.ToDouble(Temperature.GetUnitConverted());
-            }
-        }
-
-        public object GetPressure()
-        {
-            if (Pressure.Type == "single")
-            {
-                return Convert.ToSingle(Pressure.GetUnitConverted());
-            }
-            else if (Pressure.Type == "double")
-            {
-                return Convert.ToDouble(Pressure.GetUnitConverted());
-            }
-            else
-            {
-                return Convert.ToDouble(Pressure.GetUnitConverted());
-            }
-        }
     }
 
     public class PropertyList
@@ -192,6 +330,12 @@ namespace Aga8CalcService
         public double ScaleFactor { get; set; }
         [XmlIgnore]
         public double Value { get; set; }
+
+        public Component()
+        {
+            ScaleFactor = 1.0;
+            Value = 0.0;
+        }
 
         public double GetScaledValue()
         {

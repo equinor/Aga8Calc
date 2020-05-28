@@ -43,10 +43,16 @@ namespace Aga8CalcService
     {
         private readonly AGA8DetailHandle aga8;
         private Aga8Properties ResultProperties;
+        private bool disposed = false;
 
         public AGA8Detail()
         {
             aga8 = NativeMethods.Aga8New();
+        }
+
+        ~AGA8Detail()
+        {
+            Dispose(false);
         }
 
         public void Setup()
@@ -134,14 +140,28 @@ namespace Aga8CalcService
 
         public void Dispose()
         {
-            aga8.Dispose();
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposed)
+                return;
+
+            if (disposing)
+            {
+                // free managed objects
+            }
+
+            aga8.Close();
+            disposed = true;
+        }
     }
 
-    internal class GergHandle : SafeHandle
+    internal class Gerg2008Handle : SafeHandle
     {
-        public GergHandle() : base(IntPtr.Zero, true) { }
+        public Gerg2008Handle() : base(IntPtr.Zero, true) { }
 
         public override bool IsInvalid
         {
@@ -150,19 +170,25 @@ namespace Aga8CalcService
 
         protected override bool ReleaseHandle()
         {
-            NativeMethods.GergFfree(handle);
+            NativeMethods.GergFree(handle);
             return true;
         }
     }
 
-    public class Gerg : IDisposable
+    public class Gerg2008 : IDisposable
     {
-        private readonly GergHandle gerg;
+        private readonly Gerg2008Handle gerg;
         private Aga8Properties ResultProperties;
+        private bool disposed = false;
 
-        public Gerg()
+        public Gerg2008()
         {
-            gerg = NativeMethods.GergNnew();
+            gerg = NativeMethods.GergNew();
+        }
+
+        ~Gerg2008()
+        {
+            Dispose(false);
         }
 
         public void Setup()
@@ -184,7 +210,7 @@ namespace Aga8CalcService
                 comp[i] = composition[i];
             }
 
-            NativeMethods.GergSetComposition(gerg, composition);
+            NativeMethods.GergSetComposition(gerg, comp);
         }
 
         public void SetPressure(double pressure)
@@ -242,7 +268,7 @@ namespace Aga8CalcService
                 case ConfigModel.Aga8ResultCode.IsentropicExponent:
                     return ResultProperties.u;
                 case ConfigModel.Aga8ResultCode.Density:
-                    return ResultProperties.d / ResultProperties.mm;
+                    return ResultProperties.d * ResultProperties.mm;
                 default:
                     return ResultProperties.d;
             }
@@ -250,7 +276,22 @@ namespace Aga8CalcService
 
         public void Dispose()
         {
-            gerg.Dispose();
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposed)
+                return;
+
+            if (disposing)
+            {
+                // Free managed objects
+            }
+
+            gerg.Close();
+            disposed = true;
         }
     }
 }

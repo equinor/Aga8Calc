@@ -137,6 +137,7 @@ The configuration file is structured like the example below.
       <OpcUser>xxx</OpcUser>
       <OpcPassword>xxx</OpcPassword>
       <Interval>1000</Interval>
+      <EquationOfState>AGA8Detail</EquationOfState>
       <ConfigList>
         <Config>
         ...
@@ -160,6 +161,12 @@ The configuration file is structured like the example below.
 -   `<Interval>` is used to set the update interval of the calculation task.
     The interval is set in milli seconds, so 1000 would be 1 second.
 
+-   `<EquationOfState>` is used to select the equation of state to use.
+    The possible selections are:
+
+    - AGA8Detail
+    - Gerg2008
+
 -   `<ConfigList>` can contain one or more `<Config>` elements.
 
 Every `<Config>` element is structured like below.
@@ -181,8 +188,14 @@ Every `<Config>` element is structured like below.
       </Composition>
       <PressureTemperatureList>
         <PressureTemperature Name="Point 1">
-          <Pressure Tag="ns=2;s=1:AI1001?Pressure" Unit="barg" />
-          <Temperature Tag="ns=2;s=1:AI1001?Temperature" Unit="C" />
+          <PressureFunction MathFunction="Min">
+            <Pressure Name="P 1" Tag="ns=2;s=1:AI1001?Pressure" Unit="barg" />
+            <Pressure Name="P 2" Tag="ns=2;s=1:AI1002?Pressure" Unit="barg" />
+          </PressureFunction>
+          <TemperatureFunction MathFunction="Max">
+            <Temperature Name="T 1" Tag="ns=2;s=1:AI1001?Temperature" Unit="C" />
+            <Temperature Name="T 2" Tag="ns=2;s=1:AI1002?Temperature" Unit="C" />
+          </TemperatureFunction>
           <Properties>
             <Property Tag="ns=2;s=1:AI1001?Result" Property="MolarConcentration" Type="single" />
           </Properties>
@@ -203,33 +216,42 @@ This holds the values that is read from, and the result written back to the OPC 
     The sort order of the `<Component>` elements is significant.
     They must be in this order:
 
-      - Methane
-      - Nitrogen
-      - Carbon dioxide
-      - Ethane
-      - Propane
-      - Isobutane
-      - n-Butane
-      - Isopentane
-      - n-Pentane
-      - Hexane
-      - Heptane
-      - Octane
-      - Nonane
-      - Decane
-      - Hydrogen
-      - Oxygen
-      - Carbon monoxide
-      - Water
-      - Hydrogen sulfide
-      - Helium
-      - Argon
+    - Methane
+    - Nitrogen
+    - Carbon dioxide
+    - Ethane
+    - Propane
+    - Isobutane
+    - n-Butane
+    - Isopentane
+    - n-Pentane
+    - Hexane
+    - Heptane
+    - Octane
+    - Nonane
+    - Decane
+    - Hydrogen
+    - Oxygen
+    - Carbon monoxide
+    - Water
+    - Hydrogen sulfide
+    - Helium
+    - Argon
 
 -   `<PressureTemperatureList>` can contain several `<PressureTemperature>` elements.
     Every `<PressureTemperature>` element contains the pressure and temperature to read, and one or more properties that is to be written to the OPC server.
 
--   `<Pressure>` is the pressure to be read.
-    Attributes:
+-   `<PressureFunction>` is the pressure to be read.
+    It contains one or more `<Pressure>` elements.
+    The `MathFunction` attribute selects what function to use when reading multiple pressure values.
+    The possible functions are:
+
+    - `Min` will select the lowest value.
+    - `Max` will select the highest value.
+    - `Average` will select the average of all the values.
+    - `Median` will select the median value.
+
+    The `<Pressure>` elements have the following attributes:
 
     - `Tag` is the OPC item to read.
     - `Unit` is the expected engineering unit of the pressure value.
@@ -239,8 +261,12 @@ This holds the values that is read from, and the result written back to the OPC 
       - barg (bar gauge)
       - bara (bar absolute)
 
--   `<Temperature>` is the temperature to read.
-    Attributes:
+-   `<TemperatureFunction>` is the temperature to read.
+    It contains one or more `<Temprature>` elements.
+    Like the `<PressureFunction>` it also has the `MathFunction` attribute.
+    The possible functions are identical to that of the `<PressureFunction>`.
+
+    The `<Temperature>` element have the following attributes:
 
     - `Tag` is the OPC item to read.
     - `Unit` is the expected engineering unit of the temperature value.
@@ -278,7 +304,7 @@ This holds the values that is read from, and the result written back to the OPC 
       - `single` a 32-bit floating point type.
       - `double` a 64-bit floating point type.
 
-A complete, minimal configuration file could look like this.
+A complete configuration file could look like this.
 
 .. code-block:: xml
 
@@ -288,6 +314,7 @@ A complete, minimal configuration file could look like this.
       <OpcUser>username</OpcUser>
       <OpcPassword>password</OpcPassword>
       <Interval>10000.0</Interval>
+      <EquationOfState>Gerg2008</EquationOfState>
       <ConfigList>
         <Config Name="GC 1">
           <Composition>
@@ -304,10 +331,17 @@ A complete, minimal configuration file could look like this.
           </Composition>
           <PressureTemperatureList>
             <PressureTemperature Name="Point 1">
-              <Pressure Tag="ns=2;s=1:AI1001?Pressure" Unit="barg" />
-              <Temperature Tag="ns=2;s=1:AI1001?Temperature" Unit="C" />
+              <PressureFunction MathFunction="Min">
+                <Pressure Name="P 1" Tag="ns=2;s=1:AI1001?Pressure" Unit="barg" />
+                <Pressure Name="P 2" Tag="ns=2;s=1:AI1002?Pressure" Unit="bara" />
+              </PressureFunction>
+              <TemperatureFunction MathFunction="Max">
+                <Temperature Name="T 1" Tag="ns=2;s=1:AI1001?Temperature" Unit="C" />
+                <Temperature Name="T 2" Tag="ns=2;s=1:AI1002?Temperature" Unit="K" />
+              </TemperatureFunction>
               <Properties>
                 <Property Tag="ns=2;s=1:AI1001?Result" Property="MolarConcentration" Type="single" />
+                <Property Tag="ns=2;s=1:AI1002?Result" Property="Density" Type="double" />
               </Properties>
             </PressureTemperature>
           </PressureTemperatureList>
@@ -318,7 +352,7 @@ A complete, minimal configuration file could look like this.
 Files
 -----
 
--   **aga8.dll** Library that implements Aga8 Part 1 Detail equation of state.
+-   **aga8.dll** Library that implements the equations of state.
 
 -   **Aga8_Calc_Client.Config.xml** Config file for the OPC client.
 
