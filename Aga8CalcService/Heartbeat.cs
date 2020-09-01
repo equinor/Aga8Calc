@@ -79,6 +79,8 @@ namespace Aga8CalcService
             {
                 foreach (Component comp in c.Composition.Item)
                 {
+                    if (string.IsNullOrEmpty(comp.Tag)) { continue; }
+
                     nodes.Add(comp.Tag); types.Add(typeof(object));
                 }
 
@@ -115,6 +117,13 @@ namespace Aga8CalcService
             {
                 foreach (var component in c.Composition.Item)
                 {
+                    if (string.IsNullOrEmpty(component.Tag))
+                    {
+                        logger.Debug(CultureInfo.InvariantCulture, "\"{0}\" Component Value: {1} Name: {2}",
+                            c.Name, component.GetScaledValue(), component.Name);
+                        continue;
+                    }
+
                     if (StatusCode.IsGood(errors[it].StatusCode))
                     {
                         component.Value = Convert.ToDouble(result[it], CultureInfo.InvariantCulture);

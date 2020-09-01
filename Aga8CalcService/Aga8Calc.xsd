@@ -19,8 +19,9 @@
                           <xsd:element maxOccurs="21" name="Component">
                             <xsd:complexType>
                               <xsd:attribute name="Name" type="xsd:string" use="required" />
-                              <xsd:attribute name="Tag" type="xsd:string" use="required" />
+                              <xsd:attribute name="Tag" type="xsd:string" use="optional"/>
                               <xsd:attribute name="ScaleFactor" type="xsd:decimal" use="required" />
+                              <xsd:attribute name="Value" type="xsd:decimal" use="optional" />
                             </xsd:complexType>
                           </xsd:element>
                         </xsd:sequence>
