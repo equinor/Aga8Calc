@@ -185,6 +185,7 @@ Every `<Config>` element is structured like below.
         <Component Name="Isopentane" Tag="ns=2;s=1:AI1001?F" ScaleFactor="0.01" />
         <Component Name="n-Pentane" Tag="ns=2;s=1:AI1001?G" ScaleFactor="0.01" />
         <Component Name="Hexane" Tag="ns=2;s=1:AI1001?I" ScaleFactor="0.01" />
+        <Component Name="Heptane" ScaleFactor="1.0" Value="0.0002471" />
       </Composition>
       <PressureTemperatureList>
         <PressureTemperature Name="Point 1">
@@ -212,6 +213,9 @@ This holds the values that is read from, and the result written back to the OPC 
     - `Name` is used to identify the component in the log files.
     - `Tag` is the OPC item to read the value from.
     - `ScaleFactor` is used to scale the individual component values into the mol fraction range from 0-1.
+    - `Value` is used to set a constant value for the component.
+
+    Tag and Value can not both be used at the same for a component. Use one or the other!
 
     The sort order of the `<Component>` elements is significant.
     They must be in this order:
@@ -328,6 +332,7 @@ A complete configuration file could look like this.
             <Component Name="Isopentane" Tag="ns=2;s=1:AI1001?F" ScaleFactor="0.01" />
             <Component Name="n-Pentane" Tag="ns=2;s=1:AI1001?G" ScaleFactor="0.01" />
             <Component Name="Hexane" Tag="ns=2;s=1:AI1001?I" ScaleFactor="0.01" />
+            <Component Name="Heptane" ScaleFactor="1.0" Value="0.0002471" />
           </Composition>
           <PressureTemperatureList>
             <PressureTemperature Name="Point 1">
