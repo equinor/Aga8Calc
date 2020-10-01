@@ -215,7 +215,7 @@ This holds the values that is read from, and the result written back to the OPC 
     - `ScaleFactor` is used to scale the individual component values into the mol fraction range from 0-1.
     - `Value` is used to set a constant value for the component.
 
-    Tag and Value can not both be used at the same for a component. Use one or the other!
+    Tag and Value can not both be used at the same time for a component. Use one or the other!
 
     The sort order of the `<Component>` elements is significant.
     They must be in this order:
