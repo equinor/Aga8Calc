@@ -130,7 +130,7 @@ namespace Aga8CalcService
                 case ConfigModel.Aga8ResultCode.JouleThomsonCoefficient:
                     return ResultProperties.jt;
                 case ConfigModel.Aga8ResultCode.IsentropicExponent:
-                    return ResultProperties.u;
+                    return ResultProperties.kappa;
                 case ConfigModel.Aga8ResultCode.Density:
                     return ResultProperties.d * ResultProperties.mm; // g/l = kg/m³
                 default:
@@ -266,7 +266,7 @@ namespace Aga8CalcService
                 case ConfigModel.Aga8ResultCode.JouleThomsonCoefficient:
                     return ResultProperties.jt;
                 case ConfigModel.Aga8ResultCode.IsentropicExponent:
-                    return ResultProperties.u;
+                    return ResultProperties.kappa;
                 case ConfigModel.Aga8ResultCode.Density:
                     return ResultProperties.d * ResultProperties.mm;
                 default:
