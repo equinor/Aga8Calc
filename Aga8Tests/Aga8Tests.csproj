@@ -306,6 +306,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="..\aga8.dll">
+      <Link>aga8.dll</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Tag_Config_Test.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

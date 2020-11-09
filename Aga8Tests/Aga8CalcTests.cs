@@ -116,7 +116,7 @@ namespace Aga8Tests
         }
         */
         [TestMethod]
-        public void Aga8_CalculatesDensity()
+        public void Aga8_CalculatesProperties()
         {
             ConfigModel conf = new ConfigModel();
 
@@ -184,6 +184,22 @@ namespace Aga8Tests
 
                 conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Properties.Item[0].Value = aga.GetProperty(ConfigModel.Aga8ResultCode.Density);
                 Assert.AreEqual(263.117_416_628_546, conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Properties.Item[0].Value, 1e-9);
+
+                Assert.AreEqual(12.807_924_036_488_01, aga.GetProperty(ConfigModel.Aga8ResultCode.MolarConcentration), 1.0e-9);
+                Assert.AreEqual(20.543_330_51, aga.GetProperty(ConfigModel.Aga8ResultCode.MolarMass), 1.0e-9);
+                Assert.AreEqual(1.173_801_364_147_326, aga.GetProperty(ConfigModel.Aga8ResultCode.CompressibilityFactor), 1.0e-9);
+                //Assert.AreEqual(6_971.387_690_924_090, aga.GetProperty(ConfigModel.Aga8ResultCode.dp_dd), 1.0e-9);
+                //Assert.AreEqual(1_118.803_636_639_520, aga.GetProperty(ConfigModel.Aga8ResultCode.d2p_dd2), 1.0e-9);
+                //Assert.AreEqual(235.664_149_306_821_2, aga.GetProperty(ConfigModel.Aga8ResultCode.dp_dt), 1.0e-9);
+                Assert.AreEqual(-2_739.134_175_817_231, aga.GetProperty(ConfigModel.Aga8ResultCode.InternalEnergy), 1.0e-9);
+                Assert.AreEqual(1_164.699_096_269_404, aga.GetProperty(ConfigModel.Aga8ResultCode.Enthalpy), 1.0e-9);
+                Assert.AreEqual(-38.548_826_846_771_11, aga.GetProperty(ConfigModel.Aga8ResultCode.Entropy), 1.0e-9);
+                Assert.AreEqual(39.120_761_544_303_32, aga.GetProperty(ConfigModel.Aga8ResultCode.IsochoricHeatCapacity), 1.0e-9);
+                Assert.AreEqual(58.546_176_723_806_67, aga.GetProperty(ConfigModel.Aga8ResultCode.IsobaricHeatCapacity), 1.0e-9);
+                Assert.AreEqual(712.639_368_405_790_3, aga.GetProperty(ConfigModel.Aga8ResultCode.SpeedOfSound), 1.0e-9);
+                Assert.AreEqual(16_584.229_834_977_85, aga.GetProperty(ConfigModel.Aga8ResultCode.GibbsEnergy), 1.0e-9);
+                Assert.AreEqual(7.432_969_304_794_577E-5, aga.GetProperty(ConfigModel.Aga8ResultCode.JouleThomsonCoefficient), 1.0e-9);
+                Assert.AreEqual(2.672_509_225_184_606, aga.GetProperty(ConfigModel.Aga8ResultCode.IsentropicExponent), 1.0e-9);
             }
 
             using (var gerg = new Gerg2008())
@@ -201,6 +217,22 @@ namespace Aga8Tests
 
                 conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Properties.Item[0].Value = gerg.GetProperty(ConfigModel.Aga8ResultCode.Density);
                 Assert.AreEqual(262.911_924_714_376, conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Properties.Item[0].Value, 1e-9);
+
+                Assert.AreEqual(12.798_286_260_820_62, gerg.GetProperty(ConfigModel.Aga8ResultCode.MolarConcentration), 1.0e-9);
+                Assert.AreEqual(20.542_744_501_6, gerg.GetProperty(ConfigModel.Aga8ResultCode.MolarMass), 1.0e-9);
+                Assert.AreEqual(1.174_690_666_383_717, gerg.GetProperty(ConfigModel.Aga8ResultCode.CompressibilityFactor), 1.0e-9);
+                //Assert.AreEqual(7_000.694_030_193_327, gerg.GetProperty(ConfigModel.Aga8ResultCode.dp_dd), 1.0e-9);
+                //Assert.AreEqual(1_129.526_655_214_841, gerg.GetProperty(ConfigModel.Aga8ResultCode.d2p_dd2), 1.0e-9);
+                //Assert.AreEqual(235.983_229_259_309_6, gerg.GetProperty(ConfigModel.Aga8ResultCode.dp_dt), 1.0e-9);
+                Assert.AreEqual(-2_746.492_901_212_53, gerg.GetProperty(ConfigModel.Aga8ResultCode.InternalEnergy), 1.0e-9);
+                Assert.AreEqual(1_160.280_160_510_973, gerg.GetProperty(ConfigModel.Aga8ResultCode.Enthalpy), 1.0e-9);
+                Assert.AreEqual(-38.575_903_924_090_89, gerg.GetProperty(ConfigModel.Aga8ResultCode.Entropy), 1.0e-9);
+                Assert.AreEqual(39.029_482_181_563_72, gerg.GetProperty(ConfigModel.Aga8ResultCode.IsochoricHeatCapacity), 1.0e-9);
+                Assert.AreEqual(58.455_220_510_003_66, gerg.GetProperty(ConfigModel.Aga8ResultCode.IsobaricHeatCapacity), 1.0e-9);
+                Assert.AreEqual(714.424_884_059_602_4, gerg.GetProperty(ConfigModel.Aga8ResultCode.SpeedOfSound), 1.0e-9);
+                Assert.AreEqual(16_590.641_730_147_33, gerg.GetProperty(ConfigModel.Aga8ResultCode.GibbsEnergy), 1.0e-9);
+                Assert.AreEqual(7.155_629_581_480_913E-5, gerg.GetProperty(ConfigModel.Aga8ResultCode.JouleThomsonCoefficient), 1.0e-9);
+                Assert.AreEqual(2.683_820_255_058_032, gerg.GetProperty(ConfigModel.Aga8ResultCode.IsentropicExponent), 1.0e-9);
             }
 
             conf.ConfigList.Item.Add(new Config());

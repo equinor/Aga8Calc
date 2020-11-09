@@ -392,7 +392,8 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="aga8.dll">
+    <Content Include="..\aga8.dll">
+      <Link>aga8.dll</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Aga8_Calc_Client.Config.xml">
