@@ -265,7 +265,7 @@ namespace Aga8CalcService
                         {
                             NodeId = property.Tag,
                             AttributeId = Attributes.Value,
-                            Value = new DataValue { Value = property.GetTypedValue()}
+                            Value = new DataValue { Value = property.GetTypedValue() }
                         });
                     }
                 }
