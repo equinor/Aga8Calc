@@ -1,7 +1,7 @@
-﻿using System;
-using System.Globalization;
+﻿using Aga8CalcService;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Aga8CalcService;
+using System;
+using System.Globalization;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
@@ -653,7 +653,7 @@ namespace Aga8Tests
             [TestMethod]
             public void TemperatureFunction_GetValue_Min()
             {
-                var temperature = new TemperatureFunction{ MathFunction = ConfigModel.Func.Min };
+                var temperature = new TemperatureFunction { MathFunction = ConfigModel.Func.Min };
                 temperature.Item.Add(new TemperatureMeasurement
                 {
                     Unit = ConfigModel.TemperatureUnit.K,
