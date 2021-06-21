@@ -65,7 +65,7 @@ namespace Aga8CalcService
 
                 if (haveAppCertificate)
                 {
-                    config.ApplicationUri = Utils.GetApplicationUriFromCertificate(config.SecurityConfiguration.ApplicationCertificate.Certificate);
+                    config.ApplicationUri = X509Utils.GetApplicationUriFromCertificate(config.SecurityConfiguration.ApplicationCertificate.Certificate);
                     if (config.SecurityConfiguration.AutoAcceptUntrustedCertificates)
                     {
                         autoAccept = true;
@@ -79,7 +79,7 @@ namespace Aga8CalcService
 
                 logger.Info($"Discover endpoints of { endpointUrl }.");
                 var selectedEndpoint = CoreClientUtils.SelectEndpoint(endpointUrl, haveAppCertificate, 15000);
-               
+
                 logger.Info(CultureInfo.InvariantCulture, "Selected endpoint uses: {0}",
                     selectedEndpoint.SecurityPolicyUri.Substring(selectedEndpoint.SecurityPolicyUri.LastIndexOf('#') + 1));
 

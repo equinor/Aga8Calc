@@ -164,7 +164,7 @@ namespace Aga8CalcService
                     foreach (var it in Item)
                     {
                         if (it.GetAGA8Converted() > value)
-                        { 
+                        {
                             value = it.GetAGA8Converted();
                         }
                     }
