@@ -3,13 +3,14 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
+using System.Reflection;
 using System.Timers;
 
 namespace Aga8CalcService
 {
     public sealed class Heartbeat : IDisposable
     {
-        private readonly System.Timers.Timer _timer;
+        private readonly Timer _timer;
         private readonly Aga8OpcClient _client;
         private readonly ConfigModel conf;
         private static readonly NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
@@ -18,7 +19,12 @@ namespace Aga8CalcService
 
         public Heartbeat()
         {
-            logger.Info("Initializing service.");
+            AssemblyName assemName = Assembly.GetExecutingAssembly().GetName();
+            Version ver = assemName.Version;
+            string title = assemName.Name;
+
+            logger.Info("Initializing \"{0}\" version \"{1}\".", title, ver.ToString());
+
             string TagConfFile = AppDomain.CurrentDomain.BaseDirectory.ToString(CultureInfo.InvariantCulture) + "Aga8Calc.config";
             try
             {
@@ -30,7 +36,7 @@ namespace Aga8CalcService
                 logger.Fatal(e, "Failed to read tag configuration.");
                 throw;
             }
-            _timer = new System.Timers.Timer(conf.Interval) { AutoReset = true, SynchronizingObject = null };
+            _timer = new Timer(conf.Interval) { AutoReset = true, SynchronizingObject = null };
             _timer.Elapsed += Worker;
 
             _client = new Aga8OpcClient(conf.OpcUrl, conf.OpcUser, conf.OpcPassword);
