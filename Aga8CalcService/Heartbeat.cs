@@ -49,6 +49,7 @@ namespace Aga8CalcService
             if (working)
             {
                 logger.Warn(CultureInfo.InvariantCulture, "Worker not completed within Interval. Interval might be too short.");
+                return;
             }
 
             Stopwatch watch = Stopwatch.StartNew();
