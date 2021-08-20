@@ -55,6 +55,10 @@ namespace Aga8CalcService
             if (working)
             {
                 logger.Warn(CultureInfo.InvariantCulture, "Worker not completed within Interval. Interval might be too short.");
+                lock (WorkerLock)
+                {
+                    working = false;
+                }
                 return;
             }
 
