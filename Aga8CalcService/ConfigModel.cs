@@ -361,10 +361,11 @@ namespace Aga8CalcService
         [XmlAttribute]
         public ConfigModel.PressureUnit Unit { get; set; }
 
+        const double stdAtm = 1.01325;
+
         public double GetAGA8Converted()
         {
             // Convert from Unit to kPa absolute
-            const double stdAtm = 1.01325;
             double result = 0.0;
             switch (Unit)
             {
@@ -384,7 +385,6 @@ namespace Aga8CalcService
         public double GetUnitConverted()
         {
             // Convert from kPa absolute to Unit
-            const double stdAtm = 1.01325;
             double result = 0.0;
             switch (Unit)
             {
@@ -407,10 +407,11 @@ namespace Aga8CalcService
         [XmlAttribute]
         public ConfigModel.TemperatureUnit Unit { get; set; }
 
+        const double zeroCelsius = 273.15;
+
         public double GetAGA8Converted()
         {
             // Convert from Unit to K
-            const double zeroCelsius = 273.15;
             double result = 0.0;
             switch (Unit)
             {
@@ -430,7 +431,6 @@ namespace Aga8CalcService
         public double GetUnitConverted()
         {
             // Convert from K to Unit
-            const double zeroCelsius = 273.15;
             double result = 0.0;
             switch (Unit)
             {
