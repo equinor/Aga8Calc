@@ -203,8 +203,6 @@ namespace Aga8CalcService
                 case ConfigModel.Equation.AGA8Detail:
                     var aga = new AGA8Detail();
 
-                    aga.Setup();
-
                     foreach (var c in conf.ConfigList.Item)
                     {
                         aga.SetComposition(c.Composition.GetScaledValues());
@@ -230,8 +228,6 @@ namespace Aga8CalcService
                     break;
                 case ConfigModel.Equation.Gerg2008:
                     var gerg = new Gerg2008();
-
-                    gerg.Setup();
 
                     foreach (var c in conf.ConfigList.Item)
                     {

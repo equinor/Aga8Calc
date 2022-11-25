@@ -171,7 +171,6 @@ namespace Aga8Tests
 
             using (var aga = new AGA8Detail())
             {
-                aga.Setup();
                 aga.SetComposition(conf.ConfigList.Item[0].Composition.GetScaledValues());
                 aga.SetPressure(conf.ConfigList.Item[0].PressureTemperatureList.Item[0].PressureFunction.GetValue());
                 aga.SetTemperature(conf.ConfigList.Item[0].PressureTemperatureList.Item[0].TemperatureFunction.GetValue());
@@ -204,7 +203,6 @@ namespace Aga8Tests
 
             using (var gerg = new Gerg2008())
             {
-                gerg.Setup();
                 gerg.SetComposition(conf.ConfigList.Item[0].Composition.GetScaledValues());
                 gerg.SetPressure(conf.ConfigList.Item[0].PressureTemperatureList.Item[0].PressureFunction.GetValue());
                 gerg.SetTemperature(conf.ConfigList.Item[0].PressureTemperatureList.Item[0].TemperatureFunction.GetValue());
@@ -275,7 +273,6 @@ namespace Aga8Tests
 
             using (var aga = new AGA8Detail())
             {
-                aga.Setup();
                 aga.SetComposition(conf.ConfigList.Item[1].Composition.GetScaledValues());
                 aga.SetPressure(conf.ConfigList.Item[1].PressureTemperatureList.Item[0].PressureFunction.GetValue());
                 aga.SetTemperature(conf.ConfigList.Item[1].PressureTemperatureList.Item[0].TemperatureFunction.GetValue());
@@ -292,7 +289,6 @@ namespace Aga8Tests
 
             using (var gerg = new Gerg2008())
             {
-                gerg.Setup();
                 gerg.SetComposition(conf.ConfigList.Item[1].Composition.GetScaledValues());
                 gerg.SetPressure(conf.ConfigList.Item[1].PressureTemperatureList.Item[0].PressureFunction.GetValue());
                 gerg.SetTemperature(conf.ConfigList.Item[1].PressureTemperatureList.Item[0].TemperatureFunction.GetValue());
@@ -366,7 +362,6 @@ namespace Aga8Tests
             {
                 using (var aga = new AGA8Detail())
                 {
-                    aga.Setup();
                     aga.SetComposition(conf.ConfigList.Item[0].Composition.GetValues());
                     aga.SetPressure(conf.ConfigList.Item[0].PressureTemperatureList.Item[0].PressureFunction.GetValue());
                     aga.SetTemperature(conf.ConfigList.Item[0].PressureTemperatureList.Item[0].TemperatureFunction.GetValue());
@@ -383,7 +378,6 @@ namespace Aga8Tests
 
                 using (var gerg = new Gerg2008())
                 {
-                    gerg.Setup();
                     gerg.SetComposition(conf.ConfigList.Item[0].Composition.GetValues());
                     gerg.SetPressure(conf.ConfigList.Item[0].PressureTemperatureList.Item[0].PressureFunction.GetValue());
                     gerg.SetTemperature(conf.ConfigList.Item[0].PressureTemperatureList.Item[0].TemperatureFunction.GetValue());

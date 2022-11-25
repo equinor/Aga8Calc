@@ -113,28 +113,158 @@ namespace Aga8CalcService
         [XmlElement("Component")]
         public List<Component> Item { get; }
 
-        public double[] GetValues()
+        public Aga8Composition GetValues()
         {
-            List<double> vs = new List<double>();
+            Aga8Composition comp = new Aga8Composition();
 
             foreach (var component in Item)
             {
-                vs.Add(component.Value);
+                switch (component.Name)
+                {
+                    case "Methane":
+                        comp.Methane = component.GetScaledValue();
+                        break;
+                    case "Nitrogen":
+                        comp.Nitrogen = component.GetScaledValue();
+                        break;
+                    case "Carbon dioxide":
+                        comp.CarbonDioxide = component.GetScaledValue();
+                        break;
+                    case "Ethane":
+                        comp.Ethane = component.GetScaledValue();
+                        break;
+                    case "Propane":
+                        comp.Propane = component.GetScaledValue();
+                        break;
+                    case "Isobutane":
+                        comp.IsoButane = component.GetScaledValue();
+                        break;
+                    case "n-Butane":
+                        comp.NormalButane = component.GetScaledValue();
+                        break;
+                    case "Isopentane":
+                        comp.IsoPentane = component.GetScaledValue();
+                        break;
+                    case "n-Pentane":
+                        comp.NormalPentane = component.GetScaledValue();
+                        break;
+                    case "Hexane":
+                        comp.Hexane = component.GetScaledValue();
+                        break;
+                    case "Heptane":
+                        comp.Heptane = component.GetScaledValue();
+                        break;
+                    case "Octane":
+                        comp.Octane = component.GetScaledValue();
+                        break;
+                    case "Nonane":
+                        comp.Nonane = component.GetScaledValue();
+                        break;
+                    case "Decane":
+                        comp.Decane = component.GetScaledValue();
+                        break;
+                    case "Hydrogen":
+                        comp.Hydrogen = component.GetScaledValue();
+                        break;
+                    case "Oxygen":
+                        comp.Oxygen = component.GetScaledValue();
+                        break;
+                    case "Carbon monoxide":
+                        comp.CarbonMonoxide = component.GetScaledValue();
+                        break;
+                    case "Water":
+                        comp.Water = component.GetScaledValue();
+                        break;
+                    case "Hydrogen sulfide":
+                        comp.HydrogenSulfide = component.GetScaledValue();
+                        break;
+                    case "Helium":
+                        comp.Helium = component.GetScaledValue();
+                        break;
+                    case "Argon":
+                        comp.Argon = component.GetScaledValue();
+                        break;
+                }
             }
 
-            return vs.ToArray();
+            return comp;
         }
 
-        public double[] GetScaledValues()
+        public Aga8Composition GetScaledValues()
         {
-            List<double> vs = new List<double>();
+            Aga8Composition comp = new Aga8Composition();
 
             foreach (var component in Item)
             {
-                vs.Add(component.GetScaledValue());
+                switch (component.Name)
+                {
+                    case "Methane":
+                        comp.Methane = component.GetScaledValue();
+                        break;
+                    case "Nitrogen":
+                        comp.Nitrogen = component.GetScaledValue();
+                        break;
+                    case "Carbon dioxide":
+                        comp.CarbonDioxide = component.GetScaledValue();
+                        break;
+                    case "Ethane":
+                        comp.Ethane= component.GetScaledValue();
+                        break;
+                    case "Propane":
+                        comp.Propane = component.GetScaledValue();
+                        break;
+                    case "Isobutane":
+                        comp.IsoButane = component.GetScaledValue();
+                        break;
+                    case "n-Butane":
+                        comp.NormalButane = component.GetScaledValue();
+                        break;
+                    case "Isopentane":
+                        comp.IsoPentane = component.GetScaledValue();
+                        break;
+                    case "n-Pentane":
+                        comp.NormalPentane = component.GetScaledValue();
+                        break;
+                    case "Hexane":
+                        comp.Hexane = component.GetScaledValue();
+                        break;
+                    case "Heptane":
+                        comp.Heptane = component.GetScaledValue();
+                        break;
+                    case "Octane":
+                        comp.Octane = component.GetScaledValue();
+                        break;
+                    case "Nonane":
+                        comp.Nonane= component.GetScaledValue();
+                        break;
+                    case "Decane":
+                        comp.Decane = component.GetScaledValue();
+                        break;
+                    case "Hydrogen":
+                        comp.Hydrogen = component.GetScaledValue();
+                        break;
+                    case "Oxygen":
+                        comp.Oxygen = component.GetScaledValue();
+                        break;
+                    case "Carbon monoxide":
+                        comp.CarbonMonoxide = component.GetScaledValue();
+                        break;
+                    case "Water":
+                        comp.Water = component.GetScaledValue();
+                        break;
+                    case "Hydrogen sulfide":
+                        comp.HydrogenSulfide = component.GetScaledValue();
+                        break;
+                    case "Helium":
+                        comp.Helium = component.GetScaledValue();
+                        break;
+                    case "Argon":
+                        comp.Argon= component.GetScaledValue();
+                        break;
+                }
             }
 
-            return vs.ToArray();
+            return comp;
         }
     }
 
