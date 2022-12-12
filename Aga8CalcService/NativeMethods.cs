@@ -10,7 +10,7 @@ namespace Aga8CalcService
         [DllImport("aga8", EntryPoint = "aga8_free")]
         internal static extern void Aga8Free(IntPtr aga8);
         [DllImport("aga8", EntryPoint = "aga8_set_composition")]
-        internal static extern void Aga8SetComposition(AGA8DetailHandle aga8, Aga8Composition composition);
+        internal static extern void Aga8SetComposition(AGA8DetailHandle aga8, Aga8Composition composition, ref CompositionError err);
         [DllImport("aga8", EntryPoint = "aga8_set_pressure")]
         internal static extern void Aga8SetPressure(AGA8DetailHandle aga8, double pressure);
         [DllImport("aga8", EntryPoint = "aga8_set_temperature")]
@@ -33,7 +33,7 @@ namespace Aga8CalcService
         [DllImport("aga8", EntryPoint = "gerg_free")]
         internal static extern void GergFree(IntPtr gerg);
         [DllImport("aga8", EntryPoint = "gerg_set_composition")]
-        internal static extern void GergSetComposition(Gerg2008Handle gerg, Aga8Composition composition);
+        internal static extern void GergSetComposition(Gerg2008Handle gerg, Aga8Composition composition, ref CompositionError err);
         [DllImport("aga8", EntryPoint = "gerg_set_pressure")]
         internal static extern void GergSetPressure(Gerg2008Handle gerg, double pressure);
         [DllImport("aga8", EntryPoint = "gerg_set_temperature")]

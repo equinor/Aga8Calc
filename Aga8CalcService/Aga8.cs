@@ -49,6 +49,13 @@ namespace Aga8CalcService
         public double Argon;
     }
 
+    public enum CompositionError : int
+    {
+        Ok = 0,
+        Empty = 1,
+        BadSum = 2
+    }
+
     internal class AGA8DetailHandle : SafeHandle
     {
         public AGA8DetailHandle() : base(IntPtr.Zero, true) { }
@@ -81,9 +88,9 @@ namespace Aga8CalcService
             Dispose(false);
         }
 
-        public void SetComposition(Aga8Composition composition)
+        public void SetComposition(Aga8Composition composition, ref CompositionError err)
         {
-            NativeMethods.Aga8SetComposition(aga8, composition);
+            NativeMethods.Aga8SetComposition(aga8, composition, ref err);
         }
 
         public void SetPressure(double pressure)
@@ -200,9 +207,9 @@ namespace Aga8CalcService
             Dispose(false);
         }
 
-        public void SetComposition(Aga8Composition composition)
+        public void SetComposition(Aga8Composition composition, ref CompositionError err)
         {
-            NativeMethods.GergSetComposition(gerg, composition);
+            NativeMethods.GergSetComposition(gerg, composition, ref err);
         }
 
         public void SetPressure(double pressure)
