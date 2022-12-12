@@ -197,17 +197,23 @@ namespace Aga8CalcService
 
         private void Calculate()
         {
-            //TODO: Implement this with interfaces, maybe.
+            var compositionError = new CompositionError();
+
             switch (conf.EquationOfState)
             {
                 case ConfigModel.Equation.AGA8Detail:
                     var aga = new AGA8Detail();
 
-                    aga.Setup();
-
                     foreach (var c in conf.ConfigList.Item)
                     {
-                        aga.SetComposition(c.Composition.GetScaledValues());
+                        aga.SetComposition(c.Composition.GetScaledValues(), ref compositionError);
+
+                        if (compositionError != CompositionError.Ok)
+                        {
+                            logger.Error(CultureInfo.InvariantCulture, "Invalid composition for {0}: {1}",
+                                c.Name, compositionError.ToString());
+                            continue;
+                        }
 
                         foreach (var pt in c.PressureTemperatureList.Item)
                         {
@@ -231,11 +237,16 @@ namespace Aga8CalcService
                 case ConfigModel.Equation.Gerg2008:
                     var gerg = new Gerg2008();
 
-                    gerg.Setup();
-
                     foreach (var c in conf.ConfigList.Item)
                     {
-                        gerg.SetComposition(c.Composition.GetScaledValues());
+                        gerg.SetComposition(c.Composition.GetScaledValues(), ref compositionError);
+
+                        if (compositionError != CompositionError.Ok)
+                        {
+                            logger.Error(CultureInfo.InvariantCulture, "Invalid composition for {0}: {1}",
+                                c.Name, compositionError.ToString());
+                            continue;
+                        }
 
                         foreach (var pt in c.PressureTemperatureList.Item)
                         {

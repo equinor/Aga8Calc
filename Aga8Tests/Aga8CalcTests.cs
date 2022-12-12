@@ -169,10 +169,10 @@ namespace Aga8Tests
                 Property = ConfigModel.Aga8ResultCode.MolarConcentration
             });
 
+            var compositionError = new CompositionError();
             using (var aga = new AGA8Detail())
             {
-                aga.Setup();
-                aga.SetComposition(conf.ConfigList.Item[0].Composition.GetScaledValues());
+                aga.SetComposition(conf.ConfigList.Item[0].Composition.GetScaledValues(), ref compositionError);
                 aga.SetPressure(conf.ConfigList.Item[0].PressureTemperatureList.Item[0].PressureFunction.GetValue());
                 aga.SetTemperature(conf.ConfigList.Item[0].PressureTemperatureList.Item[0].TemperatureFunction.GetValue());
                 aga.CalculateDensity();
@@ -204,8 +204,7 @@ namespace Aga8Tests
 
             using (var gerg = new Gerg2008())
             {
-                gerg.Setup();
-                gerg.SetComposition(conf.ConfigList.Item[0].Composition.GetScaledValues());
+                gerg.SetComposition(conf.ConfigList.Item[0].Composition.GetScaledValues(), ref compositionError);
                 gerg.SetPressure(conf.ConfigList.Item[0].PressureTemperatureList.Item[0].PressureFunction.GetValue());
                 gerg.SetTemperature(conf.ConfigList.Item[0].PressureTemperatureList.Item[0].TemperatureFunction.GetValue());
                 gerg.CalculateDensity();
@@ -275,8 +274,7 @@ namespace Aga8Tests
 
             using (var aga = new AGA8Detail())
             {
-                aga.Setup();
-                aga.SetComposition(conf.ConfigList.Item[1].Composition.GetScaledValues());
+                aga.SetComposition(conf.ConfigList.Item[1].Composition.GetScaledValues(), ref compositionError);
                 aga.SetPressure(conf.ConfigList.Item[1].PressureTemperatureList.Item[0].PressureFunction.GetValue());
                 aga.SetTemperature(conf.ConfigList.Item[1].PressureTemperatureList.Item[0].TemperatureFunction.GetValue());
                 aga.CalculateDensity();
@@ -292,8 +290,7 @@ namespace Aga8Tests
 
             using (var gerg = new Gerg2008())
             {
-                gerg.Setup();
-                gerg.SetComposition(conf.ConfigList.Item[1].Composition.GetScaledValues());
+                gerg.SetComposition(conf.ConfigList.Item[1].Composition.GetScaledValues(), ref compositionError);
                 gerg.SetPressure(conf.ConfigList.Item[1].PressureTemperatureList.Item[0].PressureFunction.GetValue());
                 gerg.SetTemperature(conf.ConfigList.Item[1].PressureTemperatureList.Item[0].TemperatureFunction.GetValue());
                 gerg.CalculateDensity();
@@ -362,12 +359,12 @@ namespace Aga8Tests
                 Property = ConfigModel.Aga8ResultCode.MolarConcentration
             });
 
+            var compositionError = new CompositionError();
             for (int i = 0; i < 1000; i++)
             {
                 using (var aga = new AGA8Detail())
                 {
-                    aga.Setup();
-                    aga.SetComposition(conf.ConfigList.Item[0].Composition.GetValues());
+                    aga.SetComposition(conf.ConfigList.Item[0].Composition.GetValues(), ref compositionError);
                     aga.SetPressure(conf.ConfigList.Item[0].PressureTemperatureList.Item[0].PressureFunction.GetValue());
                     aga.SetTemperature(conf.ConfigList.Item[0].PressureTemperatureList.Item[0].TemperatureFunction.GetValue());
                     aga.CalculateDensity();
@@ -383,8 +380,7 @@ namespace Aga8Tests
 
                 using (var gerg = new Gerg2008())
                 {
-                    gerg.Setup();
-                    gerg.SetComposition(conf.ConfigList.Item[0].Composition.GetValues());
+                    gerg.SetComposition(conf.ConfigList.Item[0].Composition.GetValues(),ref compositionError);
                     gerg.SetPressure(conf.ConfigList.Item[0].PressureTemperatureList.Item[0].PressureFunction.GetValue());
                     gerg.SetTemperature(conf.ConfigList.Item[0].PressureTemperatureList.Item[0].TemperatureFunction.GetValue());
                     gerg.CalculateDensity();

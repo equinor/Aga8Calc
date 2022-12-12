@@ -23,6 +23,39 @@ namespace Aga8CalcService
         public double kappa; // Isentropic Exponent
     }
 
+    [StructLayout(LayoutKind.Sequential)]
+    public struct Aga8Composition
+    {
+        public double Methane;
+        public double Nitrogen;
+        public double CarbonDioxide;
+        public double Ethane;
+        public double Propane;
+        public double IsoButane;
+        public double NormalButane;
+        public double IsoPentane;
+        public double NormalPentane;
+        public double Hexane;
+        public double Heptane;
+        public double Octane;
+        public double Nonane;
+        public double Decane;
+        public double Hydrogen;
+        public double Oxygen;
+        public double CarbonMonoxide;
+        public double Water;
+        public double HydrogenSulfide;
+        public double Helium;
+        public double Argon;
+    }
+
+    public enum CompositionError : int
+    {
+        Ok = 0,
+        Empty = 1,
+        BadSum = 2
+    }
+
     internal class AGA8DetailHandle : SafeHandle
     {
         public AGA8DetailHandle() : base(IntPtr.Zero, true) { }
@@ -55,26 +88,9 @@ namespace Aga8CalcService
             Dispose(false);
         }
 
-        public void Setup()
+        public void SetComposition(Aga8Composition composition, ref CompositionError err)
         {
-            NativeMethods.Aga8Setup(aga8);
-        }
-
-        public void SetComposition(double[] composition)
-        {
-            if (composition is null)
-            {
-                throw new System.Exception("composition can not be null");
-            }
-
-            double[] comp = new double[21];
-
-            for (int i = 0; i < composition.Length; i++)
-            {
-                comp[i] = composition[i];
-            }
-
-            NativeMethods.Aga8SetComposition(aga8, comp);
+            NativeMethods.Aga8SetComposition(aga8, composition, ref err);
         }
 
         public void SetPressure(double pressure)
@@ -191,26 +207,9 @@ namespace Aga8CalcService
             Dispose(false);
         }
 
-        public void Setup()
+        public void SetComposition(Aga8Composition composition, ref CompositionError err)
         {
-            NativeMethods.GergSetup(gerg);
-        }
-
-        public void SetComposition(double[] composition)
-        {
-            if (composition is null)
-            {
-                throw new System.Exception("composition can not be null");
-            }
-
-            double[] comp = new double[21];
-
-            for (int i = 0; i < composition.Length; i++)
-            {
-                comp[i] = composition[i];
-            }
-
-            NativeMethods.GergSetComposition(gerg, comp);
+            NativeMethods.GergSetComposition(gerg, composition, ref err);
         }
 
         public void SetPressure(double pressure)
