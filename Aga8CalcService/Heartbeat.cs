@@ -28,12 +28,13 @@ namespace Aga8CalcService
             string TagConfFile = AppDomain.CurrentDomain.BaseDirectory.ToString(CultureInfo.InvariantCulture) + "Aga8Calc.config";
             try
             {
+                logger.Info("Reading configuration from file \"{0}\".", TagConfFile);
                 conf = ConfigModel.ReadConfig(TagConfFile);
 
             }
             catch (Exception e)
             {
-                logger.Fatal(e, "Failed to read tag configuration.");
+                logger.Fatal(e, "Failed to read configuration file.");
                 throw;
             }
             _timer = new Timer(conf.Interval) { AutoReset = true, SynchronizingObject = null };

@@ -2,13 +2,41 @@
 using System.Collections.Generic;
 using System.Xml;
 using System.Xml.Serialization;
+using static Aga8CalcService.ConfigModel;
+
+
 
 namespace Aga8CalcService
 {
     [XmlRoot("configuration")]
     public class ConfigModel
     {
-        public enum Aga8ResultCode : Int32
+        public enum Aga8Component
+        {
+            Methane,
+            Nitrogen,
+            CarbonDioxide,
+            Ethane,
+            Propane,
+            IsoButane,
+            NormalButane,
+            IsoPentane,
+            NormalPentane,
+            Hexane,
+            Heptane,
+            Octane,
+            Nonane,
+            Decane,
+            Hydrogen,
+            Oxygen,
+            CarbonMonoxide,
+            Water,
+            HydrogenSulfide,
+            Helium,
+            Argon
+        }
+
+    public enum Aga8ResultCode : Int32
         {
             MolarConcentration = 0,
             MolarMass = 1,
@@ -121,67 +149,67 @@ namespace Aga8CalcService
             {
                 switch (component.Name)
                 {
-                    case "Methane":
+                    case Aga8Component.Methane:
                         comp.Methane = component.GetScaledValue();
                         break;
-                    case "Nitrogen":
+                    case Aga8Component.Nitrogen:
                         comp.Nitrogen = component.GetScaledValue();
                         break;
-                    case "Carbon dioxide":
+                    case Aga8Component.CarbonDioxide:
                         comp.CarbonDioxide = component.GetScaledValue();
                         break;
-                    case "Ethane":
+                    case Aga8Component.Ethane:
                         comp.Ethane = component.GetScaledValue();
                         break;
-                    case "Propane":
+                    case Aga8Component.Propane:
                         comp.Propane = component.GetScaledValue();
                         break;
-                    case "Isobutane":
+                    case Aga8Component.IsoButane:
                         comp.IsoButane = component.GetScaledValue();
                         break;
-                    case "n-Butane":
+                    case Aga8Component.NormalButane:
                         comp.NormalButane = component.GetScaledValue();
                         break;
-                    case "Isopentane":
+                    case Aga8Component.IsoPentane:
                         comp.IsoPentane = component.GetScaledValue();
                         break;
-                    case "n-Pentane":
+                    case Aga8Component.NormalPentane:
                         comp.NormalPentane = component.GetScaledValue();
                         break;
-                    case "Hexane":
+                    case Aga8Component.Hexane:
                         comp.Hexane = component.GetScaledValue();
                         break;
-                    case "Heptane":
+                    case Aga8Component.Heptane:
                         comp.Heptane = component.GetScaledValue();
                         break;
-                    case "Octane":
+                    case Aga8Component.Octane:
                         comp.Octane = component.GetScaledValue();
                         break;
-                    case "Nonane":
+                    case Aga8Component.Nonane:
                         comp.Nonane = component.GetScaledValue();
                         break;
-                    case "Decane":
+                    case Aga8Component.Decane:
                         comp.Decane = component.GetScaledValue();
                         break;
-                    case "Hydrogen":
+                    case Aga8Component.Hydrogen:
                         comp.Hydrogen = component.GetScaledValue();
                         break;
-                    case "Oxygen":
+                    case Aga8Component.Oxygen:
                         comp.Oxygen = component.GetScaledValue();
                         break;
-                    case "Carbon monoxide":
+                    case Aga8Component.CarbonMonoxide:
                         comp.CarbonMonoxide = component.GetScaledValue();
                         break;
-                    case "Water":
+                    case Aga8Component.Water:
                         comp.Water = component.GetScaledValue();
                         break;
-                    case "Hydrogen sulfide":
+                    case Aga8Component.HydrogenSulfide:
                         comp.HydrogenSulfide = component.GetScaledValue();
                         break;
-                    case "Helium":
+                    case Aga8Component.Helium:
                         comp.Helium = component.GetScaledValue();
                         break;
-                    case "Argon":
+                    case Aga8Component.Argon:
                         comp.Argon = component.GetScaledValue();
                         break;
                 }
@@ -376,7 +404,7 @@ namespace Aga8CalcService
     public class Component
     {
         [XmlAttribute]
-        public string Name { get; set; }
+        public Aga8Component Name { get; set; }
         [XmlAttribute]
         public string Tag { get; set; }
         [XmlAttribute]
