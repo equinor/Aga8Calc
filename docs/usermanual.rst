@@ -177,13 +177,13 @@ Every `<Config>` element is structured like below.
       <Composition>
         <Component Name="Methane" Tag="ns=2;s=1:AI1001?A" ScaleFactor="0.01" />
         <Component Name="Nitrogen" Tag="ns=2;s=1:AI1001?J" ScaleFactor="0.01" />
-        <Component Name="Carbon dioxide" Tag="ns=2;s=1:AI1001?K" ScaleFactor="0.01" />
+        <Component Name="CarbonDioxide" Tag="ns=2;s=1:AI1001?K" ScaleFactor="0.01" />
         <Component Name="Ethane" Tag="ns=2;s=1:AI1001?B" ScaleFactor="0.01" />
         <Component Name="Propane" Tag="ns=2;s=1:AI1001?C" ScaleFactor="0.01" />
-        <Component Name="Isobutane" Tag="ns=2;s=1:AI1001?D" ScaleFactor="0.01" />
-        <Component Name="n-Butane" Tag="ns=2;s=1:AI1001?E" ScaleFactor="0.01" />
-        <Component Name="Isopentane" Tag="ns=2;s=1:AI1001?F" ScaleFactor="0.01" />
-        <Component Name="n-Pentane" Tag="ns=2;s=1:AI1001?G" ScaleFactor="0.01" />
+        <Component Name="IsoButane" Tag="ns=2;s=1:AI1001?D" ScaleFactor="0.01" />
+        <Component Name="NormalButane" Tag="ns=2;s=1:AI1001?E" ScaleFactor="0.01" />
+        <Component Name="IsoPentane" Tag="ns=2;s=1:AI1001?F" ScaleFactor="0.01" />
+        <Component Name="NormalPentane" Tag="ns=2;s=1:AI1001?G" ScaleFactor="0.01" />
         <Component Name="Hexane" Tag="ns=2;s=1:AI1001?I" ScaleFactor="0.01" />
         <Component Name="Heptane" ScaleFactor="1.0" Value="0.0002471" />
       </Composition>
@@ -210,37 +210,39 @@ This holds the values that is read from, and the result written back to the OPC 
 -   `<Composition>` contains up to 21 `<Component>` elements where each one contains attributes for the component.
     Attributes:
 
-    - `Name` is used to identify the component in the log files.
+    - `Name` is used to identify the component.
+      The available names are:
+
+      - Methane
+      - Nitrogen
+      - CarbonDioxide
+      - Ethane
+      - Propane
+      - IsoButane
+      - NormalButane
+      - IsoPentane
+      - NormalPentane
+      - Hexane
+      - Heptane
+      - Octane
+      - Nonane
+      - Decane
+      - Hydrogen
+      - Oxygen
+      - CarbonMonoxide
+      - Water
+      - HydrogenSulfide
+      - Helium
+      - Argon
+
     - `Tag` is the OPC item to read the value from.
     - `ScaleFactor` is used to scale the individual component values into the mol fraction range from 0-1.
     - `Value` is used to set a constant value for the component.
 
     Tag and Value can not both be used at the same time for a component. Use one or the other!
 
-    The sort order of the `<Component>` elements is significant.
+    The sort order of the `<Component>` elements is not significant.
     They must be in this order:
-
-    - Methane
-    - Nitrogen
-    - Carbon dioxide
-    - Ethane
-    - Propane
-    - Isobutane
-    - n-Butane
-    - Isopentane
-    - n-Pentane
-    - Hexane
-    - Heptane
-    - Octane
-    - Nonane
-    - Decane
-    - Hydrogen
-    - Oxygen
-    - Carbon monoxide
-    - Water
-    - Hydrogen sulfide
-    - Helium
-    - Argon
 
 -   `<PressureTemperatureList>` can contain several `<PressureTemperature>` elements.
     Every `<PressureTemperature>` element contains the pressure and temperature to read, and one or more properties that is to be written to the OPC server.
@@ -258,6 +260,8 @@ This holds the values that is read from, and the result written back to the OPC 
     The `<Pressure>` elements have the following attributes:
 
     - `Tag` is the OPC item to read.
+    - `ScaleFactor` is used to scale the value to the expected unit.
+      For example to scale fra mbarg to barg, ScaleFactor should be set to 0.001.
     - `Unit` is the expected engineering unit of the pressure value.
       This is used to convert the pressure value to the unit needed for the Aga8 equation of state, namely [kPa].
       The possible units are:
@@ -324,13 +328,13 @@ A complete configuration file could look like this.
           <Composition>
             <Component Name="Methane" Tag="ns=2;s=1:AI1001?A" ScaleFactor="0.01" />
             <Component Name="Nitrogen" Tag="ns=2;s=1:AI1001?J" ScaleFactor="0.01" />
-            <Component Name="Carbon dioxide" Tag="ns=2;s=1:AI1001?K" ScaleFactor="0.01" />
+            <Component Name="CarbonDioxide" Tag="ns=2;s=1:AI1001?K" ScaleFactor="0.01" />
             <Component Name="Ethane" Tag="ns=2;s=1:AI1001?B" ScaleFactor="0.01" />
             <Component Name="Propane" Tag="ns=2;s=1:AI1001?C" ScaleFactor="0.01" />
-            <Component Name="Isobutane" Tag="ns=2;s=1:AI1001?D" ScaleFactor="0.01" />
-            <Component Name="n-Butane" Tag="ns=2;s=1:AI1001?E" ScaleFactor="0.01" />
-            <Component Name="Isopentane" Tag="ns=2;s=1:AI1001?F" ScaleFactor="0.01" />
-            <Component Name="n-Pentane" Tag="ns=2;s=1:AI1001?G" ScaleFactor="0.01" />
+            <Component Name="IsoButane" Tag="ns=2;s=1:AI1001?D" ScaleFactor="0.01" />
+            <Component Name="NormalButane" Tag="ns=2;s=1:AI1001?E" ScaleFactor="0.01" />
+            <Component Name="IsoPentane" Tag="ns=2;s=1:AI1001?F" ScaleFactor="0.01" />
+            <Component Name="NormalPentane" Tag="ns=2;s=1:AI1001?G" ScaleFactor="0.01" />
             <Component Name="Hexane" Tag="ns=2;s=1:AI1001?I" ScaleFactor="0.01" />
             <Component Name="Heptane" ScaleFactor="1.0" Value="0.0002471" />
           </Composition>
