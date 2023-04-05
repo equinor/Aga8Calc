@@ -19,11 +19,11 @@ namespace Aga8CalcService
 
         public Heartbeat()
         {
-            AssemblyName assemName = Assembly.GetExecutingAssembly().GetName();
-            Version ver = assemName.Version;
-            string title = assemName.Name;
+            Assembly assem = Assembly.GetExecutingAssembly();
+            string version = assem.GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion;
+            string title = assem.GetName().Name;
 
-            logger.Info("Initializing \"{0}\" version \"{1}\".", title, ver.ToString());
+            logger.Info("Initializing \"{0}\" version \"{1}\".", title, version);
 
             string TagConfFile = AppDomain.CurrentDomain.BaseDirectory.ToString(CultureInfo.InvariantCulture) + "Aga8Calc.config";
             try

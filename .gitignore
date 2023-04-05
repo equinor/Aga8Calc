@@ -35,6 +35,9 @@ bld/
 # Visual Studio 2017 auto generated files
 Generated\ Files/
 
+# T4 generated files
+*.tt.cs
+
 # MSTest test Results
 [Tt]est[Rr]esult*/
 [Bb]uild[Ll]og.*
