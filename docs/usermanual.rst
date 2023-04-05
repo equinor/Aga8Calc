@@ -60,69 +60,6 @@ They can be seen by running::
 
     PS C:\Program Files\Aga8Calc> .\Aga8CalcService.exe --help
 
-This will produce this output:
-
-::
-
-    Command-Line Reference
-
-    Aga8CalcService.exe [verb] [-option:value] [-switch]
-
-        run                 Runs the service from the command line (default)
-        help, --help        Displays help
-
-        install             Installs the service
-
-        --autostart       The service should start automatically (default)
-        --disabled        The service should be set to disabled
-        --manual          The service should be started manually
-        --delayed         The service should start automatically (delayed)
-        -instance         An instance name if registering the service
-                            multiple times
-        -username         The username to run the service
-        -password         The password for the specified username
-        --localsystem     Run the service with the local system account
-        --localservice    Run the service with the local service account
-        --networkservice  Run the service with the network service permission
-        --interactive     The service will prompt the user at installation for
-                            the service credentials
-        start             Start the service after it has been installed
-        --sudo            Prompts for UAC if running on Vista/W7/2008
-
-        -servicename      The name that the service should use when
-                            installing
-        -description      The service description the service should use when
-                            installing
-        -displayname      The display name the the service should use when
-                            installing
-
-        start               Starts the service if it is not already running
-
-        stop                Stops the service if it is running
-
-        uninstall           Uninstalls the service
-
-        -instance         An instance name if registering the service
-                            multiple times
-        --sudo            Prompts for UAC if running on Vista/W7/2008
-
-    Examples:
-
-        Aga8CalcService.exe install
-            Installs the service into the service control manager
-
-        Aga8CalcService.exe install -username:joe -password:bob --autostart
-            Installs the service using the specified username/password and
-            configures the service to start automatically at machine startup
-
-        Aga8CalcService.exe uninstall
-            Uninstalls the service
-
-        Aga8CalcService.exe install -instance:001
-            Installs the service, appending the instance name to the service name
-            so that the service can be installed multiple times. You may need to
-            tweak the log4net.config to make this play nicely with the log files.
-
 
 Configuration
 -------------
@@ -241,9 +178,6 @@ This holds the values that is read from, and the result written back to the OPC 
 
     Tag and Value can not both be used at the same time for a component. Use one or the other!
 
-    The sort order of the `<Component>` elements is not significant.
-    They must be in this order:
-
 -   `<PressureTemperatureList>` can contain several `<PressureTemperature>` elements.
     Every `<PressureTemperature>` element contains the pressure and temperature to read, and one or more properties that is to be written to the OPC server.
 
@@ -260,8 +194,8 @@ This holds the values that is read from, and the result written back to the OPC 
     The `<Pressure>` elements have the following attributes:
 
     - `Tag` is the OPC item to read.
-    - `ScaleFactor` is used to scale the value to the expected unit.
-      For example to scale fra mbarg to barg, ScaleFactor should be set to 0.001.
+    - `ScaleFactor` is used to scale the pressure to the expected unit.
+      For example to scale from mbarg to barg, ScaleFactor should be set to 0.001.
     - `Unit` is the expected engineering unit of the pressure value.
       This is used to convert the pressure value to the unit needed for the Aga8 equation of state, namely [kPa].
       The possible units are:
