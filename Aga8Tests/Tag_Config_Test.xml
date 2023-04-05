@@ -9,13 +9,13 @@
       <Composition>
         <Component Name="Methane" Tag="ns=2;s=1:AI1001?A" ScaleFactor="0.01" />
         <Component Name="Nitrogen" Tag="ns=2;s=1:AI1001?A" ScaleFactor="0" />
-        <Component Name="Carbon dioxide" Tag="ns=2;s=1:AI1001?A" ScaleFactor="0" />
+        <Component Name="CarbonDioxide" Tag="ns=2;s=1:AI1001?A" ScaleFactor="0" />
         <Component Name="Ethane" Tag="ns=2;s=1:AI1001?A" ScaleFactor="0" />
         <Component Name="Propane" Tag="ns=2;s=1:AI1001?A" ScaleFactor="0" />
-        <Component Name="Isobutane" Tag="ns=2;s=1:AI1001?A" ScaleFactor="0" />
-        <Component Name="n-Butane" Tag="ns=2;s=1:AI1001?A" ScaleFactor="0" />
-        <Component Name="Isopentane" Tag="ns=2;s=1:AI1001?A" ScaleFactor="0" />
-        <Component Name="n-Pentane" Tag="ns=2;s=1:AI1001?A" ScaleFactor="0" />
+        <Component Name="IsoButane" Tag="ns=2;s=1:AI1001?A" ScaleFactor="0" />
+        <Component Name="NormalButane" Tag="ns=2;s=1:AI1001?A" ScaleFactor="0" />
+        <Component Name="IsoPentane" Tag="ns=2;s=1:AI1001?A" ScaleFactor="0" />
+        <Component Name="NormalPentane" Tag="ns=2;s=1:AI1001?A" ScaleFactor="0" />
         <Component Name="Hexane" Tag="ns=2;s=1:AI1001?A" ScaleFactor="0" />
         <Component Name="Heptane" Tag="ns=2;s=1:AI1001?A" ScaleFactor="0" />
         <Component Name="Octane" Tag="ns=2;s=1:AI1001?A" ScaleFactor="0" />
@@ -23,9 +23,9 @@
         <Component Name="Decane" Tag="ns=2;s=1:AI1001?A" ScaleFactor="0" />
         <Component Name="Hydrogen" Tag="ns=2;s=1:AI1001?A" ScaleFactor="0" />
         <Component Name="Oxygen" Tag="ns=2;s=1:AI1001?A" ScaleFactor="0" />
-        <Component Name="Carbon monoxide" Tag="ns=2;s=1:AI1001?A" ScaleFactor="0" />
+        <Component Name="CarbonMonoxide" Tag="ns=2;s=1:AI1001?A" ScaleFactor="0" />
         <Component Name="Water" Tag="ns=2;s=1:AI1001?A" ScaleFactor="0" />
-        <Component Name="Hydrogen sulfide" Tag="ns=2;s=1:AI1001?A" ScaleFactor="0" />
+        <Component Name="HydrogenSulfide" Tag="ns=2;s=1:AI1001?A" ScaleFactor="0" />
         <Component Name="Helium" Tag="ns=2;s=1:AI1001?A" ScaleFactor="0" />
         <Component Name="Argon" Tag="ns=2;s=1:AI1001?A" ScaleFactor="0" />
       </Composition>
