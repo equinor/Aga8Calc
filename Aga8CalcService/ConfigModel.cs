@@ -113,7 +113,7 @@ namespace Aga8CalcService
         [XmlElement("Component")]
         public List<Component> Item { get; }
 
-        public Aga8Composition GetValues()
+        public Aga8Composition GetScaledValues()
         {
             Aga8Composition comp = new Aga8Composition();
 
@@ -183,83 +183,6 @@ namespace Aga8CalcService
                         break;
                     case "Argon":
                         comp.Argon = component.GetScaledValue();
-                        break;
-                }
-            }
-
-            return comp;
-        }
-
-        public Aga8Composition GetScaledValues()
-        {
-            Aga8Composition comp = new Aga8Composition();
-
-            foreach (var component in Item)
-            {
-                switch (component.Name)
-                {
-                    case "Methane":
-                        comp.Methane = component.GetScaledValue();
-                        break;
-                    case "Nitrogen":
-                        comp.Nitrogen = component.GetScaledValue();
-                        break;
-                    case "Carbon dioxide":
-                        comp.CarbonDioxide = component.GetScaledValue();
-                        break;
-                    case "Ethane":
-                        comp.Ethane= component.GetScaledValue();
-                        break;
-                    case "Propane":
-                        comp.Propane = component.GetScaledValue();
-                        break;
-                    case "Isobutane":
-                        comp.IsoButane = component.GetScaledValue();
-                        break;
-                    case "n-Butane":
-                        comp.NormalButane = component.GetScaledValue();
-                        break;
-                    case "Isopentane":
-                        comp.IsoPentane = component.GetScaledValue();
-                        break;
-                    case "n-Pentane":
-                        comp.NormalPentane = component.GetScaledValue();
-                        break;
-                    case "Hexane":
-                        comp.Hexane = component.GetScaledValue();
-                        break;
-                    case "Heptane":
-                        comp.Heptane = component.GetScaledValue();
-                        break;
-                    case "Octane":
-                        comp.Octane = component.GetScaledValue();
-                        break;
-                    case "Nonane":
-                        comp.Nonane= component.GetScaledValue();
-                        break;
-                    case "Decane":
-                        comp.Decane = component.GetScaledValue();
-                        break;
-                    case "Hydrogen":
-                        comp.Hydrogen = component.GetScaledValue();
-                        break;
-                    case "Oxygen":
-                        comp.Oxygen = component.GetScaledValue();
-                        break;
-                    case "Carbon monoxide":
-                        comp.CarbonMonoxide = component.GetScaledValue();
-                        break;
-                    case "Water":
-                        comp.Water = component.GetScaledValue();
-                        break;
-                    case "Hydrogen sulfide":
-                        comp.HydrogenSulfide = component.GetScaledValue();
-                        break;
-                    case "Helium":
-                        comp.Helium = component.GetScaledValue();
-                        break;
-                    case "Argon":
-                        comp.Argon= component.GetScaledValue();
                         break;
                 }
             }
@@ -480,6 +403,8 @@ namespace Aga8CalcService
         [XmlAttribute]
         public string Tag { get; set; }
         [XmlAttribute]
+        public double ScaleFactor { get; set; }
+        [XmlAttribute]
         public string Type { get; set; }
 
         [XmlIgnore]
@@ -493,6 +418,11 @@ namespace Aga8CalcService
 
         const double stdAtm = 1.01325;
 
+        public PressureMeasurement()
+        {
+            ScaleFactor = 1.0;
+        }
+
         public double GetAGA8Converted()
         {
             // Convert from Unit to kPa absolute
@@ -500,10 +430,10 @@ namespace Aga8CalcService
             switch (Unit)
             {
                 case ConfigModel.PressureUnit.barg:
-                    result = (Value + stdAtm) * 100.0;
+                    result = ((Value * ScaleFactor) + stdAtm) * 100.0;
                     break;
                 case ConfigModel.PressureUnit.bara:
-                    result = Value * 100.0;
+                    result = (Value * ScaleFactor) * 100.0;
                     break;
                 default:
                     break;
@@ -519,10 +449,10 @@ namespace Aga8CalcService
             switch (Unit)
             {
                 case ConfigModel.PressureUnit.barg:
-                    result = Value / 100.0 - stdAtm;
+                    result = (Value * ScaleFactor) / 100.0 - stdAtm;
                     break;
                 case ConfigModel.PressureUnit.bara:
-                    result = Value / 100.0;
+                    result = (Value * ScaleFactor) / 100.0;
                     break;
                 default:
                     break;
@@ -539,6 +469,11 @@ namespace Aga8CalcService
 
         const double zeroCelsius = 273.15;
 
+        public TemperatureMeasurement()
+        {
+            ScaleFactor = 1.0;
+        }
+
         public double GetAGA8Converted()
         {
             // Convert from Unit to K
@@ -546,10 +481,10 @@ namespace Aga8CalcService
             switch (Unit)
             {
                 case ConfigModel.TemperatureUnit.C:
-                    result = Value + zeroCelsius;
+                    result = (Value * ScaleFactor) + zeroCelsius;
                     break;
                 case ConfigModel.TemperatureUnit.K:
-                    result = Value;
+                    result = (Value * ScaleFactor);
                     break;
                 default:
                     break;
@@ -565,10 +500,10 @@ namespace Aga8CalcService
             switch (Unit)
             {
                 case ConfigModel.TemperatureUnit.C:
-                    result = Value - zeroCelsius;
+                    result = (Value * ScaleFactor) - zeroCelsius;
                     break;
                 case ConfigModel.TemperatureUnit.K:
-                    result = Value;
+                    result = (Value * ScaleFactor);
                     break;
                 default:
                     break;
