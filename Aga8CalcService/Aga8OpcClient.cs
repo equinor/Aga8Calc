@@ -118,7 +118,7 @@ namespace Aga8CalcService
             }
         }
 
-        private void Client_KeepAlive(Session sender, KeepAliveEventArgs e)
+        private void Client_KeepAlive(ISession sender, KeepAliveEventArgs e)
         {
             if (e.Status != null && ServiceResult.IsNotGood(e.Status))
             {
@@ -141,7 +141,7 @@ namespace Aga8CalcService
                 return;
             }
 
-            OpcSession = reconnectHandler.Session;
+            OpcSession = reconnectHandler.Session as Session;
             reconnectHandler.Dispose();
             reconnectHandler = null;
 
