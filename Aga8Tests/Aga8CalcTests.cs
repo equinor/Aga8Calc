@@ -487,6 +487,19 @@ namespace Aga8Tests
             }
 
             [TestMethod]
+            public void PressureMeasurement_GetAGA8Converted_UnitIsBargAndScaled_Return_kPa()
+            {
+                var pressure = new PressureMeasurement();
+                double testPressurekPa = 11_271.325;
+                pressure.Value = 11170.0;
+                pressure.ScaleFactor = 0.01;
+                pressure.Unit = ConfigModel.PressureUnit.barg;
+
+                double resultBara = pressure.GetAGA8Converted();
+                Assert.AreEqual(testPressurekPa, resultBara, 1.0e-10);
+            }
+
+            [TestMethod]
             public void PressureMeasurement_GetAGA8Converted_UnitIsBara_Return_kPa()
             {
                 var pressure = new PressureMeasurement();
@@ -498,6 +511,18 @@ namespace Aga8Tests
                 Assert.AreEqual(testPressurekPa, resultBara, 1.0e-10);
             }
 
+            [TestMethod]
+            public void PressureMeasurement_GetAGA8Converted_UnitIsBaraAndScaled_Return_kPa()
+            {
+                var pressure = new PressureMeasurement();
+                double testPressurekPa = 15_775.64;
+                pressure.Value = 1.57756_4;
+                pressure.ScaleFactor = 100.0;
+                pressure.Unit = ConfigModel.PressureUnit.bara;
+
+                double resultBara = pressure.GetAGA8Converted();
+                Assert.AreEqual(testPressurekPa, resultBara, 1.0e-10);
+            }
             [TestMethod]
             public void PressureMeasurement_GetUnitConverted_UnitIsBarg_ReturnBarg()
             {
@@ -511,11 +536,37 @@ namespace Aga8Tests
             }
 
             [TestMethod]
+            public void PressureMeasurement_GetUnitConverted_UnitIsBargAndScaled_ReturnBarg()
+            {
+                var pressure = new PressureMeasurement();
+                double testPressureBarg = 111.7;
+                pressure.Value = 1_127_132.5;
+                pressure.ScaleFactor = 0.01;
+                pressure.Unit = ConfigModel.PressureUnit.barg;
+
+                double resultBarg = pressure.GetUnitConverted();
+                Assert.AreEqual(testPressureBarg, resultBarg, 1.0e-10);
+            }
+
+            [TestMethod]
             public void PressureMeasurement_GetUnitConverted_UnitIsBara_ReturnBara()
             {
                 var pressure = new PressureMeasurement();
                 double testPressureBara = 157.756_4;
                 pressure.Value = 15_775.64;
+                pressure.Unit = ConfigModel.PressureUnit.bara;
+
+                double resultBara = pressure.GetUnitConverted();
+                Assert.AreEqual(testPressureBara, resultBara, 1.0e-10);
+            }
+
+            [TestMethod]
+            public void PressureMeasurement_GetUnitConverted_UnitIsBaraAndScaled_ReturnBara()
+            {
+                var pressure = new PressureMeasurement();
+                double testPressureBara = 157.756_4;
+                pressure.Value = 15.775_64;
+                pressure.ScaleFactor = 1000.0;
                 pressure.Unit = ConfigModel.PressureUnit.bara;
 
                 double resultBara = pressure.GetUnitConverted();

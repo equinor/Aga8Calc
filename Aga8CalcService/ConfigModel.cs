@@ -36,7 +36,7 @@ namespace Aga8CalcService
             Argon
         }
 
-    public enum Aga8ResultCode : Int32
+        public enum Aga8ResultCode : Int32
         {
             MolarConcentration = 0,
             MolarMass = 1,
