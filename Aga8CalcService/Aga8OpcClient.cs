@@ -77,7 +77,7 @@ namespace Aga8CalcService
                     logger.Warn("Missing application certificate, using unsecure connection.");
                 }
 
-                logger.Info($"Discover endpoints of { endpointUrl }.");
+                logger.Info($"Discover endpoints of {endpointUrl}.");
                 var selectedEndpoint = CoreClientUtils.SelectEndpoint(endpointUrl, haveAppCertificate, 15000);
 
                 logger.Info(CultureInfo.InvariantCulture, "Selected endpoint uses: {0}",

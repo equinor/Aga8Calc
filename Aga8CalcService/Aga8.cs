@@ -345,5 +345,4 @@ namespace Aga8CalcService
         internal static extern Aga8Properties Gerg2008(double[] composition, double pressure,
             double temperature);
     }
-
 }

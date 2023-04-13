@@ -26,10 +26,10 @@ namespace Aga8Tests
             };
 
             config.ConfigList.Item.Add(new Config { Name = "GC name" });
-            config.ConfigList.Item[0].Composition.Item.Add(new Component { Name = Aga8Component.Methane,         Tag = "ns=2;s=1:AI1001?A", Value = 0.778_240 });
-            config.ConfigList.Item[0].Composition.Item.Add(new Component { Name = Aga8Component.Nitrogen,        Tag = "ns=2;s=1:AI1001?A", Value = 0.020_000 });
-            config.ConfigList.Item[0].Composition.Item.Add(new Component { Name = Aga8Component.CarbonDioxide,   Tag = "ns=2;s=1:AI1001?A", Value = 0.060_000 });
-            config.ConfigList.Item[0].Composition.Item.Add(new Component { Name = Aga8Component.Ethane,          Tag = "ns=2;s=1:AI1001?A", Value = 0.080_000 });
+            config.ConfigList.Item[0].Composition.Item.Add(new Component { Name = Aga8Component.Methane, Tag = "ns=2;s=1:AI1001?A", Value = 0.778_240 });
+            config.ConfigList.Item[0].Composition.Item.Add(new Component { Name = Aga8Component.Nitrogen, Tag = "ns=2;s=1:AI1001?A", Value = 0.020_000 });
+            config.ConfigList.Item[0].Composition.Item.Add(new Component { Name = Aga8Component.CarbonDioxide, Tag = "ns=2;s=1:AI1001?A", Value = 0.060_000 });
+            config.ConfigList.Item[0].Composition.Item.Add(new Component { Name = Aga8Component.Ethane, Tag = "ns=2;s=1:AI1001?A", Value = 0.080_000 });
             config.ConfigList.Item[0].Composition.Item.Add(new Component { Name = Aga8Component.Propane, Tag = "ns=2;s=1:AI1001?A", Value = 0.030_000 });
             config.ConfigList.Item[0].Composition.Item.Add(new Component { Name = Aga8Component.IsoButane, Tag = "ns=2;s=1:AI1001?A", Value = 0.001_500 });
             config.ConfigList.Item[0].Composition.Item.Add(new Component { Name = Aga8Component.NormalButane, Tag = "ns=2;s=1:AI1001?A", Value = 0.003_000 });
@@ -382,7 +382,7 @@ namespace Aga8Tests
 
                 using (var gerg = new Gerg2008())
                 {
-                    gerg.SetComposition(conf.ConfigList.Item[0].Composition.GetScaledValues(),ref compositionError);
+                    gerg.SetComposition(conf.ConfigList.Item[0].Composition.GetScaledValues(), ref compositionError);
                     gerg.SetPressure(conf.ConfigList.Item[0].PressureTemperatureList.Item[0].PressureFunction.GetValue());
                     gerg.SetTemperature(conf.ConfigList.Item[0].PressureTemperatureList.Item[0].TemperatureFunction.GetValue());
                     gerg.CalculateDensity();
