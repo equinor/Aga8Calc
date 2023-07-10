@@ -181,7 +181,7 @@ This holds the values that is read from, and the result written back to the OPC 
     - `ScaleFactor` is used to scale the individual component values into the mol fraction range from 0-1.
     - `Value` is used to set a constant value for the component.
 
-    Tag and Value can not both be used at the same time for a component. Use one or the other!
+    Identifier and Value can not both be used at the same time for a component. Use one or the other!
 
 -   `<PressureTemperatureList>` can contain several `<PressureTemperature>` elements.
     Every `<PressureTemperature>` element contains the pressure and temperature to read, and one or more properties that is to be written to the OPC server.
@@ -260,6 +260,7 @@ A complete configuration file could look like this.
       <OpcUrl>opc.tcp://lt-103009:62548/Quickstarts/DataAccessServer</OpcUrl>
       <OpcUser>username</OpcUser>
       <OpcPassword>password</OpcPassword>
+      <DefaultNamespaceURI>http://test.org/UA/Alarms/</DefaultNamespaceURI>
       <Interval>10000.0</Interval>
       <EquationOfState>Gerg2008</EquationOfState>
       <ConfigList>
@@ -274,18 +275,18 @@ A complete configuration file could look like this.
             <Component Name="NormalButane" Identifier="s=1:AI1001?E" ScaleFactor="0.01" />
             <Component Name="IsoPentane" Identifier="s=1:AI1001?F" ScaleFactor="0.01" />
             <Component Name="NormalPentane" Identifier="s=1:AI1001?G" ScaleFactor="0.01" />
-            <Component Name="Hexane" Identifier="s=1:AI1001?I" ScaleFactor="0.01" />
+            <Component Name="Hexane" NamespaceURI="http://analyzer.local/" Identifier="s=1:AI1001?I" ScaleFactor="0.01" />
             <Component Name="Heptane" ScaleFactor="1.0" Value="0.0002471" />
           </Composition>
           <PressureTemperatureList>
             <PressureTemperature Name="Point 1">
               <PressureFunction MathFunction="Min">
                 <Pressure Name="P 1" Identifier="s=1:AI1001?Pressure" Unit="barg" />
-                <Pressure Name="P 2" Identifier="s=1:AI1002?Pressure" Unit="bara" />
+                <Pressure Name="P 2" NamespaceURI="http://field-trans.local/" Identifier="s=1:AI1002?Pressure" Unit="bara" />
               </PressureFunction>
               <TemperatureFunction MathFunction="Max">
-                <Temperature Name="T 1" Identifier="s=1:AI1001?Temperature" Unit="C" />
-                <Temperature Name="T 2" Identifier="s=1:AI1002?Temperature" Unit="K" />
+                <Temperature Name="T 1" NamespaceURI="http://field-trans.local/" Identifier="s=1:AI1001?Temperature" Unit="C" />
+                <Temperature Name="T 2" NamespaceURI="http://field-trans.local/" Identifier="s=1:AI1002?Temperature" Unit="K" />
               </TemperatureFunction>
               <Properties>
                 <Property Identifier="s=1:AI1001?Result" Property="MolarConcentration" Type="single" />
