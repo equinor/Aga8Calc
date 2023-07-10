@@ -16,6 +16,7 @@ namespace Aga8CalcService
         private static bool autoAccept = false;
         private readonly UserIdentity user;
         private static readonly NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
+        public string[] namespaces;
 
         public Aga8OpcClient(string endpointUrl, string username, string password)
         {
@@ -88,6 +89,13 @@ namespace Aga8CalcService
                 var endpoint = new ConfiguredEndpoint(null, selectedEndpoint, endpointConfiguration);
 
                 OpcSession = await Session.Create(config, endpoint, false, "OPC UA Console Client", 60000, user, null);
+
+                namespaces = OpcSession.NamespaceUris.ToArray();
+
+                for (int i = 0; i < namespaces.Length; i++)
+                {
+                    logger.Info(CultureInfo.InvariantCulture, "Namespace {0}: '{1}'", i, namespaces[i]);
+                }
 
                 // register keep alive handler
                 OpcSession.KeepAlive += Client_KeepAlive;

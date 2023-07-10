@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Opc.Ua;
+using System;
 using System.Collections.Generic;
 using System.Xml;
 using System.Xml.Serialization;
@@ -86,6 +87,9 @@ namespace Aga8CalcService
         public string OpcUser { get; set; }
         [XmlElement]
         public string OpcPassword { get; set; }
+
+        [XmlElement]
+        public string DefaultNamespaceURI { get; set; }
 
         [XmlElement]
         public double Interval { get; set; }
@@ -406,11 +410,15 @@ namespace Aga8CalcService
         [XmlAttribute]
         public Aga8Component Name { get; set; }
         [XmlAttribute]
-        public string Tag { get; set; }
+        public string NamespaceURI { get; set; }
+        [XmlAttribute]
+        public string Identifier { get; set; }
         [XmlAttribute]
         public double ScaleFactor { get; set; }
         [XmlAttribute]
         public double Value { get; set; }
+
+        public string NodeId { get; set; }
 
         public Component()
         {
@@ -429,7 +437,9 @@ namespace Aga8CalcService
         [XmlAttribute]
         public string Name { get; set; }
         [XmlAttribute]
-        public string Tag { get; set; }
+        public string NamespaceURI { get; set; }
+        [XmlAttribute]
+        public string Identifier { get; set; }
         [XmlAttribute]
         public double ScaleFactor { get; set; }
         [XmlAttribute]
@@ -437,6 +447,8 @@ namespace Aga8CalcService
 
         [XmlIgnore]
         public double Value { get; set; }
+
+        public string NodeId { get; set; }
     }
 
     public class PressureMeasurement : Measurement

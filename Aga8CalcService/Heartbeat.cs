@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
+using System.Linq;
 using System.Reflection;
 using System.Timers;
 
@@ -86,32 +87,32 @@ namespace Aga8CalcService
             List<object> result = new List<object>();
             List<ServiceResult> errors = new List<ServiceResult>();
 
-            // Make a list of all the OPC items that we want to read
+            // Make a list of all the OPC NodeIds that we want to read
             foreach (var c in conf.ConfigList.Item)
             {
                 foreach (Component comp in c.Composition.Item)
                 {
-                    if (string.IsNullOrEmpty(comp.Tag)) { continue; }
+                    if (string.IsNullOrEmpty(comp.NodeId)) { continue; }
 
-                    nodes.Add(comp.Tag); types.Add(typeof(object));
+                    nodes.Add(comp.NodeId); types.Add(typeof(object));
                 }
 
                 foreach (PressureTemperature pt in c.PressureTemperatureList.Item)
                 {
                     foreach (PressureMeasurement pm in pt.PressureFunction.Item)
                     {
-                        nodes.Add(pm.Tag); types.Add(typeof(object));
+                        nodes.Add(pm.NodeId); types.Add(typeof(object));
                     }
                     foreach (TemperatureMeasurement tm in pt.TemperatureFunction.Item)
                     {
-                        nodes.Add(tm.Tag); types.Add(typeof(object));
+                        nodes.Add(tm.NodeId); types.Add(typeof(object));
                     }
                 }
             }
 
             foreach (var item in nodes)
             {
-                logger.Debug(CultureInfo.InvariantCulture, "Item to read: \"{0}\"", item.ToString());
+                logger.Debug(CultureInfo.InvariantCulture, "NodeIds to read: \"{0}\"", item.ToString());
             }
 
             // Read all of the inputs
@@ -129,7 +130,7 @@ namespace Aga8CalcService
             {
                 foreach (var component in c.Composition.Item)
                 {
-                    if (string.IsNullOrEmpty(component.Tag))
+                    if (string.IsNullOrEmpty(component.Identifier))
                     {
                         logger.Debug(CultureInfo.InvariantCulture, "\"{0}\" Component Value: {1} Name: {2}",
                             c.Name, component.GetScaledValue(), component.Name);
@@ -139,13 +140,13 @@ namespace Aga8CalcService
                     if (StatusCode.IsGood(errors[it].StatusCode))
                     {
                         component.Value = Convert.ToDouble(result[it], CultureInfo.InvariantCulture);
-                        logger.Debug(CultureInfo.InvariantCulture, "\"{0}\" Component Value: {1} Name: {2} Tag: \"{3}\"",
-                            c.Name, component.GetScaledValue(), component.Name, component.Tag);
+                        logger.Debug(CultureInfo.InvariantCulture, "\"{0}\" Component Value: {1} Name: {2} NodeId: \"{3}\"",
+                            c.Name, component.GetScaledValue(), component.Name, component.NodeId);
                     }
                     else
                     {
-                        logger.Warn(CultureInfo.InvariantCulture, "\"{0}\" Tag: \"{1}\" Quality: \"{2}\"",
-                            c.Name, component.Tag, errors[it].ToString());
+                        logger.Warn(CultureInfo.InvariantCulture, "\"{0}\" NodeId: \"{1}\" Quality: \"{2}\"",
+                            c.Name, component.NodeId, errors[it].ToString());
                     }
 
                     it++;
@@ -158,13 +159,13 @@ namespace Aga8CalcService
                         if (StatusCode.IsGood(errors[it].StatusCode))
                         {
                             pm.Value = Convert.ToDouble(result[it], CultureInfo.InvariantCulture);
-                            logger.Debug(CultureInfo.InvariantCulture, "\"{0}\" PressureFunc Value: {1} Unit: \"{2}\" Tag: \"{3}\"",
-                                pm.Name, pm.Value, pm.Unit, pm.Tag);
+                            logger.Debug(CultureInfo.InvariantCulture, "\"{0}\" PressureFunc Value: {1} Unit: \"{2}\" NodeId: \"{3}\"",
+                                pm.Name, pm.Value, pm.Unit, pm.NodeId);
                         }
                         else
                         {
-                            logger.Warn(CultureInfo.InvariantCulture, "\"{0}\" Tag: \"{1}\" Quality: \"{2}\"",
-                                pm.Name, pm.Tag, errors[it].ToString());
+                            logger.Warn(CultureInfo.InvariantCulture, "\"{0}\" NodeId: \"{1}\" Quality: \"{2}\"",
+                                pm.Name, pm.NodeId, errors[it].ToString());
                         }
 
                         it++;
@@ -178,13 +179,13 @@ namespace Aga8CalcService
                         if (StatusCode.IsGood(errors[it].StatusCode))
                         {
                             tm.Value = Convert.ToDouble(result[it], CultureInfo.InvariantCulture);
-                            logger.Debug(CultureInfo.InvariantCulture, "\"{0}\" TemperatureFunc Value: {1} Unit: \"{2}\" Tag: \"{3}\"",
-                                tm.Name, tm.Value, tm.Unit, tm.Tag);
+                            logger.Debug(CultureInfo.InvariantCulture, "\"{0}\" TemperatureFunc Value: {1} Unit: \"{2}\" NodeId: \"{3}\"",
+                                tm.Name, tm.Value, tm.Unit, tm.NodeId);
                         }
                         else
                         {
-                            logger.Warn(CultureInfo.InvariantCulture, "\"{0}\" Tag: \"{1}\" Quality: \"{2}\"",
-                                tm.Name, tm.Tag, errors[it].ToString());
+                            logger.Warn(CultureInfo.InvariantCulture, "\"{0}\" NodeId: \"{1}\" Quality: \"{2}\"",
+                                tm.Name, tm.NodeId, errors[it].ToString());
                         }
 
                         it++;
@@ -286,7 +287,7 @@ namespace Aga8CalcService
                     {
                         wvc.Add(new WriteValue
                         {
-                            NodeId = property.Tag,
+                            NodeId = property.NodeId,
                             AttributeId = Attributes.Value,
                             Value = new DataValue { Value = property.GetTypedValue() }
                         });
@@ -324,6 +325,7 @@ namespace Aga8CalcService
         {
             logger.Info("Starting service.");
             await _client.Connect();
+            GenerateNodeIds();
             _timer.Start();
         }
 
@@ -339,6 +341,62 @@ namespace Aga8CalcService
                 _client.DisConnect();
             }
             logger.Info("Stopping service.");
+        }
+
+        private string GenerateNodeIdString(Measurement m)
+        {
+            if (m.Identifier == null)
+            {
+                return null;
+            }
+            // Normally use the default namespace URI
+            string namespaceURI = conf.DefaultNamespaceURI;
+            // Use custom namespace URI if it exists
+            if (!string.IsNullOrEmpty(m.NamespaceURI)) { namespaceURI = m.NamespaceURI; }
+            int namespaceIndex = Array.IndexOf(_client.OpcSession.NamespaceUris.ToArray(), namespaceURI);
+            if (namespaceIndex < 0)
+            {
+                logger.Error(CultureInfo.InvariantCulture, "Namespace URI \"{0}\" not found.", namespaceURI);
+                return null;
+            }
+
+            return String.Format("ns={0};{1}", namespaceIndex, m.Identifier);
+        }
+        private void GenerateNodeIds()
+        {
+            foreach (var c in conf.ConfigList.Item)
+            {
+                foreach (Component comp in c.Composition.Item)
+                {
+                    string namespaceURI = conf.DefaultNamespaceURI;
+                    if (!string.IsNullOrEmpty(comp.NamespaceURI)) { namespaceURI = comp.NamespaceURI; }
+                    int namespaceIndex = Array.IndexOf(_client.OpcSession.NamespaceUris.ToArray(), namespaceURI);
+                    if (namespaceIndex < 0)
+                    {
+                        logger.Error(CultureInfo.InvariantCulture, "Namespace URI \"{0}\" not found.", namespaceURI);
+                        continue;
+                    }
+
+                    comp.NodeId = String.Format("ns={0};{1}", namespaceIndex, comp.Identifier);
+                }
+
+                foreach (PressureTemperature pt in c.PressureTemperatureList.Item)
+                {
+                    foreach (PressureMeasurement pm in pt.PressureFunction.Item)
+                    {
+                        pm.NodeId = GenerateNodeIdString(pm);
+                    }
+                    foreach (TemperatureMeasurement tm in pt.TemperatureFunction.Item)
+                    {
+                        tm.NodeId = GenerateNodeIdString(tm);
+                    }
+
+                    foreach (var property in pt.Properties.Item)
+                    {
+                        property.NodeId = GenerateNodeIdString(property);
+                    }
+                }
+            }
         }
     }
 }

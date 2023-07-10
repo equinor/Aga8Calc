@@ -3,6 +3,7 @@
   <OpcUrl>opc.tcp://lt-143010:62541/Quickstarts/DataAccessServer</OpcUrl>
   <OpcUser></OpcUser>
   <OpcPassword></OpcPassword>
+  <DefaultNamespaceURI>http://test.org/UA/Alarms/</DefaultNamespaceURI>
   <Interval>42.0</Interval>
   <ConfigList>
     <Config Name="Test Config 1">
