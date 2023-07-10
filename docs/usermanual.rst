@@ -73,6 +73,7 @@ The configuration file is structured like the example below.
       <OpcUrl>opc.tcp://lt-103009:62548/Quickstarts/DataAccessServer</OpcUrl>
       <OpcUser>xxx</OpcUser>
       <OpcPassword>xxx</OpcPassword>
+      <DefaultNamespaceURI>http://test.org/UA/Alarms/</DefaultNamespaceURI>
       <Interval>1000</Interval>
       <EquationOfState>AGA8Detail</EquationOfState>
       <ConfigList>
@@ -95,6 +96,8 @@ The configuration file is structured like the example below.
 
 -   `<OpcUser>` and `<OpcPassword>` are used to select what user name and password to use to connect to the OPC server.
 
+-   `<DefaultNamespaceURI>` is used to set the default namespace URI to be used if no namespace URI is specified for the individual nodes.
+
 -   `<Interval>` is used to set the update interval of the calculation task.
     The interval is set in milli seconds, so 1000 would be 1 second.
 
@@ -112,30 +115,30 @@ Every `<Config>` element is structured like below.
 
     <Config Name="GC 1">
       <Composition>
-        <Component Name="Methane" Tag="ns=2;s=1:AI1001?A" ScaleFactor="0.01" />
-        <Component Name="Nitrogen" Tag="ns=2;s=1:AI1001?J" ScaleFactor="0.01" />
-        <Component Name="CarbonDioxide" Tag="ns=2;s=1:AI1001?K" ScaleFactor="0.01" />
-        <Component Name="Ethane" Tag="ns=2;s=1:AI1001?B" ScaleFactor="0.01" />
-        <Component Name="Propane" Tag="ns=2;s=1:AI1001?C" ScaleFactor="0.01" />
-        <Component Name="IsoButane" Tag="ns=2;s=1:AI1001?D" ScaleFactor="0.01" />
-        <Component Name="NormalButane" Tag="ns=2;s=1:AI1001?E" ScaleFactor="0.01" />
-        <Component Name="IsoPentane" Tag="ns=2;s=1:AI1001?F" ScaleFactor="0.01" />
-        <Component Name="NormalPentane" Tag="ns=2;s=1:AI1001?G" ScaleFactor="0.01" />
-        <Component Name="Hexane" Tag="ns=2;s=1:AI1001?I" ScaleFactor="0.01" />
+        <Component Name="Methane" Identifier="s=1:AI1001?A" ScaleFactor="0.01" />
+        <Component Name="Nitrogen" Identifier="s=1:AI1001?J" ScaleFactor="0.01" />
+        <Component Name="CarbonDioxide" Identifier="s=1:AI1001?K" ScaleFactor="0.01" />
+        <Component Name="Ethane" Identifier="s=1:AI1001?B" ScaleFactor="0.01" />
+        <Component Name="Propane" Identifier="s=1:AI1001?C" ScaleFactor="0.01" />
+        <Component Name="IsoButane" Identifier="s=1:AI1001?D" ScaleFactor="0.01" />
+        <Component Name="NormalButane" Identifier="s=1:AI1001?E" ScaleFactor="0.01" />
+        <Component Name="IsoPentane" Identifier="s=1:AI1001?F" ScaleFactor="0.01" />
+        <Component Name="NormalPentane" Identifier="s=1:AI1001?G" ScaleFactor="0.01" />
+        <Component Name="Hexane" Identifier="s=1:AI1001?I" ScaleFactor="0.01" />
         <Component Name="Heptane" ScaleFactor="1.0" Value="0.0002471" />
       </Composition>
       <PressureTemperatureList>
         <PressureTemperature Name="Point 1">
           <PressureFunction MathFunction="Min">
-            <Pressure Name="P 1" Tag="ns=2;s=1:AI1001?Pressure" Unit="barg" />
-            <Pressure Name="P 2" Tag="ns=2;s=1:AI1002?Pressure" Unit="barg" />
+            <Pressure Name="P 1" Identifier="s=1:AI1001?Pressure" Unit="barg" />
+            <Pressure Name="P 2" Identifier="s=1:AI1002?Pressure" Unit="barg" />
           </PressureFunction>
           <TemperatureFunction MathFunction="Max">
-            <Temperature Name="T 1" Tag="ns=2;s=1:AI1001?Temperature" Unit="C" />
-            <Temperature Name="T 2" Tag="ns=2;s=1:AI1002?Temperature" Unit="C" />
+            <Temperature Name="T 1" Identifier="s=1:AI1001?Temperature" Unit="C" />
+            <Temperature Name="T 2" Identifier="s=1:AI1002?Temperature" Unit="C" />
           </TemperatureFunction>
           <Properties>
-            <Property Tag="ns=2;s=1:AI1001?Result" Property="MolarConcentration" Type="single" />
+            <Property Identifier="s=1:AI1001?Result" Property="MolarConcentration" Type="single" />
           </Properties>
         </PressureTemperature>
       </PressureTemperatureList>
@@ -172,7 +175,9 @@ This holds the values that is read from, and the result written back to the OPC 
       - Helium
       - Argon
 
-    - `Tag` is the OPC item to read the value from.
+    - `NamespaceURI` is the namespace URI for the OPC node to read.
+      If this is empty, the DefaultNamespaceURI will be used.
+    - `Identifier` is the OPC identifierType and identifier of the node to be read from.
     - `ScaleFactor` is used to scale the individual component values into the mol fraction range from 0-1.
     - `Value` is used to set a constant value for the component.
 
@@ -193,7 +198,7 @@ This holds the values that is read from, and the result written back to the OPC 
 
     The `<Pressure>` elements have the following attributes:
 
-    - `Tag` is the OPC item to read.
+    - `Identifier` is the OPC identifierType and identifier of the node to be read from.
     - `ScaleFactor` is used to scale the pressure to the expected unit.
       For example to scale from mbarg to barg, ScaleFactor should be set to 0.001.
     - `Unit` is the expected engineering unit of the pressure value.
@@ -210,7 +215,7 @@ This holds the values that is read from, and the result written back to the OPC 
 
     The `<Temperature>` element have the following attributes:
 
-    - `Tag` is the OPC item to read.
+    - `Identifier` is the OPC identifierType and identifier of the node to be read from.
     - `Unit` is the expected engineering unit of the temperature value.
       This is used to convert the temperature to the proper unit - [K].
       The possible temperature units are:
@@ -222,7 +227,7 @@ This holds the values that is read from, and the result written back to the OPC 
     These are the results that will be written to the OPC server.
     The Attributes of the `<Property>` element are:
 
-    - `Tag` is the OPC item to write to.
+    - `Identifier` is the OPC identifierType and identifier of the node to be read from.
     - `Property` is the result that will be written to the OPC item.
       The possible options are:
 
@@ -260,31 +265,31 @@ A complete configuration file could look like this.
       <ConfigList>
         <Config Name="GC 1">
           <Composition>
-            <Component Name="Methane" Tag="ns=2;s=1:AI1001?A" ScaleFactor="0.01" />
-            <Component Name="Nitrogen" Tag="ns=2;s=1:AI1001?J" ScaleFactor="0.01" />
-            <Component Name="CarbonDioxide" Tag="ns=2;s=1:AI1001?K" ScaleFactor="0.01" />
-            <Component Name="Ethane" Tag="ns=2;s=1:AI1001?B" ScaleFactor="0.01" />
-            <Component Name="Propane" Tag="ns=2;s=1:AI1001?C" ScaleFactor="0.01" />
-            <Component Name="IsoButane" Tag="ns=2;s=1:AI1001?D" ScaleFactor="0.01" />
-            <Component Name="NormalButane" Tag="ns=2;s=1:AI1001?E" ScaleFactor="0.01" />
-            <Component Name="IsoPentane" Tag="ns=2;s=1:AI1001?F" ScaleFactor="0.01" />
-            <Component Name="NormalPentane" Tag="ns=2;s=1:AI1001?G" ScaleFactor="0.01" />
-            <Component Name="Hexane" Tag="ns=2;s=1:AI1001?I" ScaleFactor="0.01" />
+            <Component Name="Methane" Identifier="s=1:AI1001?A" ScaleFactor="0.01" />
+            <Component Name="Nitrogen" Identifier="s=1:AI1001?J" ScaleFactor="0.01" />
+            <Component Name="CarbonDioxide" Identifier="s=1:AI1001?K" ScaleFactor="0.01" />
+            <Component Name="Ethane" Identifier="s=1:AI1001?B" ScaleFactor="0.01" />
+            <Component Name="Propane" Identifier="s=1:AI1001?C" ScaleFactor="0.01" />
+            <Component Name="IsoButane" Identifier="s=1:AI1001?D" ScaleFactor="0.01" />
+            <Component Name="NormalButane" Identifier="s=1:AI1001?E" ScaleFactor="0.01" />
+            <Component Name="IsoPentane" Identifier="s=1:AI1001?F" ScaleFactor="0.01" />
+            <Component Name="NormalPentane" Identifier="s=1:AI1001?G" ScaleFactor="0.01" />
+            <Component Name="Hexane" Identifier="s=1:AI1001?I" ScaleFactor="0.01" />
             <Component Name="Heptane" ScaleFactor="1.0" Value="0.0002471" />
           </Composition>
           <PressureTemperatureList>
             <PressureTemperature Name="Point 1">
               <PressureFunction MathFunction="Min">
-                <Pressure Name="P 1" Tag="ns=2;s=1:AI1001?Pressure" Unit="barg" />
-                <Pressure Name="P 2" Tag="ns=2;s=1:AI1002?Pressure" Unit="bara" />
+                <Pressure Name="P 1" Identifier="s=1:AI1001?Pressure" Unit="barg" />
+                <Pressure Name="P 2" Identifier="s=1:AI1002?Pressure" Unit="bara" />
               </PressureFunction>
               <TemperatureFunction MathFunction="Max">
-                <Temperature Name="T 1" Tag="ns=2;s=1:AI1001?Temperature" Unit="C" />
-                <Temperature Name="T 2" Tag="ns=2;s=1:AI1002?Temperature" Unit="K" />
+                <Temperature Name="T 1" Identifier="s=1:AI1001?Temperature" Unit="C" />
+                <Temperature Name="T 2" Identifier="s=1:AI1002?Temperature" Unit="K" />
               </TemperatureFunction>
               <Properties>
-                <Property Tag="ns=2;s=1:AI1001?Result" Property="MolarConcentration" Type="single" />
-                <Property Tag="ns=2;s=1:AI1002?Result" Property="Density" Type="double" />
+                <Property Identifier="s=1:AI1001?Result" Property="MolarConcentration" Type="single" />
+                <Property Identifier="s=1:AI1002?Result" Property="Density" Type="double" />
               </Properties>
             </PressureTemperature>
           </PressureTemperatureList>
