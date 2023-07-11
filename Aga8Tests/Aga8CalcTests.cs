@@ -279,12 +279,13 @@ namespace Aga8Tests
             });
 
             var compositionError = new CompositionError();
+            var densityError = new DensityError();
             using (var aga = new AGA8Detail())
             {
                 aga.SetComposition(conf.ConfigList.Item[0].Composition.GetScaledValues(), ref compositionError);
                 aga.SetPressure(conf.ConfigList.Item[0].PressureTemperatureList.Item[0].PressureFunction.GetValue());
                 aga.SetTemperature(conf.ConfigList.Item[0].PressureTemperatureList.Item[0].TemperatureFunction.GetValue());
-                aga.CalculateDensity();
+                aga.CalculateDensity(ref densityError);
                 aga.CalculateProperties();
 
                 conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Properties.Item[0].Value = aga.GetProperty(conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Properties.Item[0].Property);
@@ -316,7 +317,7 @@ namespace Aga8Tests
                 gerg.SetComposition(conf.ConfigList.Item[0].Composition.GetScaledValues(), ref compositionError);
                 gerg.SetPressure(conf.ConfigList.Item[0].PressureTemperatureList.Item[0].PressureFunction.GetValue());
                 gerg.SetTemperature(conf.ConfigList.Item[0].PressureTemperatureList.Item[0].TemperatureFunction.GetValue());
-                gerg.CalculateDensity();
+                gerg.CalculateDensity(ref densityError);
                 gerg.CalculateProperties();
 
                 conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Properties.Item[0].Value = gerg.GetProperty(conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Properties.Item[0].Property);
@@ -386,7 +387,7 @@ namespace Aga8Tests
                 aga.SetComposition(conf.ConfigList.Item[1].Composition.GetScaledValues(), ref compositionError);
                 aga.SetPressure(conf.ConfigList.Item[1].PressureTemperatureList.Item[0].PressureFunction.GetValue());
                 aga.SetTemperature(conf.ConfigList.Item[1].PressureTemperatureList.Item[0].TemperatureFunction.GetValue());
-                aga.CalculateDensity();
+                aga.CalculateDensity(ref densityError);
                 aga.CalculateProperties();
 
                 conf.ConfigList.Item[1].PressureTemperatureList.Item[0].Properties.Item[0].Value = aga.GetProperty(conf.ConfigList.Item[1].PressureTemperatureList.Item[0].Properties.Item[0].Property);
@@ -402,7 +403,7 @@ namespace Aga8Tests
                 gerg.SetComposition(conf.ConfigList.Item[1].Composition.GetScaledValues(), ref compositionError);
                 gerg.SetPressure(conf.ConfigList.Item[1].PressureTemperatureList.Item[0].PressureFunction.GetValue());
                 gerg.SetTemperature(conf.ConfigList.Item[1].PressureTemperatureList.Item[0].TemperatureFunction.GetValue());
-                gerg.CalculateDensity();
+                gerg.CalculateDensity(ref densityError);
                 gerg.CalculateProperties();
 
                 conf.ConfigList.Item[1].PressureTemperatureList.Item[0].Properties.Item[0].Value = gerg.GetProperty(conf.ConfigList.Item[1].PressureTemperatureList.Item[0].Properties.Item[0].Property);
@@ -470,6 +471,7 @@ namespace Aga8Tests
             });
 
             var compositionError = new CompositionError();
+            var densityError = new DensityError();
             for (int i = 0; i < 1000; i++)
             {
                 using (var aga = new AGA8Detail())
@@ -477,7 +479,7 @@ namespace Aga8Tests
                     aga.SetComposition(conf.ConfigList.Item[0].Composition.GetScaledValues(), ref compositionError);
                     aga.SetPressure(conf.ConfigList.Item[0].PressureTemperatureList.Item[0].PressureFunction.GetValue());
                     aga.SetTemperature(conf.ConfigList.Item[0].PressureTemperatureList.Item[0].TemperatureFunction.GetValue());
-                    aga.CalculateDensity();
+                    aga.CalculateDensity(ref densityError);
                     aga.CalculateProperties();
 
                     conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Properties.Item[0].Value = aga.GetProperty(conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Properties.Item[0].Property);
@@ -493,7 +495,7 @@ namespace Aga8Tests
                     gerg.SetComposition(conf.ConfigList.Item[0].Composition.GetScaledValues(), ref compositionError);
                     gerg.SetPressure(conf.ConfigList.Item[0].PressureTemperatureList.Item[0].PressureFunction.GetValue());
                     gerg.SetTemperature(conf.ConfigList.Item[0].PressureTemperatureList.Item[0].TemperatureFunction.GetValue());
-                    gerg.CalculateDensity();
+                    gerg.CalculateDensity(ref densityError);
                     gerg.CalculateProperties();
 
                     conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Properties.Item[0].Value = gerg.GetProperty(conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Properties.Item[0].Property);

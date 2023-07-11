@@ -123,6 +123,7 @@ namespace Aga8CalcService
             catch (Exception e)
             {
                 logger.Error(e, "Error reading values from OPC.");
+                return;
             }
 
             int it = 0;
@@ -200,6 +201,7 @@ namespace Aga8CalcService
         private void Calculate()
         {
             var compositionError = new CompositionError();
+            var densityError = new DensityError();
 
             switch (conf.EquationOfState)
             {
@@ -221,9 +223,15 @@ namespace Aga8CalcService
                         {
                             aga.SetPressure(pt.PressureFunction.GetValue());
                             aga.SetTemperature(pt.TemperatureFunction.GetValue());
-                            aga.CalculateDensity();
-                            aga.CalculateProperties();
+                            aga.CalculateDensity(ref densityError);
+                            if (densityError != DensityError.Ok)
+                            {
+                                logger.Error(CultureInfo.InvariantCulture, "Failed to calculate density for {0}: {1}",
+                                    pt.Name, densityError.ToString());
+                                continue;
+                            }
 
+                            aga.CalculateProperties();
                             foreach (var property in pt.Properties.Item)
                             {
                                 property.Value = aga.GetProperty(property.Property);
@@ -254,9 +262,15 @@ namespace Aga8CalcService
                         {
                             gerg.SetPressure(pt.PressureFunction.GetValue());
                             gerg.SetTemperature(pt.TemperatureFunction.GetValue());
-                            gerg.CalculateDensity();
-                            gerg.CalculateProperties();
+                            gerg.CalculateDensity(ref densityError);
+                            if (densityError != DensityError.Ok)
+                            {
+                                logger.Error(CultureInfo.InvariantCulture, "Failed to calculate density for {0}: {1}",
+                                    pt.Name, densityError.ToString());
+                                continue;
+                            }
 
+                            gerg.CalculateProperties();
                             foreach (var property in pt.Properties.Item)
                             {
                                 property.Value = gerg.GetProperty(property.Property);
