@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <OpcUrl>opc.tcp://lt-143010:62541/Quickstarts/DataAccessServer</OpcUrl>
+  <OpcUrl>opc.tcp://localhost:4840/freeopcua/server/</OpcUrl>
   <OpcUser></OpcUser>
   <OpcPassword></OpcPassword>
   <DefaultNamespaceURI>http://test.org/UA/Alarms/</DefaultNamespaceURI>
