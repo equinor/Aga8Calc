@@ -305,7 +305,7 @@ namespace Aga8CalcService
     {
         // External dependency: aga8
         // URL: https://github.com/royvegard/aga8
-        // Version: 0.3.0
+        // Version: 0.4.0
         [DllImport("aga8", EntryPoint = "aga8_new")]
         internal static extern AGA8DetailHandle Aga8New();
         [DllImport("aga8", EntryPoint = "aga8_free")]
