@@ -160,7 +160,7 @@
       <DependentUpon>generate_git_info.tt</DependentUpon>
     </Compile>
     <Compile Include="GlobalSuppressions.cs" />
-    <Compile Include="Heartbeat.cs" />
+    <Compile Include="Aga8Calc.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

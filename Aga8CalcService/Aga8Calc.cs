@@ -3,13 +3,12 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
-using System.Linq;
 using System.Reflection;
 using System.Timers;
 
 namespace Aga8CalcService
 {
-    public sealed class Heartbeat : IDisposable
+    public sealed class Aga8Calc : IDisposable
     {
         private readonly Timer _timer;
         private readonly Aga8OpcClient _client;
@@ -18,7 +17,7 @@ namespace Aga8CalcService
         private readonly object WorkerLock = new object();
         private bool working = false;
 
-        public Heartbeat()
+        public Aga8Calc()
         {
             Assembly assem = Assembly.GetExecutingAssembly();
             string version = assem.GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion;
