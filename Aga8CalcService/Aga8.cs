@@ -63,6 +63,16 @@ namespace Aga8CalcService
         PressureTooLow = 2,
     }
 
+    interface IEquation : IDisposable
+    {
+        void SetComposition(Aga8Composition composition, ref CompositionError err);
+        void SetPressure(double pressure);
+        void SetTemperature(double temperature);
+        void CalculateDensity(ref DensityError err);
+        void CalculateProperties();
+        double GetProperty(ConfigModel.Aga8ResultCode resultCode);
+    }
+
     internal class AGA8DetailHandle : SafeHandle
     {
         public AGA8DetailHandle() : base(IntPtr.Zero, true) { }
@@ -79,7 +89,7 @@ namespace Aga8CalcService
         }
     }
 
-    public class AGA8Detail : IDisposable
+    public class AGA8Detail : IEquation
     {
         private readonly AGA8DetailHandle aga8;
         private Aga8Properties ResultProperties;
@@ -198,7 +208,7 @@ namespace Aga8CalcService
         }
     }
 
-    public class Gerg2008 : IDisposable
+    public class Gerg2008 : IEquation
     {
         private readonly Gerg2008Handle gerg;
         private Aga8Properties ResultProperties;

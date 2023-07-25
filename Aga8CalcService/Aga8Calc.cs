@@ -202,89 +202,55 @@ namespace Aga8CalcService
             var compositionError = new CompositionError();
             var densityError = new DensityError();
 
+            IEquation equation;
+
             switch (conf.EquationOfState)
             {
                 case ConfigModel.Equation.AGA8Detail:
-                    var aga = new AGA8Detail();
-
-                    foreach (var c in conf.ConfigList.Item)
-                    {
-                        aga.SetComposition(c.Composition.GetScaledValues(), ref compositionError);
-
-                        if (compositionError != CompositionError.Ok)
-                        {
-                            logger.Error(CultureInfo.InvariantCulture, "Invalid composition for {0}: {1}",
-                                c.Name, compositionError.ToString());
-                            continue;
-                        }
-
-                        foreach (var pt in c.PressureTemperatureList.Item)
-                        {
-                            aga.SetPressure(pt.PressureFunction.GetValue());
-                            aga.SetTemperature(pt.TemperatureFunction.GetValue());
-                            aga.CalculateDensity(ref densityError);
-                            if (densityError != DensityError.Ok)
-                            {
-                                logger.Error(CultureInfo.InvariantCulture, "Failed to calculate density for {0}: {1}",
-                                    pt.Name, densityError.ToString());
-                                continue;
-                            }
-
-                            aga.CalculateProperties();
-                            foreach (var property in pt.Properties.Item)
-                            {
-                                property.Value = aga.GetProperty(property.Property);
-                                logger.Debug(CultureInfo.InvariantCulture, "\"{0}\" Property: \"{1}\" Value: {2}",
-                                    pt.Name, property.Property.ToString(), property.Value);
-                            }
-                        }
-                    }
-
-                    aga.Dispose();
-
+                    equation = new AGA8Detail();
                     break;
                 case ConfigModel.Equation.Gerg2008:
-                    var gerg = new Gerg2008();
-
-                    foreach (var c in conf.ConfigList.Item)
-                    {
-                        gerg.SetComposition(c.Composition.GetScaledValues(), ref compositionError);
-
-                        if (compositionError != CompositionError.Ok)
-                        {
-                            logger.Error(CultureInfo.InvariantCulture, "Invalid composition for {0}: {1}",
-                                c.Name, compositionError.ToString());
-                            continue;
-                        }
-
-                        foreach (var pt in c.PressureTemperatureList.Item)
-                        {
-                            gerg.SetPressure(pt.PressureFunction.GetValue());
-                            gerg.SetTemperature(pt.TemperatureFunction.GetValue());
-                            gerg.CalculateDensity(ref densityError);
-                            if (densityError != DensityError.Ok)
-                            {
-                                logger.Error(CultureInfo.InvariantCulture, "Failed to calculate density for {0}: {1}",
-                                    pt.Name, densityError.ToString());
-                                continue;
-                            }
-
-                            gerg.CalculateProperties();
-                            foreach (var property in pt.Properties.Item)
-                            {
-                                property.Value = gerg.GetProperty(property.Property);
-                                logger.Debug(CultureInfo.InvariantCulture, "\"{0}\" Property: \"{1}\" Value: {2}",
-                                    pt.Name, property.Property.ToString(), property.Value);
-                            }
-                        }
-                    }
-
-                    gerg.Dispose();
-
+                    equation = new Gerg2008();
                     break;
                 default:
+                    equation = new AGA8Detail();
                     break;
             }
+
+            foreach (var c in conf.ConfigList.Item)
+            {
+                equation.SetComposition(c.Composition.GetScaledValues(), ref compositionError);
+
+                if (compositionError != CompositionError.Ok)
+                {
+                    logger.Error(CultureInfo.InvariantCulture, "Invalid composition for {0}: {1}",
+                        c.Name, compositionError.ToString());
+                    continue;
+                }
+
+                foreach (var pt in c.PressureTemperatureList.Item)
+                {
+                    equation.SetPressure(pt.PressureFunction.GetValue());
+                    equation.SetTemperature(pt.TemperatureFunction.GetValue());
+                    equation.CalculateDensity(ref densityError);
+                    if (densityError != DensityError.Ok)
+                    {
+                        logger.Error(CultureInfo.InvariantCulture, "Failed to calculate density for {0}: {1}",
+                            pt.Name, densityError.ToString());
+                        continue;
+                    }
+
+                    equation.CalculateProperties();
+                    foreach (var property in pt.Properties.Item)
+                    {
+                        property.Value = equation.GetProperty(property.Property);
+                        logger.Debug(CultureInfo.InvariantCulture, "\"{0}\" Property: \"{1}\" Value: {2}",
+                            pt.Name, property.Property.ToString(), property.Value);
+                    }
+                }
+            }
+
+            equation.Dispose();
         }
 
         private void WriteToOPC()
