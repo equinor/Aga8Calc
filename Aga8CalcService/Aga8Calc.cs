@@ -130,14 +130,17 @@ namespace Aga8CalcService
             {
                 foreach (var component in c.Composition.Item)
                 {
+                    component.Quality = errors[it].StatusCode;
                     if (string.IsNullOrEmpty(component.Identifier))
                     {
+                        // If identifier is empty, then we assume that Value is given a
+                        // constant value in the config file
                         logger.Debug(CultureInfo.InvariantCulture, "\"{0}\" Component Value: {1} Name: {2}",
                             c.Name, component.GetScaledValue(), component.Name);
                         continue;
                     }
 
-                    if (StatusCode.IsGood(errors[it].StatusCode))
+                    if (StatusCode.IsGood(component.Quality))
                     {
                         component.Value = Convert.ToDouble(result[it], CultureInfo.InvariantCulture);
                         logger.Debug(CultureInfo.InvariantCulture, "\"{0}\" Component Value: {1} Name: {2} NodeId: \"{3}\"",
@@ -146,7 +149,7 @@ namespace Aga8CalcService
                     else
                     {
                         logger.Warn(CultureInfo.InvariantCulture, "\"{0}\" NodeId: \"{1}\" Quality: \"{2}\"",
-                            c.Name, component.NodeId, errors[it].ToString());
+                            c.Name, component.NodeId, component.Quality.ToString());
                     }
 
                     it++;
@@ -156,7 +159,8 @@ namespace Aga8CalcService
                 {
                     foreach (PressureMeasurement pm in pt.PressureFunction.Item)
                     {
-                        if (StatusCode.IsGood(errors[it].StatusCode))
+                        pm.Quality = errors[it].StatusCode;
+                        if (StatusCode.IsGood(pm.Quality))
                         {
                             pm.Value = Convert.ToDouble(result[it], CultureInfo.InvariantCulture);
                             logger.Debug(CultureInfo.InvariantCulture, "\"{0}\" PressureFunc Value: {1} Unit: \"{2}\" NodeId: \"{3}\"",
@@ -164,19 +168,21 @@ namespace Aga8CalcService
                         }
                         else
                         {
+                            pt.PressureFunction.Quality = pm.Quality;
                             logger.Warn(CultureInfo.InvariantCulture, "\"{0}\" NodeId: \"{1}\" Quality: \"{2}\"",
-                                pm.Name, pm.NodeId, errors[it].ToString());
+                                pm.Name, pm.NodeId, pm.Quality.ToString());
                         }
 
                         it++;
                     }
 
-                    logger.Debug(CultureInfo.InvariantCulture, "\"{0}\" Pressure function: \"{1}\" Result value: {2} kPa",
-                        pt.Name, pt.PressureFunction.MathFunction.ToString(), pt.PressureFunction.GetValue());
+                    logger.Debug(CultureInfo.InvariantCulture, "\"{0}\" Pressure function: \"{1}\" Result value: {2} kPa {3}",
+                        pt.Name, pt.PressureFunction.MathFunction.ToString(), pt.PressureFunction.GetValue(), pt.PressureFunction.Quality.ToString());
 
                     foreach (TemperatureMeasurement tm in pt.TemperatureFunction.Item)
                     {
-                        if (StatusCode.IsGood(errors[it].StatusCode))
+                        tm.Quality = errors[it].StatusCode;
+                        if (StatusCode.IsGood(tm.Quality))
                         {
                             tm.Value = Convert.ToDouble(result[it], CultureInfo.InvariantCulture);
                             logger.Debug(CultureInfo.InvariantCulture, "\"{0}\" TemperatureFunc Value: {1} Unit: \"{2}\" NodeId: \"{3}\"",
@@ -184,15 +190,16 @@ namespace Aga8CalcService
                         }
                         else
                         {
+                            pt.TemperatureFunction.Quality = tm.Quality;
                             logger.Warn(CultureInfo.InvariantCulture, "\"{0}\" NodeId: \"{1}\" Quality: \"{2}\"",
-                                tm.Name, tm.NodeId, errors[it].ToString());
+                                tm.Name, tm.NodeId, tm.Quality.ToString());
                         }
 
                         it++;
                     }
 
-                    logger.Debug(CultureInfo.InvariantCulture, "\"{0}\" Temperature function: \"{1}\" Result value: {2} K",
-                        pt.Name, pt.TemperatureFunction.MathFunction.ToString(), pt.TemperatureFunction.GetValue());
+                    logger.Debug(CultureInfo.InvariantCulture, "\"{0}\" Temperature function: \"{1}\" Result value: {2} K {3}",
+                        pt.Name, pt.TemperatureFunction.MathFunction.ToString(), pt.TemperatureFunction.GetValue(), pt.TemperatureFunction.Quality.ToString());
                 }
             }
         }
@@ -223,6 +230,7 @@ namespace Aga8CalcService
 
                 if (compositionError != CompositionError.Ok)
                 {
+                    c.Composition.Quality = StatusCodes.Bad;
                     logger.Error(CultureInfo.InvariantCulture, "Invalid composition for {0}: {1}",
                         c.Name, compositionError.ToString());
                     continue;
@@ -264,11 +272,20 @@ namespace Aga8CalcService
                 {
                     foreach (var property in pt.Properties.Item)
                     {
+                        StatusCode status = new StatusCode { Code = StatusCodes.Good };
+
+                        if (StatusCode.IsNotGood(c.Composition.Quality)
+                            | StatusCode.IsNotGood(pt.TemperatureFunction.Quality)
+                            | StatusCode.IsNotGood(pt.PressureFunction.Quality))
+                        {
+                            status.Code = StatusCodes.Uncertain;
+                        }
+
                         wvc.Add(new WriteValue
                         {
                             NodeId = property.NodeId,
                             AttributeId = Attributes.Value,
-                            Value = new DataValue { Value = property.GetTypedValue() }
+                            Value = new DataValue { Value = property.GetTypedValue(), StatusCode = status }
                         });
                     }
                 }
@@ -276,9 +293,10 @@ namespace Aga8CalcService
 
             foreach (var item in wvc)
             {
-                logger.Debug(CultureInfo.InvariantCulture, "Item to write: \"{0}\" Value: {1}",
+                logger.Debug(CultureInfo.InvariantCulture, "Item to write: \"{0}\" Value: {1} {2}",
                     item.NodeId.ToString(),
-                    item.Value.Value);
+                    item.Value.Value,
+                    item.Value.StatusCode.ToString());
             }
 
             try

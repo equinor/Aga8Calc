@@ -145,6 +145,8 @@ namespace Aga8CalcService
         [XmlElement("Component")]
         public List<Component> Item { get; }
 
+        public StatusCode Quality { get; set; }
+
         public Aga8Composition GetScaledValues()
         {
             Aga8Composition comp = new Aga8Composition();
@@ -239,6 +241,8 @@ namespace Aga8CalcService
         [XmlAttribute]
         public ConfigModel.Func MathFunction { get; set; }
 
+        public StatusCode Quality { get; set; }
+
         public double GetValue()
         {
             double value = 0.0;
@@ -314,6 +318,8 @@ namespace Aga8CalcService
 
         [XmlAttribute]
         public ConfigModel.Func MathFunction { get; set; }
+
+        public StatusCode Quality { get; set; }
 
         public double GetValue()
         {
@@ -420,6 +426,9 @@ namespace Aga8CalcService
 
         public string NodeId { get; set; }
 
+        [XmlIgnore]
+        public StatusCode Quality { get; set; }
+
         public Component()
         {
             ScaleFactor = 1.0;
@@ -447,6 +456,9 @@ namespace Aga8CalcService
 
         [XmlIgnore]
         public double Value { get; set; }
+
+        [XmlIgnore]
+        public StatusCode Quality { get; set; }
 
         public string NodeId { get; set; }
     }
