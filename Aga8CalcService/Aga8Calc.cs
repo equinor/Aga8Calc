@@ -20,7 +20,7 @@ namespace Aga8CalcService
         public Aga8Calc()
         {
             Assembly assem = Assembly.GetExecutingAssembly();
-            string version = assem.GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion;
+            string version = ""; // assem.GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion;
             string title = assem.GetName().Name;
 
             logger.Info("Initializing \"{0}\" version \"{1}\".", title, version);
