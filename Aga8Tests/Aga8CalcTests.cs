@@ -230,7 +230,7 @@ namespace Aga8Tests
             ConfigModel conf = new ConfigModel();
 
             conf.ConfigList.Item.Add(new Config());
-            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = Aga8Component.Methane,  Value = 0.778_240 });
+            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = Aga8Component.Methane, Value = 0.778_240 });
             conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = Aga8Component.Nitrogen, Value = 0.020_000 });
             conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = Aga8Component.CarbonDioxide, Value = 0.060_000 });
             conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = Aga8Component.Ethane, Value = 0.080_000 });
