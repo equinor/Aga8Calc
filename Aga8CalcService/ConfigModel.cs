@@ -420,6 +420,10 @@ namespace Aga8CalcService
         [XmlAttribute]
         public string Identifier { get; set; }
         [XmlAttribute]
+        public string StartIdentifier { get; set; }
+        [XmlAttribute]
+        public string RelativePath { get; set;  }
+        [XmlAttribute]
         public double ScaleFactor { get; set; }
         [XmlAttribute]
         public double Value { get; set; }

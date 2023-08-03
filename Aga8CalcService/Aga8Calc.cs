@@ -131,9 +131,9 @@ namespace Aga8CalcService
                 foreach (var component in c.Composition.Item)
                 {
                     component.Quality = errors[it].StatusCode;
-                    if (string.IsNullOrEmpty(component.Identifier))
+                    if (string.IsNullOrEmpty(component.NodeId))
                     {
-                        // If identifier is empty, then we assume that Value is given a
+                        // If NodeId is empty, then we assume that Value is given a
                         // constant value in the config file
                         logger.Debug(CultureInfo.InvariantCulture, "\"{0}\" Component Value: {1} Name: {2}",
                             c.Name, component.GetScaledValue(), component.Name);
@@ -363,8 +363,17 @@ namespace Aga8CalcService
         {
             foreach (var c in conf.ConfigList.Item)
             {
+                BrowsePathCollection pathsToTranslate = new BrowsePathCollection();
+                List<string> paths = new List<string>();
+                TypeTable typeTable = new TypeTable(new NamespaceTable());
+
                 foreach (Component comp in c.Composition.Item)
                 {
+                    if (!string.IsNullOrEmpty(comp.Identifier) && !string.IsNullOrEmpty(comp.RelativePath))
+                    {
+                        logger.Warn(CultureInfo.InvariantCulture, "Identifier \"{0}\" and RelativePath \"{1}\" defined for \"{2}\".", comp.Identifier, comp.RelativePath, comp.Name);
+                    }
+
                     string namespaceURI = conf.DefaultNamespaceURI;
                     if (!string.IsNullOrEmpty(comp.NamespaceURI)) { namespaceURI = comp.NamespaceURI; }
                     int namespaceIndex = Array.IndexOf(_client.OpcSession.NamespaceUris.ToArray(), namespaceURI);
@@ -374,8 +383,57 @@ namespace Aga8CalcService
                         continue;
                     }
 
-                    comp.NodeId = String.Format("ns={0};{1}", namespaceIndex, comp.Identifier);
+                    if (!string.IsNullOrEmpty(comp.RelativePath) && string.IsNullOrEmpty(comp.Identifier))
+                    {
+                        BrowsePath pathToTranslate = new BrowsePath();
+                        NodeId startNode = new NodeId(ObjectIds.ObjectsFolder);
+                        paths.Add(comp.RelativePath);
+
+                        RelativePath path = RelativePath.Parse(comp.RelativePath, typeTable);
+                        path.Elements.ForEach(e => { e.TargetName = new QualifiedName(e.TargetName.Name, (ushort)namespaceIndex); });
+
+                        pathToTranslate.StartingNode = startNode;
+                        pathToTranslate.RelativePath = path;
+                        pathsToTranslate.Add(pathToTranslate);
+                    }
+
+                    if (!string.IsNullOrEmpty(comp.Identifier))
+                    {
+                        comp.NodeId = String.Format("ns={0};{1}", namespaceIndex, comp.Identifier);
+                    }
                 }
+
+                BrowsePathResultCollection results = null;
+                DiagnosticInfoCollection diagnosticInfos = null;
+                ResponseHeader response_header;
+
+                try
+                {
+                    response_header = _client.OpcSession.TranslateBrowsePathsToNodeIds(null, pathsToTranslate, out results, out diagnosticInfos);
+                }
+                catch (Exception)
+                {
+
+                    throw;
+                }
+
+                foreach (var comp in c.Composition.Item)
+                {
+                    if (string.IsNullOrEmpty(comp.Identifier))
+                    {
+                        int index = Array.IndexOf(paths.ToArray(), comp.RelativePath);
+                        if (StatusCode.IsGood(results[index].StatusCode))
+                        {
+                            comp.NodeId = results[index].Targets[0].TargetId.ToString();
+                            logger.Debug(CultureInfo.InvariantCulture, "RelativePath \"{0}\" translates to NodeId \"{1}\"", comp.RelativePath, comp.NodeId);
+                        }
+                        else
+                        {
+                            logger.Error(CultureInfo.InvariantCulture, "RelativePath \"{0}\" failed to translate: \"{1}\"", comp.RelativePath, results[index].StatusCode);
+                        }
+                    }
+                }
+
 
                 foreach (PressureTemperature pt in c.PressureTemperatureList.Item)
                 {
