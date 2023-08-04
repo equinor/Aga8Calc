@@ -14,7 +14,7 @@ namespace Aga8CalcService
         private readonly Aga8OpcClient _client;
         private readonly ConfigModel conf;
         private static readonly NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
-        private readonly object WorkerLock = new object();
+        private readonly object WorkerLock = new();
         private bool working = false;
 
         public Aga8Calc()
@@ -81,10 +81,10 @@ namespace Aga8CalcService
 
         private void ReadFromOPC()
         {
-            NodeIdCollection nodes = new NodeIdCollection();
-            List<Type> types = new List<Type>();
-            List<object> result = new List<object>();
-            List<ServiceResult> errors = new List<ServiceResult>();
+            NodeIdCollection nodes = new();
+            List<Type> types = new();
+            List<object> result;
+            List<ServiceResult> errors;
 
             // Make a list of all the OPC NodeIds that we want to read
             foreach (var c in conf.ConfigList.Item)
@@ -208,21 +208,12 @@ namespace Aga8CalcService
         {
             var compositionError = new CompositionError();
             var densityError = new DensityError();
-
-            IEquation equation;
-
-            switch (conf.EquationOfState)
+            IEquation equation = conf.EquationOfState switch
             {
-                case ConfigModel.Equation.AGA8Detail:
-                    equation = new AGA8Detail();
-                    break;
-                case ConfigModel.Equation.Gerg2008:
-                    equation = new Gerg2008();
-                    break;
-                default:
-                    equation = new AGA8Detail();
-                    break;
-            }
+                ConfigModel.Equation.AGA8Detail => new AGA8Detail(),
+                ConfigModel.Equation.Gerg2008 => new Gerg2008(),
+                _ => new AGA8Detail(),
+            };
 
             foreach (var c in conf.ConfigList.Item)
             {
@@ -264,7 +255,7 @@ namespace Aga8CalcService
         private void WriteToOPC()
         {
             // Make a list of all the OPC items that we want to write
-            WriteValueCollection wvc = new WriteValueCollection();
+            WriteValueCollection wvc = new();
 
             foreach (var c in conf.ConfigList.Item)
             {
@@ -272,7 +263,7 @@ namespace Aga8CalcService
                 {
                     foreach (var property in pt.Properties.Item)
                     {
-                        StatusCode status = new StatusCode { Code = StatusCodes.Good };
+                        StatusCode status = new() { Code = StatusCodes.Good };
 
                         if (StatusCode.IsNotGood(c.Composition.Quality)
                             | StatusCode.IsNotGood(pt.TemperatureFunction.Quality)

@@ -138,37 +138,23 @@ namespace Aga8CalcService
 
         public double GetProperty(ConfigModel.Aga8ResultCode resultCode)
         {
-            switch (resultCode)
+            return resultCode switch
             {
-                case ConfigModel.Aga8ResultCode.MolarConcentration:
-                    return ResultProperties.d;
-                case ConfigModel.Aga8ResultCode.MolarMass:
-                    return ResultProperties.mm;
-                case ConfigModel.Aga8ResultCode.CompressibilityFactor:
-                    return ResultProperties.z;
-                case ConfigModel.Aga8ResultCode.InternalEnergy:
-                    return ResultProperties.u;
-                case ConfigModel.Aga8ResultCode.Enthalpy:
-                    return ResultProperties.h;
-                case ConfigModel.Aga8ResultCode.Entropy:
-                    return ResultProperties.s;
-                case ConfigModel.Aga8ResultCode.IsochoricHeatCapacity:
-                    return ResultProperties.cv;
-                case ConfigModel.Aga8ResultCode.IsobaricHeatCapacity:
-                    return ResultProperties.cp;
-                case ConfigModel.Aga8ResultCode.SpeedOfSound:
-                    return ResultProperties.w;
-                case ConfigModel.Aga8ResultCode.GibbsEnergy:
-                    return ResultProperties.g;
-                case ConfigModel.Aga8ResultCode.JouleThomsonCoefficient:
-                    return ResultProperties.jt;
-                case ConfigModel.Aga8ResultCode.IsentropicExponent:
-                    return ResultProperties.kappa;
-                case ConfigModel.Aga8ResultCode.Density:
-                    return ResultProperties.d * ResultProperties.mm; // g/l = kg/m³
-                default:
-                    return ResultProperties.d;
-            }
+                ConfigModel.Aga8ResultCode.MolarConcentration => ResultProperties.d,
+                ConfigModel.Aga8ResultCode.MolarMass => ResultProperties.mm,
+                ConfigModel.Aga8ResultCode.CompressibilityFactor => ResultProperties.z,
+                ConfigModel.Aga8ResultCode.InternalEnergy => ResultProperties.u,
+                ConfigModel.Aga8ResultCode.Enthalpy => ResultProperties.h,
+                ConfigModel.Aga8ResultCode.Entropy => ResultProperties.s,
+                ConfigModel.Aga8ResultCode.IsochoricHeatCapacity => ResultProperties.cv,
+                ConfigModel.Aga8ResultCode.IsobaricHeatCapacity => ResultProperties.cp,
+                ConfigModel.Aga8ResultCode.SpeedOfSound => ResultProperties.w,
+                ConfigModel.Aga8ResultCode.GibbsEnergy => ResultProperties.g,
+                ConfigModel.Aga8ResultCode.JouleThomsonCoefficient => ResultProperties.jt,
+                ConfigModel.Aga8ResultCode.IsentropicExponent => ResultProperties.kappa,
+                ConfigModel.Aga8ResultCode.Density => ResultProperties.d * ResultProperties.mm,// g/l = kg/m³
+                _ => ResultProperties.d,
+            };
         }
 
         public void Dispose()
@@ -257,37 +243,23 @@ namespace Aga8CalcService
 
         public double GetProperty(ConfigModel.Aga8ResultCode resultCode)
         {
-            switch (resultCode)
+            return resultCode switch
             {
-                case ConfigModel.Aga8ResultCode.MolarConcentration:
-                    return ResultProperties.d;
-                case ConfigModel.Aga8ResultCode.MolarMass:
-                    return ResultProperties.mm;
-                case ConfigModel.Aga8ResultCode.CompressibilityFactor:
-                    return ResultProperties.z;
-                case ConfigModel.Aga8ResultCode.InternalEnergy:
-                    return ResultProperties.u;
-                case ConfigModel.Aga8ResultCode.Enthalpy:
-                    return ResultProperties.h;
-                case ConfigModel.Aga8ResultCode.Entropy:
-                    return ResultProperties.s;
-                case ConfigModel.Aga8ResultCode.IsochoricHeatCapacity:
-                    return ResultProperties.cv;
-                case ConfigModel.Aga8ResultCode.IsobaricHeatCapacity:
-                    return ResultProperties.cp;
-                case ConfigModel.Aga8ResultCode.SpeedOfSound:
-                    return ResultProperties.w;
-                case ConfigModel.Aga8ResultCode.GibbsEnergy:
-                    return ResultProperties.g;
-                case ConfigModel.Aga8ResultCode.JouleThomsonCoefficient:
-                    return ResultProperties.jt;
-                case ConfigModel.Aga8ResultCode.IsentropicExponent:
-                    return ResultProperties.kappa;
-                case ConfigModel.Aga8ResultCode.Density:
-                    return ResultProperties.d * ResultProperties.mm;
-                default:
-                    return ResultProperties.d;
-            }
+                ConfigModel.Aga8ResultCode.MolarConcentration => ResultProperties.d,
+                ConfigModel.Aga8ResultCode.MolarMass => ResultProperties.mm,
+                ConfigModel.Aga8ResultCode.CompressibilityFactor => ResultProperties.z,
+                ConfigModel.Aga8ResultCode.InternalEnergy => ResultProperties.u,
+                ConfigModel.Aga8ResultCode.Enthalpy => ResultProperties.h,
+                ConfigModel.Aga8ResultCode.Entropy => ResultProperties.s,
+                ConfigModel.Aga8ResultCode.IsochoricHeatCapacity => ResultProperties.cv,
+                ConfigModel.Aga8ResultCode.IsobaricHeatCapacity => ResultProperties.cp,
+                ConfigModel.Aga8ResultCode.SpeedOfSound => ResultProperties.w,
+                ConfigModel.Aga8ResultCode.GibbsEnergy => ResultProperties.g,
+                ConfigModel.Aga8ResultCode.JouleThomsonCoefficient => ResultProperties.jt,
+                ConfigModel.Aga8ResultCode.IsentropicExponent => ResultProperties.kappa,
+                ConfigModel.Aga8ResultCode.Density => ResultProperties.d * ResultProperties.mm,
+                _ => ResultProperties.d,
+            };
         }
 
         public void Dispose()

@@ -102,7 +102,7 @@ namespace Aga8CalcService
 
         public static ConfigModel ReadConfig(string file)
         {
-            XmlReaderSettings readerSettings = new XmlReaderSettings
+            XmlReaderSettings readerSettings = new()
             {
                 IgnoreComments = true,
                 IgnoreProcessingInstructions = true,
@@ -110,7 +110,7 @@ namespace Aga8CalcService
             };
 
             XmlReader configFileReader = XmlReader.Create(file, readerSettings);
-            XmlSerializer configSerializer = new XmlSerializer(typeof(ConfigModel));
+            XmlSerializer configSerializer = new(typeof(ConfigModel));
             ConfigModel result = (ConfigModel)configSerializer.Deserialize(configFileReader);
             configFileReader.Close();
 
@@ -149,7 +149,7 @@ namespace Aga8CalcService
 
         public Aga8Composition GetScaledValues()
         {
-            Aga8Composition comp = new Aga8Composition();
+            Aga8Composition comp = new();
 
             foreach (var component in Item)
             {
@@ -278,7 +278,7 @@ namespace Aga8CalcService
                     break;
                 case ConfigModel.Func.Median:
                     value = 0.0;
-                    List<double> v = new List<double>();
+                    List<double> v = new();
                     foreach (var it in Item)
                     {
                         v.Add(it.GetAGA8Converted());
@@ -356,7 +356,7 @@ namespace Aga8CalcService
                     break;
                 case ConfigModel.Func.Median:
                     value = 0.0;
-                    List<double> v = new List<double>();
+                    List<double> v = new();
                     foreach (var it in Item)
                     {
                         v.Add(it.GetAGA8Converted());
