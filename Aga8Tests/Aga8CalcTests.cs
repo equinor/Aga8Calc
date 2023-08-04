@@ -2,6 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Globalization;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
@@ -522,6 +523,16 @@ namespace Aga8Tests
             Assert.IsNotNull(client.OpcSession);
             Assert.IsTrue(client.OpcSession.Connected);
             client.DisConnect();
+        }
+
+        [TestMethod]
+        public void Aga8OpcClient_Communicate()
+        {
+            ConfigModel config = ReadConfig("Aga8Calc.config");
+            Aga8Calc aga8Calc = new();
+            aga8Calc.Start();
+            Thread.Sleep((int)(config.Interval * 2.5));
+            aga8Calc.Stop();
         }
 
         [TestClass]

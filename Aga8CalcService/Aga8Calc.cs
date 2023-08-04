@@ -135,7 +135,7 @@ namespace Aga8CalcService
                     {
                         // If NodeId is empty, then we assume that Value is given a
                         // constant value in the config file
-                        logger.Debug(CultureInfo.InvariantCulture, "\"{0}\" Component Value: {1} Name: {2}",
+                        logger.Debug(CultureInfo.InvariantCulture, "\"{0}\" Component Value: {1} Name: {2} constant value",
                             c.Name, component.GetScaledValue(), component.Name);
                         continue;
                     }
@@ -363,15 +363,20 @@ namespace Aga8CalcService
         {
             foreach (var c in conf.ConfigList.Item)
             {
-                BrowsePathCollection pathsToTranslate = new BrowsePathCollection();
-                List<string> paths = new List<string>();
-                TypeTable typeTable = new TypeTable(new NamespaceTable());
+                BrowsePathCollection pathsToTranslate = new();
+                List<string> paths = new();
+                TypeTable typeTable = new(new NamespaceTable());
 
                 foreach (Component comp in c.Composition.Item)
                 {
+                    if (string.IsNullOrEmpty(comp.Identifier) && string.IsNullOrEmpty(comp.RelativePath))
+                    {
+                        continue;
+                    }
+
                     if (!string.IsNullOrEmpty(comp.Identifier) && !string.IsNullOrEmpty(comp.RelativePath))
                     {
-                        logger.Warn(CultureInfo.InvariantCulture, "Identifier \"{0}\" and RelativePath \"{1}\" defined for \"{2}\".", comp.Identifier, comp.RelativePath, comp.Name);
+                        logger.Warn(CultureInfo.InvariantCulture, "Identifier \"{0}\" and RelativePath \"{1}\" defined for \"{2}\". Identifier will be used and RelativePath will be ignored.", comp.Identifier, comp.RelativePath, comp.Name);
                     }
 
                     string namespaceURI = conf.DefaultNamespaceURI;
@@ -385,8 +390,18 @@ namespace Aga8CalcService
 
                     if (!string.IsNullOrEmpty(comp.RelativePath) && string.IsNullOrEmpty(comp.Identifier))
                     {
-                        BrowsePath pathToTranslate = new BrowsePath();
-                        NodeId startNode = new NodeId(ObjectIds.ObjectsFolder);
+                        BrowsePath pathToTranslate = new();
+                        NodeId startNode;
+                        
+                        if (!string.IsNullOrEmpty(comp.StartIdentifier))
+                        {
+                            startNode = new NodeId(String.Format("ns={0};{1}", namespaceIndex, comp.StartIdentifier));
+                        }
+                        else
+                        {
+                            startNode = new NodeId(ObjectIds.ObjectsFolder);
+                        }
+
                         paths.Add(comp.RelativePath);
 
                         RelativePath path = RelativePath.Parse(comp.RelativePath, typeTable);
@@ -419,10 +434,10 @@ namespace Aga8CalcService
 
                 foreach (var comp in c.Composition.Item)
                 {
-                    if (string.IsNullOrEmpty(comp.Identifier))
+                    if (string.IsNullOrEmpty(comp.Identifier) && !string.IsNullOrEmpty(comp.RelativePath))
                     {
                         int index = Array.IndexOf(paths.ToArray(), comp.RelativePath);
-                        if (StatusCode.IsGood(results[index].StatusCode))
+                        if (index >= 0 && StatusCode.IsGood(results[index].StatusCode))
                         {
                             comp.NodeId = results[index].Targets[0].TargetId.ToString();
                             logger.Debug(CultureInfo.InvariantCulture, "RelativePath \"{0}\" translates to NodeId \"{1}\"", comp.RelativePath, comp.NodeId);
