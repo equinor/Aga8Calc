@@ -331,131 +331,107 @@ namespace Aga8CalcService
             logger.Info("Stopping service.");
         }
 
-        private string GenerateNodeIdString(Measurement m)
+        private void GenerateNodeIdString(IEnumerable<Measurement> measurement)
         {
-            if (m.Identifier == null)
+            BrowsePathCollection pathsToTranslate = new();
+            List<string> paths = new();
+            TypeTable typeTable = new(new NamespaceTable());
+
+            foreach (var m in measurement)
             {
-                return null;
-            }
-            // Normally use the default namespace URI
-            string namespaceURI = conf.DefaultNamespaceURI;
-            // Use custom namespace URI if it exists
-            if (!string.IsNullOrEmpty(m.NamespaceURI)) { namespaceURI = m.NamespaceURI; }
-            int namespaceIndex = Array.IndexOf(_client.OpcSession.NamespaceUris.ToArray(), namespaceURI);
-            if (namespaceIndex < 0)
-            {
-                logger.Error(CultureInfo.InvariantCulture, "Namespace URI \"{0}\" not found.", namespaceURI);
-                return null;
+                if (string.IsNullOrEmpty(m.Identifier) && string.IsNullOrEmpty(m.RelativePath))
+                {
+                    continue;
+                }
+
+                if (!string.IsNullOrEmpty(m.Identifier) && !string.IsNullOrEmpty(m.RelativePath))
+                {
+                    logger.Warn(CultureInfo.InvariantCulture, "Identifier \"{0}\" and RelativePath \"{1}\" defined for \"{2}\". Identifier will be used and RelativePath will be ignored.", m.Identifier, m.RelativePath, "placeholder");
+                }
+
+                string namespaceURI = conf.DefaultNamespaceURI;
+                if (!string.IsNullOrEmpty(m.NamespaceURI)) { namespaceURI = m.NamespaceURI; }
+                int namespaceIndex = Array.IndexOf(_client.OpcSession.NamespaceUris.ToArray(), namespaceURI);
+                if (namespaceIndex < 0)
+                {
+                    logger.Error(CultureInfo.InvariantCulture, "Namespace URI \"{0}\" not found.", namespaceURI);
+                    continue;
+                }
+
+                if (!string.IsNullOrEmpty(m.RelativePath) && string.IsNullOrEmpty(m.Identifier))
+                {
+                    BrowsePath pathToTranslate = new();
+                    NodeId startNode;
+
+                    if (!string.IsNullOrEmpty(m.StartIdentifier))
+                    {
+                        startNode = new NodeId(String.Format("ns={0};{1}", namespaceIndex, m.StartIdentifier));
+                    }
+                    else
+                    {
+                        startNode = new NodeId(ObjectIds.ObjectsFolder);
+                    }
+
+                    paths.Add(m.RelativePath);
+
+                    RelativePath path = RelativePath.Parse(m.RelativePath, typeTable);
+                    path.Elements.ForEach(e => { e.TargetName = new QualifiedName(e.TargetName.Name, (ushort)namespaceIndex); });
+
+                    pathToTranslate.StartingNode = startNode;
+                    pathToTranslate.RelativePath = path;
+                    pathsToTranslate.Add(pathToTranslate);
+                }
+
+                if (!string.IsNullOrEmpty(m.Identifier))
+                {
+                    m.NodeId = String.Format("ns={0};{1}", namespaceIndex, m.Identifier);
+                }
             }
 
-            return String.Format("ns={0};{1}", namespaceIndex, m.Identifier);
+            if (pathsToTranslate.Count > 0)
+            {
+                BrowsePathResultCollection results;
+                DiagnosticInfoCollection diagnosticInfos;
+                try
+                {
+                    _client.OpcSession.TranslateBrowsePathsToNodeIds(null, pathsToTranslate, out results, out diagnosticInfos);
+                }
+                catch (Exception e)
+                {
+                    logger.Fatal(e, "Failed to translate browse paths.");
+                    throw;
+                }
+
+                foreach (var m in measurement)
+                {
+                    if (string.IsNullOrEmpty(m.Identifier) && !string.IsNullOrEmpty(m.RelativePath))
+                    {
+                        int index = Array.IndexOf(paths.ToArray(), m.RelativePath);
+                        if (index >= 0 && StatusCode.IsGood(results[index].StatusCode))
+                        {
+                            m.NodeId = results[index].Targets[0].TargetId.ToString();
+                            logger.Debug(CultureInfo.InvariantCulture, "RelativePath \"{0}\" translates to NodeId \"{1}\"", m.RelativePath, m.NodeId);
+                        }
+                        else
+                        {
+                            logger.Error(CultureInfo.InvariantCulture, "RelativePath \"{0}\" failed to translate: \"{1}\"", m.RelativePath, results[index].StatusCode);
+                        }
+                    }
+                }
+            }
         }
+
         private void GenerateNodeIds()
         {
             foreach (var c in conf.ConfigList.Item)
             {
-                BrowsePathCollection pathsToTranslate = new();
-                List<string> paths = new();
-                TypeTable typeTable = new(new NamespaceTable());
-
-                foreach (Component comp in c.Composition.Item)
-                {
-                    if (string.IsNullOrEmpty(comp.Identifier) && string.IsNullOrEmpty(comp.RelativePath))
-                    {
-                        continue;
-                    }
-
-                    if (!string.IsNullOrEmpty(comp.Identifier) && !string.IsNullOrEmpty(comp.RelativePath))
-                    {
-                        logger.Warn(CultureInfo.InvariantCulture, "Identifier \"{0}\" and RelativePath \"{1}\" defined for \"{2}\". Identifier will be used and RelativePath will be ignored.", comp.Identifier, comp.RelativePath, comp.Name);
-                    }
-
-                    string namespaceURI = conf.DefaultNamespaceURI;
-                    if (!string.IsNullOrEmpty(comp.NamespaceURI)) { namespaceURI = comp.NamespaceURI; }
-                    int namespaceIndex = Array.IndexOf(_client.OpcSession.NamespaceUris.ToArray(), namespaceURI);
-                    if (namespaceIndex < 0)
-                    {
-                        logger.Error(CultureInfo.InvariantCulture, "Namespace URI \"{0}\" not found.", namespaceURI);
-                        continue;
-                    }
-
-                    if (!string.IsNullOrEmpty(comp.RelativePath) && string.IsNullOrEmpty(comp.Identifier))
-                    {
-                        BrowsePath pathToTranslate = new();
-                        NodeId startNode;
-                        
-                        if (!string.IsNullOrEmpty(comp.StartIdentifier))
-                        {
-                            startNode = new NodeId(String.Format("ns={0};{1}", namespaceIndex, comp.StartIdentifier));
-                        }
-                        else
-                        {
-                            startNode = new NodeId(ObjectIds.ObjectsFolder);
-                        }
-
-                        paths.Add(comp.RelativePath);
-
-                        RelativePath path = RelativePath.Parse(comp.RelativePath, typeTable);
-                        path.Elements.ForEach(e => { e.TargetName = new QualifiedName(e.TargetName.Name, (ushort)namespaceIndex); });
-
-                        pathToTranslate.StartingNode = startNode;
-                        pathToTranslate.RelativePath = path;
-                        pathsToTranslate.Add(pathToTranslate);
-                    }
-
-                    if (!string.IsNullOrEmpty(comp.Identifier))
-                    {
-                        comp.NodeId = String.Format("ns={0};{1}", namespaceIndex, comp.Identifier);
-                    }
-                }
-
-                BrowsePathResultCollection results = null;
-                DiagnosticInfoCollection diagnosticInfos = null;
-                ResponseHeader response_header;
-
-                try
-                {
-                    response_header = _client.OpcSession.TranslateBrowsePathsToNodeIds(null, pathsToTranslate, out results, out diagnosticInfos);
-                }
-                catch (Exception)
-                {
-
-                    throw;
-                }
-
-                foreach (var comp in c.Composition.Item)
-                {
-                    if (string.IsNullOrEmpty(comp.Identifier) && !string.IsNullOrEmpty(comp.RelativePath))
-                    {
-                        int index = Array.IndexOf(paths.ToArray(), comp.RelativePath);
-                        if (index >= 0 && StatusCode.IsGood(results[index].StatusCode))
-                        {
-                            comp.NodeId = results[index].Targets[0].TargetId.ToString();
-                            logger.Debug(CultureInfo.InvariantCulture, "RelativePath \"{0}\" translates to NodeId \"{1}\"", comp.RelativePath, comp.NodeId);
-                        }
-                        else
-                        {
-                            logger.Error(CultureInfo.InvariantCulture, "RelativePath \"{0}\" failed to translate: \"{1}\"", comp.RelativePath, results[index].StatusCode);
-                        }
-                    }
-                }
-
+                GenerateNodeIdString(c.Composition.Item);
 
                 foreach (PressureTemperature pt in c.PressureTemperatureList.Item)
                 {
-                    foreach (PressureMeasurement pm in pt.PressureFunction.Item)
-                    {
-                        pm.NodeId = GenerateNodeIdString(pm);
-                    }
-                    foreach (TemperatureMeasurement tm in pt.TemperatureFunction.Item)
-                    {
-                        tm.NodeId = GenerateNodeIdString(tm);
-                    }
-
-                    foreach (var property in pt.Properties.Item)
-                    {
-                        property.NodeId = GenerateNodeIdString(property);
-                    }
+                    GenerateNodeIdString(pt.PressureFunction.Item);
+                    GenerateNodeIdString(pt.TemperatureFunction.Item);
+                    GenerateNodeIdString(pt.Properties.Item);
                 }
             }
         }
