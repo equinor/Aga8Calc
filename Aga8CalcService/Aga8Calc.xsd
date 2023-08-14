@@ -3,6 +3,14 @@
   xmlns:xs="http://www.w3.org/2001/XMLSchema">
   <xs:element name="configuration" type="configurationType" />
 
+  <xs:attributeGroup name="MeasurementType">
+    <xs:attribute type="xs:string" name="NamespaceURI" use="optional" />
+    <xs:attribute type="xs:string" name="Identifier" use="optional" />
+    <xs:attribute type="xs:string" name="RelativePath" use="optional" />
+    <xs:attribute type="xs:string" name="StartIdentifier" use="optional" />
+    <xs:attribute type="xs:string" name="Value" use="optional" />
+  </xs:attributeGroup>
+
   <xs:complexType name="ComponentType">
     <xs:simpleContent>
       <xs:extension base="xs:string">
@@ -33,11 +41,8 @@
             </xs:restriction>
           </xs:simpleType>
         </xs:attribute>
-        <xs:attribute type="xs:string" name="RelativePath" use="optional" />
+        <xs:attributeGroup ref="MeasurementType" />
         <xs:attribute type="xs:float" name="ScaleFactor" use="optional" />
-        <xs:attribute type="xs:string" name="Identifier" use="optional" />
-        <xs:attribute type="xs:string" name="StartIdentifier" use="optional" />
-        <xs:attribute type="xs:float" name="Value" use="optional" />
       </xs:extension>
     </xs:simpleContent>
   </xs:complexType>
@@ -56,14 +61,6 @@
       <xs:enumeration value="Median" />
     </xs:restriction>
   </xs:simpleType>
-
-  <xs:attributeGroup name="MeasurementType">
-    <xs:attribute type="xs:string" name="NamespaceURI" use="optional" />
-    <xs:attribute type="xs:string" name="Identifier" use="optional" />
-    <xs:attribute type="xs:string" name="RelativePath" use="optional" />
-    <xs:attribute type="xs:string" name="StartIdentifier" use="optional" />
-    <xs:attribute type="xs:string" name="Value" use="optional" />
-  </xs:attributeGroup>
 
   <xs:complexType name="PressureType">
     <xs:simpleContent>
@@ -108,7 +105,7 @@
 
   <xs:complexType name="TemperatureFunctionType">
     <xs:sequence>
-      <xs:element type="TemperatureType" name="Temperature" maxOccurs="unbounded" minOccurs="0" />
+      <xs:element type="TemperatureType" name="Temperature" maxOccurs="unbounded" minOccurs="1" />
     </xs:sequence>
     <xs:attribute name="MathFunction" type="MathFunctionType" use="optional" />
   </xs:complexType>
@@ -144,7 +141,6 @@
             </xs:restriction>
           </xs:simpleType>
         </xs:attribute>
-
       </xs:extension>
     </xs:simpleContent>
   </xs:complexType>
@@ -185,7 +181,7 @@
   </xs:complexType>
 
   <xs:complexType name="configurationType">
-    <xs:sequence>
+    <xs:all>
       <xs:element type="xs:string" name="OpcUrl" minOccurs="1" />
       <xs:element type="xs:string" name="OpcUser" minOccurs="0" />
       <xs:element type="xs:string" name="OpcPassword" minOccurs="0" />
@@ -200,6 +196,6 @@
         </xs:simpleType>
       </xs:element>
       <xs:element type="ConfigListType" name="ConfigList" minOccurs="1" />
-    </xs:sequence>
+    </xs:all>
   </xs:complexType>
 </xs:schema>
