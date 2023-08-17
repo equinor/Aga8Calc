@@ -157,6 +157,7 @@ namespace Aga8CalcService
 
                 foreach (var pt in c.PressureTemperatureList.Item)
                 {
+                    pt.PressureFunction.Quality = StatusCodes.Good;
                     foreach (PressureMeasurement pm in pt.PressureFunction.Item)
                     {
                         pm.Quality = errors[it].StatusCode;
@@ -219,6 +220,7 @@ namespace Aga8CalcService
             {
                 equation.SetComposition(c.Composition.GetScaledValues(), ref compositionError);
 
+                c.Composition.Quality = StatusCodes.Good;
                 if (compositionError != CompositionError.Ok)
                 {
                     c.Composition.Quality = StatusCodes.Bad;
@@ -261,17 +263,19 @@ namespace Aga8CalcService
             {
                 foreach (var pt in c.PressureTemperatureList.Item)
                 {
+                    StatusCode status = new() { Code = StatusCodes.Good };
+
+                    if (StatusCode.IsNotGood(c.Composition.Quality)
+                        | StatusCode.IsNotGood(pt.TemperatureFunction.Quality)
+                        | StatusCode.IsNotGood(pt.PressureFunction.Quality))
+                    {
+                        status.Code = StatusCodes.Uncertain;
+                        logger.Warn(CultureInfo.InvariantCulture, "Bad quality in inputs for {0}", pt.Name);
+                        continue;
+                    }
+
                     foreach (var property in pt.Properties.Item)
                     {
-                        StatusCode status = new() { Code = StatusCodes.Good };
-
-                        if (StatusCode.IsNotGood(c.Composition.Quality)
-                            | StatusCode.IsNotGood(pt.TemperatureFunction.Quality)
-                            | StatusCode.IsNotGood(pt.PressureFunction.Quality))
-                        {
-                            status.Code = StatusCodes.Uncertain;
-                        }
-
                         wvc.Add(new WriteValue
                         {
                             NodeId = property.NodeId,
@@ -292,7 +296,10 @@ namespace Aga8CalcService
 
             try
             {
-                _client.OpcSession.Write(null, wvc, out StatusCodeCollection results, out DiagnosticInfoCollection diagnosticInfos);
+                StatusCodeCollection results = new();
+                if (wvc.Count > 0) {
+                    _client.OpcSession.Write(null, wvc, out results, out DiagnosticInfoCollection diagnosticInfos);
+                }
 
                 for (int i = 0; i < results.Count; i++)
                 {
