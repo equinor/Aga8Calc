@@ -147,7 +147,7 @@
 
   <xs:complexType name="PropertiesType">
     <xs:sequence>
-      <xs:element type="PropertyType" name="Property" />
+      <xs:element type="PropertyType" name="Property" maxOccurs="unbounded" minOccurs="1" />
     </xs:sequence>
   </xs:complexType>
 
@@ -162,7 +162,7 @@
 
   <xs:complexType name="PressureTemperatureListType">
     <xs:sequence>
-      <xs:element type="PressureTemperatureType" name="PressureTemperature" />
+      <xs:element type="PressureTemperatureType" name="PressureTemperature" maxOccurs="unbounded" minOccurs="1" />
     </xs:sequence>
   </xs:complexType>
 
