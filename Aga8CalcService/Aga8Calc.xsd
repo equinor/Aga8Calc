@@ -8,7 +8,8 @@
     <xs:attribute type="xs:string" name="Identifier" use="optional" />
     <xs:attribute type="xs:string" name="RelativePath" use="optional" />
     <xs:attribute type="xs:string" name="StartIdentifier" use="optional" />
-    <xs:attribute type="xs:string" name="Value" use="optional" />
+    <xs:attribute type="xs:double" name="Value" use="optional" />
+    <xs:attribute type="xs:int" name="SamplingInterval" use="optional" />
   </xs:attributeGroup>
 
   <xs:complexType name="ComponentType">
@@ -51,6 +52,7 @@
     <xs:sequence>
       <xs:element type="ComponentType" name="Component" maxOccurs="21" minOccurs="1" />
     </xs:sequence>
+    <xs:attribute type="xs:int" name="SamplingInterval" use="optional" />
   </xs:complexType>
 
   <xs:simpleType name="MathFunctionType">

@@ -142,6 +142,8 @@ namespace Aga8CalcService
     public class CompositionList
     {
         public CompositionList() { Item = new List<Component>(); }
+        [XmlAttribute]
+        public int SamplingInterval { get; set; } = 180000;
         [XmlElement("Component")]
         public List<Component> Item { get; }
 
@@ -439,6 +441,8 @@ namespace Aga8CalcService
         public string Type { get; set; }
         [XmlAttribute]
         public double Value { get; set; }
+        [XmlAttribute]
+        public int SamplingInterval { get; set; } = -2;
 
         [XmlIgnore]
         public StatusCode Quality { get; set; }
