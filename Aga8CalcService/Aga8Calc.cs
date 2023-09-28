@@ -102,7 +102,36 @@ namespace Aga8CalcService
                 }
                 logger.Debug(CultureInfo.InvariantCulture, "Composition sum {0}", compositionSum);
 
-                equation.SetComposition(c.Composition.GetScaledValues(), ref compositionError);
+                Aga8Composition composition = c.Composition.GetScaledValues();
+                if (c.Composition.Normalize)
+                {
+                    logger.Debug(CultureInfo.InvariantCulture, "Normalizing composition for {0}", c.Name);
+                    double factor = 1.0 / compositionSum;
+
+                    composition.Methane *= factor;
+                    composition.Nitrogen *= factor;
+                    composition.CarbonDioxide *= factor;
+                    composition.Ethane *= factor;
+                    composition.Propane *= factor;
+                    composition.IsoButane *= factor;
+                    composition.NormalButane *= factor;
+                    composition.IsoPentane *= factor;
+                    composition.NormalPentane *= factor;
+                    composition.Hexane *= factor;
+                    composition.Heptane *= factor;
+                    composition.Octane *= factor;
+                    composition.Nonane *= factor;
+                    composition.Decane *= factor;
+                    composition.Hydrogen *= factor;
+                    composition.Oxygen *= factor;
+                    composition.CarbonMonoxide *= factor;
+                    composition.Water *= factor;
+                    composition.HydrogenSulfide *= factor;
+                    composition.Helium *= factor;
+                    composition.Argon *= factor;
+                }
+
+                equation.SetComposition(composition, ref compositionError);
 
                 c.Composition.Quality = StatusCodes.Good;
                 if (compositionError != CompositionError.Ok)
@@ -115,8 +144,8 @@ namespace Aga8CalcService
 
                 foreach (var pt in c.PressureTemperatureList.Item)
                 {
-                    logger.Debug(CultureInfo.InvariantCulture, "Pressure function {0}", pt.PressureFunction.GetValue());
-                    logger.Debug(CultureInfo.InvariantCulture, "Temperature function {0}", pt.TemperatureFunction.GetValue());
+                    logger.Debug(CultureInfo.InvariantCulture, "{0} Pressure function {1}", pt.Name, pt.PressureFunction.GetValue());
+                    logger.Debug(CultureInfo.InvariantCulture, "{0} Temperature function {1}", pt.Name, pt.TemperatureFunction.GetValue());
 
                     equation.SetPressure(pt.PressureFunction.GetValue());
                     equation.SetTemperature(pt.TemperatureFunction.GetValue());
@@ -285,7 +314,7 @@ namespace Aga8CalcService
             try
             {
                 MonitoredItemNotification notification = e.NotificationValue as MonitoredItemNotification;
-                logger.Debug(CultureInfo.InvariantCulture, "Subscription: {0}, Notification: {1} \"{2}\" and Value = {3}", monitoredItem.Subscription.Id, notification.Message.SequenceNumber, monitoredItem.DisplayName, notification.Value);
+                logger.Debug(CultureInfo.InvariantCulture, "Subscription: {0}, Notification: {1} \"{2}\" Value = {3}", monitoredItem.Subscription.Id, notification.Message.SequenceNumber, monitoredItem.DisplayName, notification.Value);
 
                 if (notification != null)
                 {

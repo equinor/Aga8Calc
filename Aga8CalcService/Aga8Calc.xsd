@@ -53,6 +53,7 @@
       <xs:element type="ComponentType" name="Component" maxOccurs="21" minOccurs="1" />
     </xs:sequence>
     <xs:attribute type="xs:int" name="SamplingInterval" use="optional" />
+    <xs:attribute type="xs:boolean" name="Normalize" use="optional" />
   </xs:complexType>
 
   <xs:simpleType name="MathFunctionType">

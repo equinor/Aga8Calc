@@ -144,6 +144,8 @@ namespace Aga8CalcService
         public CompositionList() { Item = new List<Component>(); }
         [XmlAttribute]
         public int SamplingInterval { get; set; } = 180000;
+        [XmlAttribute]
+        public bool Normalize { get; set; }
         [XmlElement("Component")]
         public List<Component> Item { get; }
 
