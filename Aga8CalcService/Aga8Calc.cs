@@ -1,10 +1,12 @@
 ﻿using Opc.Ua;
+using Opc.Ua.Client;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Reflection;
 using System.Timers;
+using System.Xml.Linq;
 
 namespace Aga8CalcService
 {
@@ -14,8 +16,9 @@ namespace Aga8CalcService
         private readonly Aga8OpcClient _client;
         private readonly ConfigModel conf;
         private static readonly NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
-        private readonly object WorkerLock = new object();
+        private readonly object WorkerLock = new();
         private bool working = false;
+        private Subscription subscription;
 
         public Aga8Calc()
         {
@@ -68,7 +71,6 @@ namespace Aga8CalcService
             lock (WorkerLock)
             {
                 working = true;
-                ReadFromOPC();
                 Calculate();
                 WriteToOPC();
                 working = false;
@@ -79,171 +81,78 @@ namespace Aga8CalcService
             logger.Debug(CultureInfo.InvariantCulture, "Worker elapsed time: {0} ms.", watch.ElapsedMilliseconds);
         }
 
-        private void ReadFromOPC()
-        {
-            NodeIdCollection nodes = new NodeIdCollection();
-            List<Type> types = new List<Type>();
-            List<object> result = new List<object>();
-            List<ServiceResult> errors = new List<ServiceResult>();
-
-            // Make a list of all the OPC NodeIds that we want to read
-            foreach (var c in conf.ConfigList.Item)
-            {
-                foreach (Component comp in c.Composition.Item)
-                {
-                    if (string.IsNullOrEmpty(comp.NodeId)) { continue; }
-
-                    nodes.Add(comp.NodeId); types.Add(typeof(object));
-                }
-
-                foreach (PressureTemperature pt in c.PressureTemperatureList.Item)
-                {
-                    foreach (PressureMeasurement pm in pt.PressureFunction.Item)
-                    {
-                        nodes.Add(pm.NodeId); types.Add(typeof(object));
-                    }
-                    foreach (TemperatureMeasurement tm in pt.TemperatureFunction.Item)
-                    {
-                        nodes.Add(tm.NodeId); types.Add(typeof(object));
-                    }
-                }
-            }
-
-            foreach (var item in nodes)
-            {
-                logger.Debug(CultureInfo.InvariantCulture, "NodeIds to read: \"{0}\"", item.ToString());
-            }
-
-            // Read all of the inputs
-            try
-            {
-                _client.OpcSession.ReadValues(nodes, types, out result, out errors);
-            }
-            catch (Exception e)
-            {
-                logger.Error(e, "Error reading values from OPC.");
-                return;
-            }
-
-            int it = 0;
-            foreach (var c in conf.ConfigList.Item)
-            {
-                foreach (var component in c.Composition.Item)
-                {
-                    component.Quality = errors[it].StatusCode;
-                    if (string.IsNullOrEmpty(component.Identifier))
-                    {
-                        // If identifier is empty, then we assume that Value is given a
-                        // constant value in the config file
-                        logger.Debug(CultureInfo.InvariantCulture, "\"{0}\" Component Value: {1} Name: {2}",
-                            c.Name, component.GetScaledValue(), component.Name);
-                        continue;
-                    }
-
-                    if (StatusCode.IsGood(component.Quality))
-                    {
-                        component.Value = Convert.ToDouble(result[it], CultureInfo.InvariantCulture);
-                        logger.Debug(CultureInfo.InvariantCulture, "\"{0}\" Component Value: {1} Name: {2} NodeId: \"{3}\"",
-                            c.Name, component.GetScaledValue(), component.Name, component.NodeId);
-                    }
-                    else
-                    {
-                        logger.Warn(CultureInfo.InvariantCulture, "\"{0}\" NodeId: \"{1}\" Quality: \"{2}\"",
-                            c.Name, component.NodeId, component.Quality.ToString());
-                    }
-
-                    it++;
-                }
-
-                foreach (var pt in c.PressureTemperatureList.Item)
-                {
-                    foreach (PressureMeasurement pm in pt.PressureFunction.Item)
-                    {
-                        pm.Quality = errors[it].StatusCode;
-                        if (StatusCode.IsGood(pm.Quality))
-                        {
-                            pm.Value = Convert.ToDouble(result[it], CultureInfo.InvariantCulture);
-                            logger.Debug(CultureInfo.InvariantCulture, "\"{0}\" PressureFunc Value: {1} Unit: \"{2}\" NodeId: \"{3}\"",
-                                pm.Name, pm.Value, pm.Unit, pm.NodeId);
-                        }
-                        else
-                        {
-                            pt.PressureFunction.Quality = pm.Quality;
-                            logger.Warn(CultureInfo.InvariantCulture, "\"{0}\" NodeId: \"{1}\" Quality: \"{2}\"",
-                                pm.Name, pm.NodeId, pm.Quality.ToString());
-                        }
-
-                        it++;
-                    }
-
-                    logger.Debug(CultureInfo.InvariantCulture, "\"{0}\" Pressure function: \"{1}\" Result value: {2} kPa {3}",
-                        pt.Name, pt.PressureFunction.MathFunction.ToString(), pt.PressureFunction.GetValue(), pt.PressureFunction.Quality.ToString());
-
-                    foreach (TemperatureMeasurement tm in pt.TemperatureFunction.Item)
-                    {
-                        tm.Quality = errors[it].StatusCode;
-                        if (StatusCode.IsGood(tm.Quality))
-                        {
-                            tm.Value = Convert.ToDouble(result[it], CultureInfo.InvariantCulture);
-                            logger.Debug(CultureInfo.InvariantCulture, "\"{0}\" TemperatureFunc Value: {1} Unit: \"{2}\" NodeId: \"{3}\"",
-                                tm.Name, tm.Value, tm.Unit, tm.NodeId);
-                        }
-                        else
-                        {
-                            pt.TemperatureFunction.Quality = tm.Quality;
-                            logger.Warn(CultureInfo.InvariantCulture, "\"{0}\" NodeId: \"{1}\" Quality: \"{2}\"",
-                                tm.Name, tm.NodeId, tm.Quality.ToString());
-                        }
-
-                        it++;
-                    }
-
-                    logger.Debug(CultureInfo.InvariantCulture, "\"{0}\" Temperature function: \"{1}\" Result value: {2} K {3}",
-                        pt.Name, pt.TemperatureFunction.MathFunction.ToString(), pt.TemperatureFunction.GetValue(), pt.TemperatureFunction.Quality.ToString());
-                }
-            }
-        }
-
         private void Calculate()
         {
             var compositionError = new CompositionError();
             var densityError = new DensityError();
-
-            IEquation equation;
-
-            switch (conf.EquationOfState)
+            IEquation equation = conf.EquationOfState switch
             {
-                case ConfigModel.Equation.AGA8Detail:
-                    equation = new AGA8Detail();
-                    break;
-                case ConfigModel.Equation.Gerg2008:
-                    equation = new Gerg2008();
-                    break;
-                default:
-                    equation = new AGA8Detail();
-                    break;
-            }
+                ConfigModel.Equation.AGA8Detail => new AGA8Detail(),
+                ConfigModel.Equation.Gerg2008 => new Gerg2008(),
+                _ => new AGA8Detail(),
+            };
 
             foreach (var c in conf.ConfigList.Item)
             {
-                equation.SetComposition(c.Composition.GetScaledValues(), ref compositionError);
+                double compositionSum = 0.0;
+                foreach (var comp in c.Composition.Item)
+                {
+                    compositionSum += comp.GetScaledValue();
+                    logger.Debug(CultureInfo.InvariantCulture, "Component {0}, scaled value {1}", comp.Name, comp.GetScaledValue());
+                }
+                logger.Debug(CultureInfo.InvariantCulture, "Composition sum {0}", compositionSum);
 
+                Aga8Composition composition = c.Composition.GetScaledValues();
+                if (c.Composition.Normalize)
+                {
+                    logger.Debug(CultureInfo.InvariantCulture, "Normalizing composition for {0}", c.Name);
+                    double factor = 1.0 / compositionSum;
+
+                    composition.Methane *= factor;
+                    composition.Nitrogen *= factor;
+                    composition.CarbonDioxide *= factor;
+                    composition.Ethane *= factor;
+                    composition.Propane *= factor;
+                    composition.IsoButane *= factor;
+                    composition.NormalButane *= factor;
+                    composition.IsoPentane *= factor;
+                    composition.NormalPentane *= factor;
+                    composition.Hexane *= factor;
+                    composition.Heptane *= factor;
+                    composition.Octane *= factor;
+                    composition.Nonane *= factor;
+                    composition.Decane *= factor;
+                    composition.Hydrogen *= factor;
+                    composition.Oxygen *= factor;
+                    composition.CarbonMonoxide *= factor;
+                    composition.Water *= factor;
+                    composition.HydrogenSulfide *= factor;
+                    composition.Helium *= factor;
+                    composition.Argon *= factor;
+                }
+
+                equation.SetComposition(composition, ref compositionError);
+
+                c.Composition.Quality = StatusCodes.Good;
                 if (compositionError != CompositionError.Ok)
                 {
                     c.Composition.Quality = StatusCodes.Bad;
-                    logger.Error(CultureInfo.InvariantCulture, "Invalid composition for {0}: {1}",
+                    logger.Error(CultureInfo.InvariantCulture, "Calculation aborted. Cause: invalid composition for {0}: {1}",
                         c.Name, compositionError.ToString());
                     continue;
                 }
 
                 foreach (var pt in c.PressureTemperatureList.Item)
                 {
+                    logger.Debug(CultureInfo.InvariantCulture, "{0} Pressure function {1}", pt.Name, pt.PressureFunction.GetValue());
+                    logger.Debug(CultureInfo.InvariantCulture, "{0} Temperature function {1}", pt.Name, pt.TemperatureFunction.GetValue());
+
                     equation.SetPressure(pt.PressureFunction.GetValue());
                     equation.SetTemperature(pt.TemperatureFunction.GetValue());
                     equation.CalculateDensity(ref densityError);
                     if (densityError != DensityError.Ok)
                     {
-                        logger.Error(CultureInfo.InvariantCulture, "Failed to calculate density for {0}: {1}",
+                        logger.Error(CultureInfo.InvariantCulture, "Calculation aborted. Cause: failed to calculate density for {0}: {1}",
                             pt.Name, densityError.ToString());
                         continue;
                     }
@@ -264,23 +173,23 @@ namespace Aga8CalcService
         private void WriteToOPC()
         {
             // Make a list of all the OPC items that we want to write
-            WriteValueCollection wvc = new WriteValueCollection();
+            WriteValueCollection wvc = new();
 
             foreach (var c in conf.ConfigList.Item)
             {
                 foreach (var pt in c.PressureTemperatureList.Item)
                 {
-                    foreach (var property in pt.Properties.Item)
-                    {
-                        StatusCode status = new StatusCode { Code = StatusCodes.Good };
+                    StatusCode status = new() { Code = StatusCodes.Good };
 
                         if (StatusCode.IsNotGood(c.Composition.Quality)
                             | StatusCode.IsNotGood(pt.TemperatureFunction.Quality)
                             | StatusCode.IsNotGood(pt.PressureFunction.Quality))
                         {
-                            status.Code = StatusCodes.Uncertain;
+                            status.Code = StatusCodes.Bad;
                         }
 
+                    foreach (var property in pt.Properties.Item)
+                    {
                         wvc.Add(new WriteValue
                         {
                             NodeId = property.NodeId,
@@ -301,7 +210,10 @@ namespace Aga8CalcService
 
             try
             {
-                _client.OpcSession.Write(null, wvc, out StatusCodeCollection results, out DiagnosticInfoCollection diagnosticInfos);
+                StatusCodeCollection results = new();
+                if (wvc.Count > 0) {
+                    _client.OpcSession.Write(null, wvc, out results, out DiagnosticInfoCollection diagnosticInfos);
+                }
 
                 for (int i = 0; i < results.Count; i++)
                 {
@@ -324,6 +236,131 @@ namespace Aga8CalcService
             await _client.Connect();
             GenerateNodeIds();
             _timer.Start();
+
+            subscription = new Subscription(_client.OpcSession.DefaultSubscription)
+            {
+                DisplayName = "Console ReferenceClient Subscription",
+                PublishingEnabled = true,
+                PublishingInterval = Convert.ToInt32(conf.Interval / 2.0),
+                LifetimeCount = 0,
+                MinLifetimeInterval = 120_000,
+            };
+            _client.OpcSession.AddSubscription(subscription);
+            subscription.Create();
+            logger.Info("Subscription created with SubscriptionId = {0}", subscription.Id);
+
+            foreach (var c in conf.ConfigList.Item)
+            {
+                foreach (Component comp in c.Composition.Item)
+                {
+                    if (string.IsNullOrEmpty(comp.NodeId)) { continue; }
+                    
+                    MonitoredItem item = new(subscription.DefaultItem);
+                    item.StartNodeId = comp.NodeId;
+                    item.AttributeId = Attributes.Value;
+                    item.SamplingInterval  = c.Composition.SamplingInterval;
+                    item.QueueSize = 1;
+                    item.DiscardOldest = true;
+                    item.MonitoringMode = MonitoringMode.Reporting;
+                    item.Notification += OnMonitoredItemNotification;
+
+                    if (comp.SamplingInterval != -2)
+                    {
+                        item.SamplingInterval = comp.SamplingInterval;
+                    }
+
+                    subscription.AddItem(item);
+                }
+
+                foreach (PressureTemperature pt in c.PressureTemperatureList.Item)
+                {
+                    foreach (PressureMeasurement pm in pt.PressureFunction.Item)
+                    {
+                        if (string.IsNullOrEmpty(pm.NodeId)) { continue; }
+
+                        MonitoredItem item = new(subscription.DefaultItem);
+                        item.StartNodeId = pm.NodeId;
+                        item.AttributeId = Attributes.Value;
+                        item.SamplingInterval = pm.SamplingInterval;
+                        item.QueueSize = 1;
+                        item.DiscardOldest = true;
+                        item.MonitoringMode = MonitoringMode.Reporting;
+                        item.Notification += OnMonitoredItemNotification;
+
+                        subscription.AddItem(item);
+                    }
+                    foreach (TemperatureMeasurement tm in pt.TemperatureFunction.Item)
+                    {
+                        if (string.IsNullOrEmpty(tm.NodeId)) { continue; }
+
+                        MonitoredItem item = new(subscription.DefaultItem);
+                        item.StartNodeId = tm.NodeId;
+                        item.AttributeId = Attributes.Value;
+                        item.SamplingInterval = tm.SamplingInterval;
+                        item.QueueSize = 1;
+                        item.DiscardOldest = true;
+                        item.MonitoringMode = MonitoringMode.Reporting;
+                        item.Notification += OnMonitoredItemNotification;
+
+                        subscription.AddItem(item);
+                    }
+                }
+            }
+
+            subscription.ApplyChanges();
+            subscription.StateChanged += null;
+            logger.Info("MonitoredItems created for SubscriptionId = {0}", subscription.Id);
+        }
+
+        private void OnMonitoredItemNotification(MonitoredItem monitoredItem, MonitoredItemNotificationEventArgs e)
+        {
+            try
+            {
+                MonitoredItemNotification notification = e.NotificationValue as MonitoredItemNotification;
+                logger.Debug(CultureInfo.InvariantCulture, "Subscription: {0}, Notification: {1} \"{2}\" Value = {3}", monitoredItem.Subscription.Id, notification.Message.SequenceNumber, monitoredItem.DisplayName, notification.Value);
+
+                if (notification != null)
+                {
+                    foreach (var c in conf.ConfigList.Item)
+                    {
+                        foreach (Component comp in c.Composition.Item)
+                        {
+                            if (string.IsNullOrEmpty(comp.NodeId)) { continue; }
+
+                            if (monitoredItem.StartNodeId.ToString() == comp.NodeId)
+                            {
+                                comp.Value = Convert.ToDouble(notification.Value.Value);
+                            }
+                        }
+
+                        foreach (PressureTemperature pt in c.PressureTemperatureList.Item)
+                        {
+                            foreach (PressureMeasurement pm in pt.PressureFunction.Item)
+                            {
+                                if (string.IsNullOrEmpty(pm.NodeId)) { continue; }
+
+                                if (monitoredItem.StartNodeId.ToString() == pm.NodeId)
+                                {
+                                    pm.Value = Convert.ToDouble(notification.Value.Value);
+                                }
+                            }
+                            foreach (TemperatureMeasurement tm in pt.TemperatureFunction.Item)
+                            {
+                                if (string.IsNullOrEmpty(tm.NodeId)) { continue; }
+
+                                if (monitoredItem.StartNodeId.ToString() == tm.NodeId)
+                                {
+                                    tm.Value = Convert.ToDouble(notification.Value.Value);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex, "OnMonitoredItemNotification error");
+            }
         }
 
         public void Stop()
@@ -335,63 +372,114 @@ namespace Aga8CalcService
             {
                 logger.Info("Worker is done.");
                 logger.Info("Disconnecting from OPC server.");
+
+                subscription.Delete(true);
                 _client.DisConnect();
             }
             logger.Info("Stopping service.");
         }
 
-        private string GenerateNodeIdString(Measurement m)
+        private void GenerateNodeIdString(IEnumerable<Measurement> measurement)
         {
-            if (m.Identifier == null)
+            BrowsePathCollection pathsToTranslate = new();
+            List<string> paths = new();
+            TypeTable typeTable = new(new NamespaceTable());
+
+            foreach (var m in measurement)
             {
-                return null;
-            }
-            // Normally use the default namespace URI
-            string namespaceURI = conf.DefaultNamespaceURI;
-            // Use custom namespace URI if it exists
-            if (!string.IsNullOrEmpty(m.NamespaceURI)) { namespaceURI = m.NamespaceURI; }
-            int namespaceIndex = Array.IndexOf(_client.OpcSession.NamespaceUris.ToArray(), namespaceURI);
-            if (namespaceIndex < 0)
-            {
-                logger.Error(CultureInfo.InvariantCulture, "Namespace URI \"{0}\" not found.", namespaceURI);
-                return null;
+                if (string.IsNullOrEmpty(m.Identifier) && string.IsNullOrEmpty(m.RelativePath))
+                {
+                    continue;
+                }
+
+                if (!string.IsNullOrEmpty(m.Identifier) && !string.IsNullOrEmpty(m.RelativePath))
+                {
+                    logger.Warn(CultureInfo.InvariantCulture, "Identifier \"{0}\" and RelativePath \"{1}\" defined for \"{2}\". Identifier will be used and RelativePath will be ignored.", m.Identifier, m.RelativePath, "placeholder");
+                }
+
+                string namespaceURI = conf.DefaultNamespaceURI;
+                if (!string.IsNullOrEmpty(m.NamespaceURI)) { namespaceURI = m.NamespaceURI; }
+                int namespaceIndex = Array.IndexOf(_client.OpcSession.NamespaceUris.ToArray(), namespaceURI);
+                if (namespaceIndex < 0)
+                {
+                    logger.Error(CultureInfo.InvariantCulture, "Namespace URI \"{0}\" not found.", namespaceURI);
+                    continue;
+                }
+
+                if (!string.IsNullOrEmpty(m.RelativePath) && string.IsNullOrEmpty(m.Identifier))
+                {
+                    BrowsePath pathToTranslate = new();
+                    NodeId startNode;
+
+                    if (!string.IsNullOrEmpty(m.StartIdentifier))
+                    {
+                        startNode = new NodeId(String.Format("ns={0};{1}", namespaceIndex, m.StartIdentifier));
+                    }
+                    else
+                    {
+                        startNode = new NodeId(ObjectIds.ObjectsFolder);
+                    }
+
+                    paths.Add(m.RelativePath);
+
+                    RelativePath path = RelativePath.Parse(m.RelativePath, typeTable);
+                    path.Elements.ForEach(e => { e.TargetName = new QualifiedName(e.TargetName.Name, (ushort)namespaceIndex); });
+
+                    pathToTranslate.StartingNode = startNode;
+                    pathToTranslate.RelativePath = path;
+                    pathsToTranslate.Add(pathToTranslate);
+                }
+
+                if (!string.IsNullOrEmpty(m.Identifier))
+                {
+                    m.NodeId = String.Format("ns={0};{1}", namespaceIndex, m.Identifier);
+                }
             }
 
-            return String.Format("ns={0};{1}", namespaceIndex, m.Identifier);
+            if (pathsToTranslate.Count > 0)
+            {
+                BrowsePathResultCollection results;
+                DiagnosticInfoCollection diagnosticInfos;
+                try
+                {
+                    _client.OpcSession.TranslateBrowsePathsToNodeIds(null, pathsToTranslate, out results, out diagnosticInfos);
+                }
+                catch (Exception e)
+                {
+                    logger.Fatal(e, "Failed to translate browse paths.");
+                    throw;
+                }
+
+                foreach (var m in measurement)
+                {
+                    if (string.IsNullOrEmpty(m.Identifier) && !string.IsNullOrEmpty(m.RelativePath))
+                    {
+                        int index = Array.IndexOf(paths.ToArray(), m.RelativePath);
+                        if (index >= 0 && StatusCode.IsGood(results[index].StatusCode))
+                        {
+                            m.NodeId = results[index].Targets[0].TargetId.ToString();
+                            logger.Debug(CultureInfo.InvariantCulture, "RelativePath \"{0}\" translates to NodeId \"{1}\"", m.RelativePath, m.NodeId);
+                        }
+                        else
+                        {
+                            logger.Error(CultureInfo.InvariantCulture, "RelativePath \"{0}\" failed to translate: \"{1}\"", m.RelativePath, results[index].StatusCode);
+                        }
+                    }
+                }
+            }
         }
+
         private void GenerateNodeIds()
         {
             foreach (var c in conf.ConfigList.Item)
             {
-                foreach (Component comp in c.Composition.Item)
-                {
-                    string namespaceURI = conf.DefaultNamespaceURI;
-                    if (!string.IsNullOrEmpty(comp.NamespaceURI)) { namespaceURI = comp.NamespaceURI; }
-                    int namespaceIndex = Array.IndexOf(_client.OpcSession.NamespaceUris.ToArray(), namespaceURI);
-                    if (namespaceIndex < 0)
-                    {
-                        logger.Error(CultureInfo.InvariantCulture, "Namespace URI \"{0}\" not found.", namespaceURI);
-                        continue;
-                    }
-
-                    comp.NodeId = String.Format("ns={0};{1}", namespaceIndex, comp.Identifier);
-                }
+                GenerateNodeIdString(c.Composition.Item);
 
                 foreach (PressureTemperature pt in c.PressureTemperatureList.Item)
                 {
-                    foreach (PressureMeasurement pm in pt.PressureFunction.Item)
-                    {
-                        pm.NodeId = GenerateNodeIdString(pm);
-                    }
-                    foreach (TemperatureMeasurement tm in pt.TemperatureFunction.Item)
-                    {
-                        tm.NodeId = GenerateNodeIdString(tm);
-                    }
-
-                    foreach (var property in pt.Properties.Item)
-                    {
-                        property.NodeId = GenerateNodeIdString(property);
-                    }
+                    GenerateNodeIdString(pt.PressureFunction.Item);
+                    GenerateNodeIdString(pt.TemperatureFunction.Item);
+                    GenerateNodeIdString(pt.Properties.Item);
                 }
             }
         }

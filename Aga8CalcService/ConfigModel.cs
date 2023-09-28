@@ -102,7 +102,7 @@ namespace Aga8CalcService
 
         public static ConfigModel ReadConfig(string file)
         {
-            XmlReaderSettings readerSettings = new XmlReaderSettings
+            XmlReaderSettings readerSettings = new()
             {
                 IgnoreComments = true,
                 IgnoreProcessingInstructions = true,
@@ -110,7 +110,7 @@ namespace Aga8CalcService
             };
 
             XmlReader configFileReader = XmlReader.Create(file, readerSettings);
-            XmlSerializer configSerializer = new XmlSerializer(typeof(ConfigModel));
+            XmlSerializer configSerializer = new(typeof(ConfigModel));
             ConfigModel result = (ConfigModel)configSerializer.Deserialize(configFileReader);
             configFileReader.Close();
 
@@ -142,6 +142,10 @@ namespace Aga8CalcService
     public class CompositionList
     {
         public CompositionList() { Item = new List<Component>(); }
+        [XmlAttribute]
+        public int SamplingInterval { get; set; } = 180000;
+        [XmlAttribute]
+        public bool Normalize { get; set; }
         [XmlElement("Component")]
         public List<Component> Item { get; }
 
@@ -149,7 +153,7 @@ namespace Aga8CalcService
 
         public Aga8Composition GetScaledValues()
         {
-            Aga8Composition comp = new Aga8Composition();
+            Aga8Composition comp = new();
 
             foreach (var component in Item)
             {
@@ -278,7 +282,7 @@ namespace Aga8CalcService
                     break;
                 case ConfigModel.Func.Median:
                     value = 0.0;
-                    List<double> v = new List<double>();
+                    List<double> v = new();
                     foreach (var it in Item)
                     {
                         v.Add(it.GetAGA8Converted());
@@ -356,7 +360,7 @@ namespace Aga8CalcService
                     break;
                 case ConfigModel.Func.Median:
                     value = 0.0;
-                    List<double> v = new List<double>();
+                    List<double> v = new();
                     foreach (var it in Item)
                     {
                         v.Add(it.GetAGA8Converted());
@@ -411,29 +415,42 @@ namespace Aga8CalcService
         public List<PropertyMeasurement> Item { get; }
     }
 
-    public class Component
+    public class Component : Measurement
     {
         [XmlAttribute]
         public Aga8Component Name { get; set; }
-        [XmlAttribute]
-        public string NamespaceURI { get; set; }
-        [XmlAttribute]
-        public string Identifier { get; set; }
-        [XmlAttribute]
-        public double ScaleFactor { get; set; }
-        [XmlAttribute]
-        public double Value { get; set; }
-
-        public string NodeId { get; set; }
-
-        [XmlIgnore]
-        public StatusCode Quality { get; set; }
 
         public Component()
         {
             ScaleFactor = 1.0;
             Value = 0.0;
         }
+    }
+
+    public class Measurement
+    {
+        [XmlAttribute]
+        public string NamespaceURI { get; set; }
+        [XmlAttribute]
+        public string Identifier { get; set; }
+        [XmlAttribute]
+        public string StartIdentifier { get; set; }
+        [XmlAttribute]
+        public string RelativePath { get; set; }
+        [XmlAttribute]
+        public double ScaleFactor { get; set; }
+        [XmlAttribute]
+        public string Type { get; set; }
+        [XmlAttribute]
+        public double Value { get; set; }
+        [XmlAttribute]
+        public int SamplingInterval { get; set; } = -2;
+
+        [XmlIgnore]
+        public StatusCode Quality { get; set; }
+
+        [XmlIgnore]
+        public string NodeId { get; set; }
 
         public double GetScaledValue()
         {
@@ -441,30 +458,11 @@ namespace Aga8CalcService
         }
     }
 
-    public class Measurement
+    public class PressureMeasurement : Measurement
     {
         [XmlAttribute]
         public string Name { get; set; }
-        [XmlAttribute]
-        public string NamespaceURI { get; set; }
-        [XmlAttribute]
-        public string Identifier { get; set; }
-        [XmlAttribute]
-        public double ScaleFactor { get; set; }
-        [XmlAttribute]
-        public string Type { get; set; }
 
-        [XmlIgnore]
-        public double Value { get; set; }
-
-        [XmlIgnore]
-        public StatusCode Quality { get; set; }
-
-        public string NodeId { get; set; }
-    }
-
-    public class PressureMeasurement : Measurement
-    {
         [XmlAttribute]
         public ConfigModel.PressureUnit Unit { get; set; }
 
@@ -516,6 +514,9 @@ namespace Aga8CalcService
 
     public class TemperatureMeasurement : Measurement
     {
+        [XmlAttribute]
+        public string Name { get; set; }
+
         [XmlAttribute]
         public ConfigModel.TemperatureUnit Unit { get; set; }
 

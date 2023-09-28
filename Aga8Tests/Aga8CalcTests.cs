@@ -2,6 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Globalization;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
@@ -16,7 +17,7 @@ namespace Aga8Tests
         public void GenerateAndReadConfigModel()
         {
             // Stream 0
-            ConfigModel config = new ConfigModel
+            ConfigModel config = new()
             {
                 OpcUrl = "opc.tcp://localhost:62548/Quickstarts/DataAccessServer",
                 OpcUser = "user",
@@ -191,12 +192,12 @@ namespace Aga8Tests
                 Property = ConfigModel.Aga8ResultCode.MolarConcentration
             });
 
-            XmlWriterSettings writerSettings = new XmlWriterSettings
+            XmlWriterSettings writerSettings = new()
             {
                 Indent = true,
             };
             XmlWriter writer = XmlWriter.Create("aga8calc.xml", writerSettings);
-            XmlSerializer configSerializer = new XmlSerializer(typeof(ConfigModel));
+            XmlSerializer configSerializer = new(typeof(ConfigModel));
             configSerializer.Serialize(writer, config);
             writer.Close();
 
@@ -227,10 +228,10 @@ namespace Aga8Tests
         [TestMethod]
         public void Aga8_CalculatesProperties()
         {
-            ConfigModel conf = new ConfigModel();
+            ConfigModel conf = new();
 
             conf.ConfigList.Item.Add(new Config());
-            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = Aga8Component.Methane,  Value = 0.778_240 });
+            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = Aga8Component.Methane, Value = 0.778_240 });
             conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = Aga8Component.Nitrogen, Value = 0.020_000 });
             conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = Aga8Component.CarbonDioxide, Value = 0.060_000 });
             conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = Aga8Component.Ethane, Value = 0.080_000 });
@@ -418,7 +419,7 @@ namespace Aga8Tests
         [TestMethod]
         public void Aga8_Test_Memory()
         {
-            ConfigModel conf = new ConfigModel();
+            ConfigModel conf = new();
 
             conf.ConfigList.Item.Add(new Config());
             conf.ConfigList.Item[0].Name = "Test config";
@@ -516,12 +517,22 @@ namespace Aga8Tests
             string TagConfFile = AppDomain.CurrentDomain.BaseDirectory.ToString(CultureInfo.InvariantCulture) + "\\Tag_Config_Test.xml";
             ConfigModel conf = ConfigModel.ReadConfig(TagConfFile);
 
-            Aga8OpcClient client = new Aga8OpcClient(conf.OpcUrl, conf.OpcUser, conf.OpcPassword);
+            Aga8OpcClient client = new(conf.OpcUrl, conf.OpcUser, conf.OpcPassword);
             Assert.IsNull(client.OpcSession);
             await client.Connect();
             Assert.IsNotNull(client.OpcSession);
             Assert.IsTrue(client.OpcSession.Connected);
             client.DisConnect();
+        }
+
+        [TestMethod]
+        public void Aga8OpcClient_Communicate()
+        {
+            ConfigModel config = ReadConfig("Aga8Calc.config");
+            Aga8Calc aga8Calc = new();
+            aga8Calc.Start();
+            Thread.Sleep((int)(config.Interval * 2.5));
+            aga8Calc.Stop();
         }
 
         [TestClass]
@@ -531,7 +542,7 @@ namespace Aga8Tests
             public void ConfigModel_ReadConfig()
             {
                 string TagConfFile = AppDomain.CurrentDomain.BaseDirectory.ToString(CultureInfo.InvariantCulture) + "\\Tag_Config_Test.xml";
-                ConfigModel conf = ConfigModel.ReadConfig(TagConfFile);
+                ConfigModel.ReadConfig(TagConfFile);
             }
 
             [TestMethod]
