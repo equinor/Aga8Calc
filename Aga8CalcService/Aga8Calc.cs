@@ -179,9 +179,7 @@ namespace Aga8CalcService
             {
                 foreach (var pt in c.PressureTemperatureList.Item)
                 {
-                    foreach (var property in pt.Properties.Item)
-                    {
-                        StatusCode status = new() { Code = StatusCodes.Good };
+                    StatusCode status = new() { Code = StatusCodes.Good };
 
                         if (StatusCode.IsNotGood(c.Composition.Quality)
                             | StatusCode.IsNotGood(pt.TemperatureFunction.Quality)
@@ -190,6 +188,8 @@ namespace Aga8CalcService
                             status.Code = StatusCodes.Bad;
                         }
 
+                    foreach (var property in pt.Properties.Item)
+                    {
                         wvc.Add(new WriteValue
                         {
                             NodeId = property.NodeId,
@@ -210,7 +210,10 @@ namespace Aga8CalcService
 
             try
             {
-                _client.OpcSession.Write(null, wvc, out StatusCodeCollection results, out DiagnosticInfoCollection diagnosticInfos);
+                StatusCodeCollection results = new();
+                if (wvc.Count > 0) {
+                    _client.OpcSession.Write(null, wvc, out results, out DiagnosticInfoCollection diagnosticInfos);
+                }
 
                 for (int i = 0; i < results.Count; i++)
                 {
