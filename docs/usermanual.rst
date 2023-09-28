@@ -114,13 +114,13 @@ Every `<Config>` element is structured like below.
 .. code-block:: xml
 
     <Config Name="GC 1">
-      <Composition>
+      <Composition SamplingInterval="90000" Normalize="true">
         <Component Name="Methane" Identifier="s=1:AI1001?A" ScaleFactor="0.01" />
         <Component Name="Nitrogen" Identifier="s=1:AI1001?J" ScaleFactor="0.01" />
         <Component Name="CarbonDioxide" Identifier="s=1:AI1001?K" ScaleFactor="0.01" />
-        <Component Name="Ethane" Identifier="s=1:AI1001?B" ScaleFactor="0.01" />
+        <Component Name="Ethane" StartIdentifier="i=28" RelativePath="Ethane" ScaleFactor="0.01" />
         <Component Name="Propane" Identifier="s=1:AI1001?C" ScaleFactor="0.01" />
-        <Component Name="IsoButane" Identifier="s=1:AI1001?D" ScaleFactor="0.01" />
+        <Component Name="IsoButane" RelativePath="20AI0001/IsoButane" ScaleFactor="0.01" />
         <Component Name="NormalButane" Identifier="s=1:AI1001?E" ScaleFactor="0.01" />
         <Component Name="IsoPentane" Identifier="s=1:AI1001?F" ScaleFactor="0.01" />
         <Component Name="NormalPentane" Identifier="s=1:AI1001?G" ScaleFactor="0.01" />
@@ -130,12 +130,12 @@ Every `<Config>` element is structured like below.
       <PressureTemperatureList>
         <PressureTemperature Name="Point 1">
           <PressureFunction MathFunction="Min">
-            <Pressure Name="P 1" Identifier="s=1:AI1001?Pressure" Unit="barg" />
-            <Pressure Name="P 2" Identifier="s=1:AI1002?Pressure" Unit="barg" />
+            <Pressure Name="P 1" Identifier="s=1:AI1001?Pressure" Unit="barg" ScaleFactor="0.5" />
+            <Pressure Name="P 2" Identifier="s=1:AI1002?Pressure" Unit="barg" SamplingInterval="1000" />
           </PressureFunction>
           <TemperatureFunction MathFunction="Max">
             <Temperature Name="T 1" Identifier="s=1:AI1001?Temperature" Unit="C" />
-            <Temperature Name="T 2" Identifier="s=1:AI1002?Temperature" Unit="C" />
+            <Temperature Name="T 2" Identifier="s=1:AI1002?Temperature" Unit="C" SamplingInterval="5000" />
           </TemperatureFunction>
           <Properties>
             <Property Identifier="s=1:AI1001?Result" Property="MolarConcentration" Type="single" />
@@ -148,7 +148,12 @@ Every `<Config>` element is structured like below.
 This holds the values that is read from, and the result written back to the OPC server.
 
 -   `<Composition>` contains up to 21 `<Component>` elements where each one contains attributes for the component.
-    Attributes:
+    `<Composition>` can have the following attributes:
+
+    - `SamplingInterval` is the default sampling interval that will be requested for the monitored items for the OPC subscription.
+    - `Normalize` can be set to `true` to automatically normalize the composition sum to 1.0.
+
+    Attributes for `<Component>`:
 
     - `Name` is used to identify the component.
       The available names are:
@@ -178,10 +183,15 @@ This holds the values that is read from, and the result written back to the OPC 
     - `NamespaceURI` is the namespace URI for the OPC node to read.
       If this is empty, the DefaultNamespaceURI will be used.
     - `Identifier` is the OPC identifierType and identifier of the node to be read from.
+    - `StartIdentifier` is the start Node for the RelativePath.
+    - `RelativePath` is the path to the wanted node, relative to StartIdentifier.
     - `ScaleFactor` is used to scale the individual component values into the mol fraction range from 0-1.
     - `Value` is used to set a constant value for the component.
 
     Identifier and Value can not both be used at the same time for a component. Use one or the other!
+
+    To read values from an OPC server either the `Identifier`, or the `RelativePath` with `StartIdentifier` can be used.
+    When using `RelativePath` the `StartIdentifier` is optional. If `StartIdentifier` is not specified it will default to the Objects folder.
 
 -   `<PressureTemperatureList>` can contain several `<PressureTemperature>` elements.
     Every `<PressureTemperature>` element contains the pressure and temperature to read, and one or more properties that is to be written to the OPC server.
@@ -323,16 +333,20 @@ Sequence Diagram
     == Init ==
     Aga8Calc -> OpcServer : Connect request
     OpcServer --> Aga8Calc : Connect granted
+    Aga8Calc -> OpcServer : Subscription request
+    OpcServer --> Aga8Calc : Subscription granted
 
     == Main loop ==
     loop forever
-        Aga8Calc -> OpcServer : Poll pressure, temperature and composition
-        OpcServer --> Aga8Calc : Return pressure, temperature, composition
-
         hnote over Aga8Calc : Calculate results
 
         Aga8Calc -> OpcServer : Write results
 
         hnote over Aga8Calc : Wait <interval> ms
     end
+
+    group Subscription
+      OpcServer --> Aga8Calc : Subscription notification
+    end
+
     @enduml
