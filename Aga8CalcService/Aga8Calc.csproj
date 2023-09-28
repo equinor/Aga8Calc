@@ -74,11 +74,11 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-    <PackageReference Include="NLog" Version="5.2.2" />
-    <PackageReference Include="OPCFoundation.NetStandard.Opc.Ua.Client" Version="1.4.371.96" />
-    <PackageReference Include="OPCFoundation.NetStandard.Opc.Ua.Configuration" Version="1.4.371.96" />
-    <PackageReference Include="OPCFoundation.NetStandard.Opc.Ua.Core" Version="1.4.371.96" />
-    <PackageReference Include="OPCFoundation.NetStandard.Opc.Ua.Security.Certificates" Version="1.4.371.96" />
+    <PackageReference Include="NLog" Version="5.2.4" />
+    <PackageReference Include="OPCFoundation.NetStandard.Opc.Ua.Client" Version="1.4.372.56" />
+    <PackageReference Include="OPCFoundation.NetStandard.Opc.Ua.Configuration" Version="1.4.372.56" />
+    <PackageReference Include="OPCFoundation.NetStandard.Opc.Ua.Core" Version="1.4.372.56" />
+    <PackageReference Include="OPCFoundation.NetStandard.Opc.Ua.Security.Certificates" Version="1.4.372.56" />
     <PackageReference Include="Portable.BouncyCastle" Version="1.9.0" />
     <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
     <PackageReference Include="System.ComponentModel.Composition" Version="7.0.0" />
