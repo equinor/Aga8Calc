@@ -94,24 +94,36 @@ namespace Aga8CalcService
 
             foreach (var c in conf.ConfigList.Item)
             {
+                double compositionSum = 0.0;
+                foreach (var comp in c.Composition.Item)
+                {
+                    compositionSum += comp.GetScaledValue();
+                    logger.Debug(CultureInfo.InvariantCulture, "Component {0}, scaled value {1}", comp.Name, comp.GetScaledValue());
+                }
+                logger.Debug(CultureInfo.InvariantCulture, "Composition sum {0}", compositionSum);
+
                 equation.SetComposition(c.Composition.GetScaledValues(), ref compositionError);
 
+                c.Composition.Quality = StatusCodes.Good;
                 if (compositionError != CompositionError.Ok)
                 {
                     c.Composition.Quality = StatusCodes.Bad;
-                    logger.Error(CultureInfo.InvariantCulture, "Invalid composition for {0}: {1}",
+                    logger.Error(CultureInfo.InvariantCulture, "Calculation aborted. Cause: invalid composition for {0}: {1}",
                         c.Name, compositionError.ToString());
                     continue;
                 }
 
                 foreach (var pt in c.PressureTemperatureList.Item)
                 {
+                    logger.Debug(CultureInfo.InvariantCulture, "Pressure function {0}", pt.PressureFunction.GetValue());
+                    logger.Debug(CultureInfo.InvariantCulture, "Temperature function {0}", pt.TemperatureFunction.GetValue());
+
                     equation.SetPressure(pt.PressureFunction.GetValue());
                     equation.SetTemperature(pt.TemperatureFunction.GetValue());
                     equation.CalculateDensity(ref densityError);
                     if (densityError != DensityError.Ok)
                     {
-                        logger.Error(CultureInfo.InvariantCulture, "Failed to calculate density for {0}: {1}",
+                        logger.Error(CultureInfo.InvariantCulture, "Calculation aborted. Cause: failed to calculate density for {0}: {1}",
                             pt.Name, densityError.ToString());
                         continue;
                     }
@@ -146,7 +158,7 @@ namespace Aga8CalcService
                             | StatusCode.IsNotGood(pt.TemperatureFunction.Quality)
                             | StatusCode.IsNotGood(pt.PressureFunction.Quality))
                         {
-                            status.Code = StatusCodes.Uncertain;
+                            status.Code = StatusCodes.Bad;
                         }
 
                         wvc.Add(new WriteValue
