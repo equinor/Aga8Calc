@@ -273,7 +273,7 @@ namespace Aga8CalcService
             try
             {
                 MonitoredItemNotification notification = e.NotificationValue as MonitoredItemNotification;
-                logger.Debug("Subscription: {0}, Notification: {1} \"{2}\" and Value = {3}.", monitoredItem.Subscription.Id, notification.Message.SequenceNumber, monitoredItem.DisplayName, notification.Value);
+                logger.Debug(CultureInfo.InvariantCulture, "Subscription: {0}, Notification: {1} \"{2}\" and Value = {3}", monitoredItem.Subscription.Id, notification.Message.SequenceNumber, monitoredItem.DisplayName, notification.Value);
 
                 if (notification != null)
                 {
@@ -283,9 +283,9 @@ namespace Aga8CalcService
                         {
                             if (string.IsNullOrEmpty(comp.NodeId)) { continue; }
 
-                            if (monitoredItem.StartNodeId == comp.NodeId)
+                            if (monitoredItem.StartNodeId.ToString() == comp.NodeId)
                             {
-                                comp.Value = Convert.ToDouble(notification.Value);
+                                comp.Value = Convert.ToDouble(notification.Value.Value);
                             }
                         }
 
@@ -295,18 +295,18 @@ namespace Aga8CalcService
                             {
                                 if (string.IsNullOrEmpty(pm.NodeId)) { continue; }
 
-                                if (monitoredItem.StartNodeId == pm.NodeId)
+                                if (monitoredItem.StartNodeId.ToString() == pm.NodeId)
                                 {
-                                    pm.Value = Convert.ToDouble(notification.Value);
+                                    pm.Value = Convert.ToDouble(notification.Value.Value);
                                 }
                             }
                             foreach (TemperatureMeasurement tm in pt.TemperatureFunction.Item)
                             {
                                 if (string.IsNullOrEmpty(tm.NodeId)) { continue; }
 
-                                if (monitoredItem.StartNodeId == tm.NodeId)
+                                if (monitoredItem.StartNodeId.ToString() == tm.NodeId)
                                 {
-                                    tm.Value = Convert.ToDouble(notification.Value);
+                                    tm.Value = Convert.ToDouble(notification.Value.Value);
                                 }
                             }
                         }
