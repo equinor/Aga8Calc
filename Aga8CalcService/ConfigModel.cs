@@ -98,6 +98,9 @@ namespace Aga8CalcService
         public Equation EquationOfState { get; set; }
 
         [XmlElement]
+        public bool ReadOnly { get; set; }
+
+        [XmlElement]
         public ConfigList ConfigList { get; set; } = new ConfigList();
 
         public static ConfigModel ReadConfig(string file)

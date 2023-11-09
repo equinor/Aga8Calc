@@ -190,6 +190,7 @@
       <xs:element type="xs:string" name="OpcPassword" minOccurs="0" />
       <xs:element type="xs:anyURI" name="DefaultNamespaceURI" minOccurs="1" />
       <xs:element type="xs:float" name="Interval" minOccurs="1" />
+      <xs:element type="xs:boolean" name="ReadOnly" minOccurs="0" />
       <xs:element name="EquationOfState" minOccurs="1">
         <xs:simpleType>
           <xs:restriction base="xs:string">

@@ -6,7 +6,6 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Reflection;
 using System.Timers;
-using System.Xml.Linq;
 
 namespace Aga8CalcService
 {
@@ -206,6 +205,12 @@ namespace Aga8CalcService
                     item.NodeId.ToString(),
                     item.Value.Value,
                     item.Value.StatusCode.ToString());
+            }
+
+            if (conf.ReadOnly)
+            {
+                logger.Info("Read only mode active. No values written to OPC server.");
+                return;
             }
 
             try
