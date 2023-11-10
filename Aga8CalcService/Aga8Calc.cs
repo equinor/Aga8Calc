@@ -254,7 +254,7 @@ namespace Aga8CalcService
 
             subscription = new Subscription(_client.OpcSession.DefaultSubscription)
             {
-                DisplayName = "Console ReferenceClient Subscription",
+                DisplayName = "Aga8Calc",
                 PublishingEnabled = true,
                 PublishingInterval = Convert.ToInt32(conf.Interval / 2.0),
                 LifetimeCount = 0,
@@ -273,6 +273,7 @@ namespace Aga8CalcService
                     MonitoredItem item = new(subscription.DefaultItem);
                     item.StartNodeId = comp.NodeId;
                     item.AttributeId = Attributes.Value;
+                    item.DisplayName = comp.Name.ToString();
                     item.SamplingInterval  = c.Composition.SamplingInterval;
                     item.QueueSize = 1;
                     item.DiscardOldest = true;
@@ -296,6 +297,7 @@ namespace Aga8CalcService
                         MonitoredItem item = new(subscription.DefaultItem);
                         item.StartNodeId = pm.NodeId;
                         item.AttributeId = Attributes.Value;
+                        item.DisplayName = pm.Name;
                         item.SamplingInterval = pm.SamplingInterval;
                         item.QueueSize = 1;
                         item.DiscardOldest = true;
@@ -311,6 +313,7 @@ namespace Aga8CalcService
                         MonitoredItem item = new(subscription.DefaultItem);
                         item.StartNodeId = tm.NodeId;
                         item.AttributeId = Attributes.Value;
+                        item.DisplayName = tm.Name;
                         item.SamplingInterval = tm.SamplingInterval;
                         item.QueueSize = 1;
                         item.DiscardOldest = true;
