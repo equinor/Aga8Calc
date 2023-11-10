@@ -97,9 +97,17 @@ namespace Aga8CalcService
                 foreach (var comp in c.Composition.Item)
                 {
                     compositionSum += comp.GetScaledValue();
-                    logger.Debug(CultureInfo.InvariantCulture, "Component {0}, scaled value {1}", comp.Name, comp.GetScaledValue());
+                    logger.Debug(CultureInfo.InvariantCulture, "Config {0} Component {1}, scaled value {2}", c.Name, comp.Name, comp.GetScaledValue());
                 }
                 logger.Debug(CultureInfo.InvariantCulture, "Composition sum {0}", compositionSum);
+
+                if ( Math.Abs(compositionSum - 1.0) > 0.2)
+                {
+                    c.Composition.Quality = StatusCodes.Bad;
+                    logger.Error(CultureInfo.InvariantCulture, "Calculation aborted. Cause: invalid composition for {0}: {1}",
+                        c.Name, compositionError.ToString());
+                    continue;
+                }
 
                 Aga8Composition composition = c.Composition.GetScaledValues();
                 if (c.Composition.Normalize)
