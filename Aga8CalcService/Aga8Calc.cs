@@ -319,52 +319,55 @@ namespace Aga8CalcService
 
         private void OnMonitoredItemNotification(MonitoredItem monitoredItem, MonitoredItemNotificationEventArgs e)
         {
-            try
+            lock (WorkerLock)
             {
-                MonitoredItemNotification notification = e.NotificationValue as MonitoredItemNotification;
-                logger.Debug(CultureInfo.InvariantCulture, "Subscription: {0}, Notification: {1} \"{2}\" Value = {3}", monitoredItem.Subscription.Id, notification.Message.SequenceNumber, monitoredItem.DisplayName, notification.Value);
-
-                if (notification != null)
+                try
                 {
-                    foreach (var c in conf.ConfigList.Item)
+                    MonitoredItemNotification notification = e.NotificationValue as MonitoredItemNotification;
+                    logger.Debug(CultureInfo.InvariantCulture, "Subscription: {0}, Notification: {1} \"{2}\" Value = {3}", monitoredItem.Subscription.Id, notification.Message.SequenceNumber, monitoredItem.DisplayName, notification.Value);
+
+                    if (notification != null)
                     {
-                        foreach (Component comp in c.Composition.Item)
+                        foreach (var c in conf.ConfigList.Item)
                         {
-                            if (string.IsNullOrEmpty(comp.NodeId)) { continue; }
-
-                            if (monitoredItem.StartNodeId.ToString() == comp.NodeId)
+                            foreach (Component comp in c.Composition.Item)
                             {
-                                comp.Value = Convert.ToDouble(notification.Value.Value);
-                            }
-                        }
+                                if (string.IsNullOrEmpty(comp.NodeId)) { continue; }
 
-                        foreach (PressureTemperature pt in c.PressureTemperatureList.Item)
-                        {
-                            foreach (PressureMeasurement pm in pt.PressureFunction.Item)
-                            {
-                                if (string.IsNullOrEmpty(pm.NodeId)) { continue; }
-
-                                if (monitoredItem.StartNodeId.ToString() == pm.NodeId)
+                                if (monitoredItem.StartNodeId.ToString() == comp.NodeId)
                                 {
-                                    pm.Value = Convert.ToDouble(notification.Value.Value);
+                                    comp.Value = Convert.ToDouble(notification.Value.Value);
                                 }
                             }
-                            foreach (TemperatureMeasurement tm in pt.TemperatureFunction.Item)
-                            {
-                                if (string.IsNullOrEmpty(tm.NodeId)) { continue; }
 
-                                if (monitoredItem.StartNodeId.ToString() == tm.NodeId)
+                            foreach (PressureTemperature pt in c.PressureTemperatureList.Item)
+                            {
+                                foreach (PressureMeasurement pm in pt.PressureFunction.Item)
                                 {
-                                    tm.Value = Convert.ToDouble(notification.Value.Value);
+                                    if (string.IsNullOrEmpty(pm.NodeId)) { continue; }
+
+                                    if (monitoredItem.StartNodeId.ToString() == pm.NodeId)
+                                    {
+                                        pm.Value = Convert.ToDouble(notification.Value.Value);
+                                    }
+                                }
+                                foreach (TemperatureMeasurement tm in pt.TemperatureFunction.Item)
+                                {
+                                    if (string.IsNullOrEmpty(tm.NodeId)) { continue; }
+
+                                    if (monitoredItem.StartNodeId.ToString() == tm.NodeId)
+                                    {
+                                        tm.Value = Convert.ToDouble(notification.Value.Value);
+                                    }
                                 }
                             }
                         }
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                logger.Error(ex, "OnMonitoredItemNotification error");
+                catch (Exception ex)
+                {
+                    logger.Error(ex, "OnMonitoredItemNotification error");
+                }
             }
         }
 
