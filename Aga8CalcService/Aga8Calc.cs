@@ -185,6 +185,8 @@ namespace Aga8CalcService
                             | StatusCode.IsNotGood(pt.PressureFunction.Quality))
                         {
                             status.Code = StatusCodes.Bad;
+                            logger.Error(CultureInfo.InvariantCulture, "PT point \"{0}\" invalid. Property values will not be written to OPC.", pt.Name);
+                            continue;
                         }
 
                     foreach (var property in pt.Properties.Item)
