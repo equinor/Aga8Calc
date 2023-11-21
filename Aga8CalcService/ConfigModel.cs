@@ -1,13 +1,42 @@
-﻿using System;
+﻿using Opc.Ua;
+using System;
 using System.Collections.Generic;
 using System.Xml;
 using System.Xml.Serialization;
+using static Aga8CalcService.ConfigModel;
+
+
 
 namespace Aga8CalcService
 {
     [XmlRoot("configuration")]
     public class ConfigModel
     {
+        public enum Aga8Component
+        {
+            Methane,
+            Nitrogen,
+            CarbonDioxide,
+            Ethane,
+            Propane,
+            IsoButane,
+            NormalButane,
+            IsoPentane,
+            NormalPentane,
+            Hexane,
+            Heptane,
+            Octane,
+            Nonane,
+            Decane,
+            Hydrogen,
+            Oxygen,
+            CarbonMonoxide,
+            Water,
+            HydrogenSulfide,
+            Helium,
+            Argon
+        }
+
         public enum Aga8ResultCode : Int32
         {
             MolarConcentration = 0,
@@ -60,17 +89,23 @@ namespace Aga8CalcService
         public string OpcPassword { get; set; }
 
         [XmlElement]
+        public string DefaultNamespaceURI { get; set; }
+
+        [XmlElement]
         public double Interval { get; set; }
 
         [XmlElement]
         public Equation EquationOfState { get; set; }
 
         [XmlElement]
+        public bool ReadOnly { get; set; }
+
+        [XmlElement]
         public ConfigList ConfigList { get; set; } = new ConfigList();
 
         public static ConfigModel ReadConfig(string file)
         {
-            XmlReaderSettings readerSettings = new XmlReaderSettings
+            XmlReaderSettings readerSettings = new()
             {
                 IgnoreComments = true,
                 IgnoreProcessingInstructions = true,
@@ -78,7 +113,7 @@ namespace Aga8CalcService
             };
 
             XmlReader configFileReader = XmlReader.Create(file, readerSettings);
-            XmlSerializer configSerializer = new XmlSerializer(typeof(ConfigModel));
+            XmlSerializer configSerializer = new(typeof(ConfigModel));
             ConfigModel result = (ConfigModel)configSerializer.Deserialize(configFileReader);
             configFileReader.Close();
 
@@ -110,156 +145,85 @@ namespace Aga8CalcService
     public class CompositionList
     {
         public CompositionList() { Item = new List<Component>(); }
+        [XmlAttribute]
+        public int SamplingInterval { get; set; } = 180000;
+        [XmlAttribute]
+        public bool Normalize { get; set; }
         [XmlElement("Component")]
         public List<Component> Item { get; }
 
-        public Aga8Composition GetValues()
-        {
-            Aga8Composition comp = new Aga8Composition();
-
-            foreach (var component in Item)
-            {
-                switch (component.Name)
-                {
-                    case "Methane":
-                        comp.Methane = component.GetScaledValue();
-                        break;
-                    case "Nitrogen":
-                        comp.Nitrogen = component.GetScaledValue();
-                        break;
-                    case "Carbon dioxide":
-                        comp.CarbonDioxide = component.GetScaledValue();
-                        break;
-                    case "Ethane":
-                        comp.Ethane = component.GetScaledValue();
-                        break;
-                    case "Propane":
-                        comp.Propane = component.GetScaledValue();
-                        break;
-                    case "Isobutane":
-                        comp.IsoButane = component.GetScaledValue();
-                        break;
-                    case "n-Butane":
-                        comp.NormalButane = component.GetScaledValue();
-                        break;
-                    case "Isopentane":
-                        comp.IsoPentane = component.GetScaledValue();
-                        break;
-                    case "n-Pentane":
-                        comp.NormalPentane = component.GetScaledValue();
-                        break;
-                    case "Hexane":
-                        comp.Hexane = component.GetScaledValue();
-                        break;
-                    case "Heptane":
-                        comp.Heptane = component.GetScaledValue();
-                        break;
-                    case "Octane":
-                        comp.Octane = component.GetScaledValue();
-                        break;
-                    case "Nonane":
-                        comp.Nonane = component.GetScaledValue();
-                        break;
-                    case "Decane":
-                        comp.Decane = component.GetScaledValue();
-                        break;
-                    case "Hydrogen":
-                        comp.Hydrogen = component.GetScaledValue();
-                        break;
-                    case "Oxygen":
-                        comp.Oxygen = component.GetScaledValue();
-                        break;
-                    case "Carbon monoxide":
-                        comp.CarbonMonoxide = component.GetScaledValue();
-                        break;
-                    case "Water":
-                        comp.Water = component.GetScaledValue();
-                        break;
-                    case "Hydrogen sulfide":
-                        comp.HydrogenSulfide = component.GetScaledValue();
-                        break;
-                    case "Helium":
-                        comp.Helium = component.GetScaledValue();
-                        break;
-                    case "Argon":
-                        comp.Argon = component.GetScaledValue();
-                        break;
-                }
-            }
-
-            return comp;
-        }
+        public StatusCode Quality { get; set; }
 
         public Aga8Composition GetScaledValues()
         {
-            Aga8Composition comp = new Aga8Composition();
+            Aga8Composition comp = new();
 
             foreach (var component in Item)
             {
                 switch (component.Name)
                 {
-                    case "Methane":
+                    case Aga8Component.Methane:
                         comp.Methane = component.GetScaledValue();
                         break;
-                    case "Nitrogen":
+                    case Aga8Component.Nitrogen:
                         comp.Nitrogen = component.GetScaledValue();
                         break;
-                    case "Carbon dioxide":
+                    case Aga8Component.CarbonDioxide:
                         comp.CarbonDioxide = component.GetScaledValue();
                         break;
-                    case "Ethane":
-                        comp.Ethane= component.GetScaledValue();
+                    case Aga8Component.Ethane:
+                        comp.Ethane = component.GetScaledValue();
                         break;
-                    case "Propane":
+                    case Aga8Component.Propane:
                         comp.Propane = component.GetScaledValue();
                         break;
-                    case "Isobutane":
+                    case Aga8Component.IsoButane:
                         comp.IsoButane = component.GetScaledValue();
                         break;
-                    case "n-Butane":
+                    case Aga8Component.NormalButane:
                         comp.NormalButane = component.GetScaledValue();
                         break;
-                    case "Isopentane":
+                    case Aga8Component.IsoPentane:
                         comp.IsoPentane = component.GetScaledValue();
                         break;
-                    case "n-Pentane":
+                    case Aga8Component.NormalPentane:
                         comp.NormalPentane = component.GetScaledValue();
                         break;
-                    case "Hexane":
+                    case Aga8Component.Hexane:
                         comp.Hexane = component.GetScaledValue();
                         break;
-                    case "Heptane":
+                    case Aga8Component.Heptane:
                         comp.Heptane = component.GetScaledValue();
                         break;
-                    case "Octane":
+                    case Aga8Component.Octane:
                         comp.Octane = component.GetScaledValue();
                         break;
-                    case "Nonane":
-                        comp.Nonane= component.GetScaledValue();
+                    case Aga8Component.Nonane:
+                        comp.Nonane = component.GetScaledValue();
                         break;
-                    case "Decane":
+                    case Aga8Component.Decane:
                         comp.Decane = component.GetScaledValue();
                         break;
-                    case "Hydrogen":
+                    case Aga8Component.Hydrogen:
                         comp.Hydrogen = component.GetScaledValue();
                         break;
-                    case "Oxygen":
+                    case Aga8Component.Oxygen:
                         comp.Oxygen = component.GetScaledValue();
                         break;
-                    case "Carbon monoxide":
+                    case Aga8Component.CarbonMonoxide:
                         comp.CarbonMonoxide = component.GetScaledValue();
                         break;
-                    case "Water":
+                    case Aga8Component.Water:
                         comp.Water = component.GetScaledValue();
                         break;
-                    case "Hydrogen sulfide":
+                    case Aga8Component.HydrogenSulfide:
                         comp.HydrogenSulfide = component.GetScaledValue();
                         break;
-                    case "Helium":
+                    case Aga8Component.Helium:
                         comp.Helium = component.GetScaledValue();
                         break;
-                    case "Argon":
-                        comp.Argon= component.GetScaledValue();
+                    case Aga8Component.Argon:
+                        comp.Argon = component.GetScaledValue();
                         break;
                 }
             }
@@ -283,6 +247,8 @@ namespace Aga8CalcService
 
         [XmlAttribute]
         public ConfigModel.Func MathFunction { get; set; }
+
+        public StatusCode Quality { get; set; }
 
         public double GetValue()
         {
@@ -319,7 +285,7 @@ namespace Aga8CalcService
                     break;
                 case ConfigModel.Func.Median:
                     value = 0.0;
-                    List<double> v = new List<double>();
+                    List<double> v = new();
                     foreach (var it in Item)
                     {
                         v.Add(it.GetAGA8Converted());
@@ -360,6 +326,8 @@ namespace Aga8CalcService
         [XmlAttribute]
         public ConfigModel.Func MathFunction { get; set; }
 
+        public StatusCode Quality { get; set; }
+
         public double GetValue()
         {
             double value = 0.0;
@@ -395,7 +363,7 @@ namespace Aga8CalcService
                     break;
                 case ConfigModel.Func.Median:
                     value = 0.0;
-                    List<double> v = new List<double>();
+                    List<double> v = new();
                     foreach (var it in Item)
                     {
                         v.Add(it.GetAGA8Converted());
@@ -450,22 +418,42 @@ namespace Aga8CalcService
         public List<PropertyMeasurement> Item { get; }
     }
 
-    public class Component
+    public class Component : Measurement
     {
         [XmlAttribute]
-        public string Name { get; set; }
-        [XmlAttribute]
-        public string Tag { get; set; }
-        [XmlAttribute]
-        public double ScaleFactor { get; set; }
-        [XmlAttribute]
-        public double Value { get; set; }
+        public Aga8Component Name { get; set; }
 
         public Component()
         {
             ScaleFactor = 1.0;
             Value = 0.0;
         }
+    }
+
+    public class Measurement
+    {
+        [XmlAttribute]
+        public string NamespaceURI { get; set; }
+        [XmlAttribute]
+        public string Identifier { get; set; }
+        [XmlAttribute]
+        public string StartIdentifier { get; set; }
+        [XmlAttribute]
+        public string RelativePath { get; set; }
+        [XmlAttribute]
+        public double ScaleFactor { get; set; }
+        [XmlAttribute]
+        public string Type { get; set; }
+        [XmlAttribute]
+        public double Value { get; set; }
+        [XmlAttribute]
+        public int SamplingInterval { get; set; } = -2;
+
+        [XmlIgnore]
+        public StatusCode Quality { get; set; }
+
+        [XmlIgnore]
+        public string NodeId { get; set; }
 
         public double GetScaledValue()
         {
@@ -473,25 +461,20 @@ namespace Aga8CalcService
         }
     }
 
-    public class Measurement
+    public class PressureMeasurement : Measurement
     {
         [XmlAttribute]
         public string Name { get; set; }
-        [XmlAttribute]
-        public string Tag { get; set; }
-        [XmlAttribute]
-        public string Type { get; set; }
 
-        [XmlIgnore]
-        public double Value { get; set; }
-    }
-
-    public class PressureMeasurement : Measurement
-    {
         [XmlAttribute]
         public ConfigModel.PressureUnit Unit { get; set; }
 
         const double stdAtm = 1.01325;
+
+        public PressureMeasurement()
+        {
+            ScaleFactor = 1.0;
+        }
 
         public double GetAGA8Converted()
         {
@@ -500,10 +483,10 @@ namespace Aga8CalcService
             switch (Unit)
             {
                 case ConfigModel.PressureUnit.barg:
-                    result = (Value + stdAtm) * 100.0;
+                    result = ((Value * ScaleFactor) + stdAtm) * 100.0;
                     break;
                 case ConfigModel.PressureUnit.bara:
-                    result = Value * 100.0;
+                    result = (Value * ScaleFactor) * 100.0;
                     break;
                 default:
                     break;
@@ -519,10 +502,10 @@ namespace Aga8CalcService
             switch (Unit)
             {
                 case ConfigModel.PressureUnit.barg:
-                    result = Value / 100.0 - stdAtm;
+                    result = (Value * ScaleFactor) / 100.0 - stdAtm;
                     break;
                 case ConfigModel.PressureUnit.bara:
-                    result = Value / 100.0;
+                    result = (Value * ScaleFactor) / 100.0;
                     break;
                 default:
                     break;
@@ -535,9 +518,17 @@ namespace Aga8CalcService
     public class TemperatureMeasurement : Measurement
     {
         [XmlAttribute]
+        public string Name { get; set; }
+
+        [XmlAttribute]
         public ConfigModel.TemperatureUnit Unit { get; set; }
 
         const double zeroCelsius = 273.15;
+
+        public TemperatureMeasurement()
+        {
+            ScaleFactor = 1.0;
+        }
 
         public double GetAGA8Converted()
         {
@@ -546,10 +537,10 @@ namespace Aga8CalcService
             switch (Unit)
             {
                 case ConfigModel.TemperatureUnit.C:
-                    result = Value + zeroCelsius;
+                    result = (Value * ScaleFactor) + zeroCelsius;
                     break;
                 case ConfigModel.TemperatureUnit.K:
-                    result = Value;
+                    result = (Value * ScaleFactor);
                     break;
                 default:
                     break;
@@ -565,10 +556,10 @@ namespace Aga8CalcService
             switch (Unit)
             {
                 case ConfigModel.TemperatureUnit.C:
-                    result = Value - zeroCelsius;
+                    result = (Value * ScaleFactor) - zeroCelsius;
                     break;
                 case ConfigModel.TemperatureUnit.K:
-                    result = Value;
+                    result = (Value * ScaleFactor);
                     break;
                 default:
                     break;

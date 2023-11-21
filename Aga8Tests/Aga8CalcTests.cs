@@ -2,9 +2,11 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Globalization;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
+using static Aga8CalcService.ConfigModel;
 
 namespace Aga8Tests
 {
@@ -15,37 +17,143 @@ namespace Aga8Tests
         public void GenerateAndReadConfigModel()
         {
             // Stream 0
-            ConfigModel config = new ConfigModel
+            ConfigModel config = new()
             {
                 OpcUrl = "opc.tcp://localhost:62548/Quickstarts/DataAccessServer",
                 OpcUser = "user",
                 OpcPassword = "password",
+                DefaultNamespaceURI = "http://test.org/UA/Alarms/",
                 Interval = 1000,
                 EquationOfState = ConfigModel.Equation.Gerg2008
             };
 
             config.ConfigList.Item.Add(new Config { Name = "GC name" });
-            config.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Methane", Tag = "ns=2;s=1:AI1001?A", Value = 0.778_240 });
-            config.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Nitrogen", Tag = "ns=2;s=1:AI1001?A", Value = 0.020_000 });
-            config.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Carbon dioxide", Tag = "ns=2;s=1:AI1001?A", Value = 0.060_000 });
-            config.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Ethane", Tag = "ns=2;s=1:AI1001?A", Value = 0.080_000 });
-            config.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Propane", Tag = "ns=2;s=1:AI1001?A", Value = 0.030_000 });
-            config.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Isobutane", Tag = "ns=2;s=1:AI1001?A", Value = 0.001_500 });
-            config.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "n-Butane", Tag = "ns=2;s=1:AI1001?A", Value = 0.003_000 });
-            config.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Isopentane", Tag = "ns=2;s=1:AI1001?A", Value = 0.000_500 });
-            config.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "n-Pentane", Tag = "ns=2;s=1:AI1001?A", Value = 0.001_650 });
-            config.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Hexane", Tag = "ns=2;s=1:AI1001?A", Value = 0.002_150 });
-            config.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Heptane", Tag = "ns=2;s=1:AI1001?A", Value = 0.000_880 });
-            config.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Octane", Tag = "ns=2;s=1:AI1001?A", Value = 0.000_240 });
-            config.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Nonane", Tag = "ns=2;s=1:AI1001?A", Value = 0.000_150 });
-            config.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Decane", Tag = "ns=2;s=1:AI1001?A", Value = 0.000_090 });
-            config.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Hydrogen", Tag = "ns=2;s=1:AI1001?A", Value = 0.004_000 });
-            config.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Oxygen", Tag = "ns=2;s=1:AI1001?A", Value = 0.005_000 });
-            config.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Carbon monoxide", Tag = "ns=2;s=1:AI1001?A", Value = 0.002_000 });
-            config.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Water", Tag = "ns=2;s=1:AI1001?A", Value = 0.000_100 });
-            config.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Hydrogen sulfide", Tag = "ns=2;s=1:AI1001?A", Value = 0.002_500 });
-            config.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Helium", Tag = "ns=2;s=1:AI1001?A", Value = 0.007_000 });
-            config.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Argon", Tag = "ns=2;s=1:AI1001?A", Value = 0.001_000 });
+            config.ConfigList.Item[0].Composition.Item.Add(new Component
+            {
+                Name = Aga8Component.Methane,
+                Identifier = "1:AI1001?A",
+                Value = 0.778_240
+            });
+            config.ConfigList.Item[0].Composition.Item.Add(new Component
+            {
+                Name = Aga8Component.Nitrogen,
+                Identifier = "s=1:AI1001?A",
+                Value = 0.020_000
+            });
+            config.ConfigList.Item[0].Composition.Item.Add(new Component
+            {
+                Name = Aga8Component.CarbonDioxide,
+                Identifier = "s=1:AI1001?A",
+                Value = 0.060_000
+            });
+            config.ConfigList.Item[0].Composition.Item.Add(new Component
+            {
+                Name = Aga8Component.Ethane,
+                Identifier = "s=1:AI1001?A",
+                Value = 0.080_000
+            });
+            config.ConfigList.Item[0].Composition.Item.Add(new Component
+            {
+                Name = Aga8Component.Propane,
+                Identifier = "s=1:AI1001?A",
+                Value = 0.030_000
+            });
+            config.ConfigList.Item[0].Composition.Item.Add(new Component
+            {
+                Name = Aga8Component.IsoButane,
+                Identifier = "s=1:AI1001?A",
+                Value = 0.001_500
+            });
+            config.ConfigList.Item[0].Composition.Item.Add(new Component
+            {
+                Name = Aga8Component.NormalButane,
+                Identifier = "s=1:AI1001?A",
+                Value = 0.003_000
+            });
+            config.ConfigList.Item[0].Composition.Item.Add(new Component
+            {
+                Name = Aga8Component.IsoPentane,
+                Identifier = "s=1:AI1001?A",
+                Value = 0.000_500
+            });
+            config.ConfigList.Item[0].Composition.Item.Add(new Component
+            {
+                Name = Aga8Component.NormalPentane,
+                Identifier = "s=1:AI1001?A",
+                Value = 0.001_650
+            });
+            config.ConfigList.Item[0].Composition.Item.Add(new Component
+            {
+                Name = Aga8Component.Hexane,
+                Identifier = "s=1:AI1001?A",
+                Value = 0.002_150
+            });
+            config.ConfigList.Item[0].Composition.Item.Add(new Component
+            {
+                Name = Aga8Component.Heptane,
+                Identifier = "s=1:AI1001?A",
+                Value = 0.000_880
+            });
+            config.ConfigList.Item[0].Composition.Item.Add(new Component
+            {
+                Name = Aga8Component.Octane,
+                Identifier = "s=1:AI1001?A",
+                Value = 0.000_240
+            });
+            config.ConfigList.Item[0].Composition.Item.Add(new Component
+            {
+                Name = Aga8Component.Nonane,
+                Identifier = "s=1:AI1001?A",
+                Value = 0.000_150
+            });
+            config.ConfigList.Item[0].Composition.Item.Add(new Component
+            {
+                Name = Aga8Component.Decane,
+                Identifier = "s=1:AI1001?A",
+                Value = 0.000_090
+            });
+            config.ConfigList.Item[0].Composition.Item.Add(new Component
+            {
+                Name = Aga8Component.Hydrogen,
+                Identifier = "s=1:AI1001?A",
+                Value = 0.004_000
+            });
+            config.ConfigList.Item[0].Composition.Item.Add(new Component
+            {
+                Name = Aga8Component.Oxygen,
+                Identifier = "s=1:AI1001?A",
+                Value = 0.005_000
+            });
+            config.ConfigList.Item[0].Composition.Item.Add(new Component
+            {
+                Name = Aga8Component.CarbonMonoxide,
+                Identifier = "s=1:AI1001?A",
+                Value = 0.002_000
+            });
+            config.ConfigList.Item[0].Composition.Item.Add(new Component
+            {
+                Name = Aga8Component.Water,
+                Identifier = "s=1:AI1001?A",
+                Value = 0.000_100
+            });
+            config.ConfigList.Item[0].Composition.Item.Add(new Component
+            {
+                Name = Aga8Component.HydrogenSulfide,
+                Identifier = "s=1:AI1001?A",
+                Value = 0.002_500
+            });
+            config.ConfigList.Item[0].Composition.Item.Add(new Component
+            {
+                Name = Aga8Component.Helium,
+                Identifier = "s=1:AI1001?A",
+                Value = 0.007_000
+            });
+            config.ConfigList.Item[0].Composition.Item.Add(new Component
+            {
+                Name = Aga8Component.Argon,
+                Identifier = "s=1:AI1001?A",
+                Value = 0.001_000
+            });
 
             config.ConfigList.Item[0].PressureTemperatureList.Item.Add(new PressureTemperature
             {
@@ -56,25 +164,27 @@ namespace Aga8Tests
             config.ConfigList.Item[0].PressureTemperatureList.Item[0].PressureFunction.Item.Add(new PressureMeasurement
             {
                 Name = "PF 1",
-                Tag = "ns=2;s=1:AI1001?Pressure",
+                Identifier = "1:AI1001?Pressure",
             });
 
             config.ConfigList.Item[0].PressureTemperatureList.Item[0].PressureFunction.Item.Add(new PressureMeasurement
             {
                 Name = "PF 2",
-                Tag = "ns=2;s=1:AI1002?Pressure",
+                Identifier = "1:AI1002?Pressure",
             });
 
             config.ConfigList.Item[0].PressureTemperatureList.Item[0].TemperatureFunction.Item.Add(new TemperatureMeasurement
             {
                 Name = "PF 1",
-                Tag = "ns=2;s=1:AI1001?Temperature",
+                Identifier = "1:AI1001?Temperature",
+                NamespaceURI = "Custom namespace URI"
             });
 
             config.ConfigList.Item[0].PressureTemperatureList.Item[0].TemperatureFunction.Item.Add(new TemperatureMeasurement
             {
                 Name = "PF 2",
-                Tag = "ns=2;s=1:AI1002?Temperature",
+                Identifier = "1:AI1002?Temperature",
+                NamespaceURI = "Custom namespace URI"
             });
 
             config.ConfigList.Item[0].PressureTemperatureList.Item[0].Properties.Item.Add(new PropertyMeasurement
@@ -82,12 +192,12 @@ namespace Aga8Tests
                 Property = ConfigModel.Aga8ResultCode.MolarConcentration
             });
 
-            XmlWriterSettings writerSettings = new XmlWriterSettings
+            XmlWriterSettings writerSettings = new()
             {
                 Indent = true,
             };
             XmlWriter writer = XmlWriter.Create("aga8calc.xml", writerSettings);
-            XmlSerializer configSerializer = new XmlSerializer(typeof(ConfigModel));
+            XmlSerializer configSerializer = new(typeof(ConfigModel));
             configSerializer.Serialize(writer, config);
             writer.Close();
 
@@ -118,30 +228,30 @@ namespace Aga8Tests
         [TestMethod]
         public void Aga8_CalculatesProperties()
         {
-            ConfigModel conf = new ConfigModel();
+            ConfigModel conf = new();
 
             conf.ConfigList.Item.Add(new Config());
-            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Methane", Tag = "ns=2;s=1:AI1001?A", Value = 0.778_240 });
-            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Nitrogen", Tag = "ns=2;s=1:AI1001?A", Value = 0.020_000 });
-            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Carbon dioxide", Tag = "ns=2;s=1:AI1001?A", Value = 0.060_000 });
-            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Ethane", Tag = "ns=2;s=1:AI1001?A", Value = 0.080_000 });
-            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Propane", Tag = "ns=2;s=1:AI1001?A", Value = 0.030_000 });
-            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Isobutane", Tag = "ns=2;s=1:AI1001?A", Value = 0.001_500 });
-            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "n-Butane", Tag = "ns=2;s=1:AI1001?A", Value = 0.003_000 });
-            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Isopentane", Tag = "ns=2;s=1:AI1001?A", Value = 0.000_500 });
-            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "n-Pentane", Tag = "ns=2;s=1:AI1001?A", Value = 0.001_650 });
-            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Hexane", Tag = "ns=2;s=1:AI1001?A", Value = 0.002_150 });
-            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Heptane", Tag = "ns=2;s=1:AI1001?A", Value = 0.000_880 });
-            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Octane", Tag = "ns=2;s=1:AI1001?A", Value = 0.000_240 });
-            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Nonane", Tag = "ns=2;s=1:AI1001?A", Value = 0.000_150 });
-            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Decane", Tag = "ns=2;s=1:AI1001?A", Value = 0.000_090 });
-            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Hydrogen", Tag = "ns=2;s=1:AI1001?A", Value = 0.004_000 });
-            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Oxygen", Tag = "ns=2;s=1:AI1001?A", Value = 0.005_000 });
-            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Carbon monoxide", Tag = "ns=2;s=1:AI1001?A", Value = 0.002_000 });
-            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Water", Tag = "ns=2;s=1:AI1001?A", Value = 0.000_100 });
-            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Hydrogen sulfide", Tag = "ns=2;s=1:AI1001?A", Value = 0.002_500 });
-            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Helium", Tag = "ns=2;s=1:AI1001?A", Value = 0.007_000 });
-            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Argon", Tag = "ns=2;s=1:AI1001?A", Value = 0.001_000 });
+            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = Aga8Component.Methane, Value = 0.778_240 });
+            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = Aga8Component.Nitrogen, Value = 0.020_000 });
+            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = Aga8Component.CarbonDioxide, Value = 0.060_000 });
+            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = Aga8Component.Ethane, Value = 0.080_000 });
+            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = Aga8Component.Propane, Value = 0.030_000 });
+            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = Aga8Component.IsoButane, Value = 0.001_500 });
+            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = Aga8Component.NormalButane, Value = 0.003_000 });
+            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = Aga8Component.IsoPentane, Value = 0.000_500 });
+            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = Aga8Component.NormalPentane, Value = 0.001_650 });
+            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = Aga8Component.Hexane, Value = 0.002_150 });
+            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = Aga8Component.Heptane, Value = 0.000_880 });
+            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = Aga8Component.Octane, Value = 0.000_240 });
+            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = Aga8Component.Nonane, Value = 0.000_150 });
+            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = Aga8Component.Decane, Value = 0.000_090 });
+            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = Aga8Component.Hydrogen, Value = 0.004_000 });
+            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = Aga8Component.Oxygen, Value = 0.005_000 });
+            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = Aga8Component.CarbonMonoxide, Value = 0.002_000 });
+            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = Aga8Component.Water, Value = 0.000_100 });
+            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = Aga8Component.HydrogenSulfide, Value = 0.002_500 });
+            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = Aga8Component.Helium, Value = 0.007_000 });
+            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = Aga8Component.Argon, Value = 0.001_000 });
 
             conf.ConfigList.Item[0].PressureTemperatureList.Item.Add(new PressureTemperature
             {
@@ -151,7 +261,7 @@ namespace Aga8Tests
             conf.ConfigList.Item[0].PressureTemperatureList.Item[0].PressureFunction.Item.Add(new PressureMeasurement
             {
                 Name = "PF 1",
-                Tag = "ns=2;s=1:AI1001?Pressure",
+                Identifier = "1:AI1001?Pressure",
                 Value = 498.98675,
                 Unit = ConfigModel.PressureUnit.barg
             });
@@ -159,7 +269,7 @@ namespace Aga8Tests
             conf.ConfigList.Item[0].PressureTemperatureList.Item[0].TemperatureFunction.Item.Add(new TemperatureMeasurement
             {
                 Name = "PF 1",
-                Tag = "ns=2;s=1:AI1001?Temperature",
+                Identifier = "1:AI1001?Temperature",
                 Value = 126.85,
                 Unit = ConfigModel.TemperatureUnit.C
             });
@@ -170,12 +280,13 @@ namespace Aga8Tests
             });
 
             var compositionError = new CompositionError();
+            var densityError = new DensityError();
             using (var aga = new AGA8Detail())
             {
                 aga.SetComposition(conf.ConfigList.Item[0].Composition.GetScaledValues(), ref compositionError);
                 aga.SetPressure(conf.ConfigList.Item[0].PressureTemperatureList.Item[0].PressureFunction.GetValue());
                 aga.SetTemperature(conf.ConfigList.Item[0].PressureTemperatureList.Item[0].TemperatureFunction.GetValue());
-                aga.CalculateDensity();
+                aga.CalculateDensity(ref densityError);
                 aga.CalculateProperties();
 
                 conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Properties.Item[0].Value = aga.GetProperty(conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Properties.Item[0].Property);
@@ -207,7 +318,7 @@ namespace Aga8Tests
                 gerg.SetComposition(conf.ConfigList.Item[0].Composition.GetScaledValues(), ref compositionError);
                 gerg.SetPressure(conf.ConfigList.Item[0].PressureTemperatureList.Item[0].PressureFunction.GetValue());
                 gerg.SetTemperature(conf.ConfigList.Item[0].PressureTemperatureList.Item[0].TemperatureFunction.GetValue());
-                gerg.CalculateDensity();
+                gerg.CalculateDensity(ref densityError);
                 gerg.CalculateProperties();
 
                 conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Properties.Item[0].Value = gerg.GetProperty(conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Properties.Item[0].Property);
@@ -235,16 +346,16 @@ namespace Aga8Tests
             }
 
             conf.ConfigList.Item.Add(new Config());
-            conf.ConfigList.Item[1].Composition.Item.Add(new Component { Name = "Methane", Tag = "ns=2;s=1:AI1001?A", Value = 96.5, ScaleFactor = 0.01 });
-            conf.ConfigList.Item[1].Composition.Item.Add(new Component { Name = "Nitrogen", Tag = "ns=2;s=1:AI1001?A", Value = 0.3, ScaleFactor = 0.01 });
-            conf.ConfigList.Item[1].Composition.Item.Add(new Component { Name = "Carbon dioxide", Tag = "ns=2;s=1:AI1001?A", Value = 0.6, ScaleFactor = 0.01 });
-            conf.ConfigList.Item[1].Composition.Item.Add(new Component { Name = "Ethane", Tag = "ns=2;s=1:AI1001?A", Value = 1.8, ScaleFactor = 0.01 });
-            conf.ConfigList.Item[1].Composition.Item.Add(new Component { Name = "Propane", Tag = "ns=2;s=1:AI1001?A", Value = 0.45, ScaleFactor = 0.01 });
-            conf.ConfigList.Item[1].Composition.Item.Add(new Component { Name = "Isobutane", Tag = "ns=2;s=1:AI1001?A", Value = 0.1, ScaleFactor = 0.01 });
-            conf.ConfigList.Item[1].Composition.Item.Add(new Component { Name = "n-Butane", Tag = "ns=2;s=1:AI1001?A", Value = 0.1, ScaleFactor = 0.01 });
-            conf.ConfigList.Item[1].Composition.Item.Add(new Component { Name = "Isopentane", Tag = "ns=2;s=1:AI1001?A", Value = 0.05, ScaleFactor = 0.01 });
-            conf.ConfigList.Item[1].Composition.Item.Add(new Component { Name = "n-Pentane", Tag = "ns=2;s=1:AI1001?A", Value = 0.03, ScaleFactor = 0.01 });
-            conf.ConfigList.Item[1].Composition.Item.Add(new Component { Name = "Hexane", Tag = "ns=2;s=1:AI1001?A", Value = 0.07, ScaleFactor = 0.01 });
+            conf.ConfigList.Item[1].Composition.Item.Add(new Component { Name = Aga8Component.Methane, Value = 96.5, ScaleFactor = 0.01 });
+            conf.ConfigList.Item[1].Composition.Item.Add(new Component { Name = Aga8Component.Nitrogen, Value = 0.3, ScaleFactor = 0.01 });
+            conf.ConfigList.Item[1].Composition.Item.Add(new Component { Name = Aga8Component.CarbonDioxide, Value = 0.6, ScaleFactor = 0.01 });
+            conf.ConfigList.Item[1].Composition.Item.Add(new Component { Name = Aga8Component.Ethane, Value = 1.8, ScaleFactor = 0.01 });
+            conf.ConfigList.Item[1].Composition.Item.Add(new Component { Name = Aga8Component.Propane, Value = 0.45, ScaleFactor = 0.01 });
+            conf.ConfigList.Item[1].Composition.Item.Add(new Component { Name = Aga8Component.IsoButane, Value = 0.1, ScaleFactor = 0.01 });
+            conf.ConfigList.Item[1].Composition.Item.Add(new Component { Name = Aga8Component.NormalButane, Value = 0.1, ScaleFactor = 0.01 });
+            conf.ConfigList.Item[1].Composition.Item.Add(new Component { Name = Aga8Component.IsoPentane, Value = 0.05, ScaleFactor = 0.01 });
+            conf.ConfigList.Item[1].Composition.Item.Add(new Component { Name = Aga8Component.NormalPentane, Value = 0.03, ScaleFactor = 0.01 });
+            conf.ConfigList.Item[1].Composition.Item.Add(new Component { Name = Aga8Component.Hexane, Value = 0.07, ScaleFactor = 0.01 });
 
             conf.ConfigList.Item[1].PressureTemperatureList.Item.Add(new PressureTemperature
             {
@@ -254,7 +365,7 @@ namespace Aga8Tests
             conf.ConfigList.Item[1].PressureTemperatureList.Item[0].PressureFunction.Item.Add(new PressureMeasurement
             {
                 Name = "PF 1",
-                Tag = "ns=2;s=1:AI1001?Pressure",
+                Identifier = "1:AI1001?Pressure",
                 Value = 145,
                 Unit = ConfigModel.PressureUnit.barg
             });
@@ -262,7 +373,7 @@ namespace Aga8Tests
             conf.ConfigList.Item[1].PressureTemperatureList.Item[0].TemperatureFunction.Item.Add(new TemperatureMeasurement
             {
                 Name = "PF 1",
-                Tag = "ns=2;s=1:AI1001?Temperature",
+                Identifier = "1:AI1001?Temperature",
                 Value = 18,
                 Unit = ConfigModel.TemperatureUnit.C
             });
@@ -277,7 +388,7 @@ namespace Aga8Tests
                 aga.SetComposition(conf.ConfigList.Item[1].Composition.GetScaledValues(), ref compositionError);
                 aga.SetPressure(conf.ConfigList.Item[1].PressureTemperatureList.Item[0].PressureFunction.GetValue());
                 aga.SetTemperature(conf.ConfigList.Item[1].PressureTemperatureList.Item[0].TemperatureFunction.GetValue());
-                aga.CalculateDensity();
+                aga.CalculateDensity(ref densityError);
                 aga.CalculateProperties();
 
                 conf.ConfigList.Item[1].PressureTemperatureList.Item[0].Properties.Item[0].Value = aga.GetProperty(conf.ConfigList.Item[1].PressureTemperatureList.Item[0].Properties.Item[0].Property);
@@ -293,7 +404,7 @@ namespace Aga8Tests
                 gerg.SetComposition(conf.ConfigList.Item[1].Composition.GetScaledValues(), ref compositionError);
                 gerg.SetPressure(conf.ConfigList.Item[1].PressureTemperatureList.Item[0].PressureFunction.GetValue());
                 gerg.SetTemperature(conf.ConfigList.Item[1].PressureTemperatureList.Item[0].TemperatureFunction.GetValue());
-                gerg.CalculateDensity();
+                gerg.CalculateDensity(ref densityError);
                 gerg.CalculateProperties();
 
                 conf.ConfigList.Item[1].PressureTemperatureList.Item[0].Properties.Item[0].Value = gerg.GetProperty(conf.ConfigList.Item[1].PressureTemperatureList.Item[0].Properties.Item[0].Property);
@@ -308,30 +419,31 @@ namespace Aga8Tests
         [TestMethod]
         public void Aga8_Test_Memory()
         {
-            ConfigModel conf = new ConfigModel();
+            ConfigModel conf = new();
 
             conf.ConfigList.Item.Add(new Config());
-            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Methane", Tag = "ns=2;s=1:AI1001?A", Value = 0.778_240 });
-            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Nitrogen", Tag = "ns=2;s=1:AI1001?A", Value = 0.020_000 });
-            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Carbon dioxide", Tag = "ns=2;s=1:AI1001?A", Value = 0.060_000 });
-            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Ethane", Tag = "ns=2;s=1:AI1001?A", Value = 0.080_000 });
-            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Propane", Tag = "ns=2;s=1:AI1001?A", Value = 0.030_000 });
-            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Isobutane", Tag = "ns=2;s=1:AI1001?A", Value = 0.001_500 });
-            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "n-Butane", Tag = "ns=2;s=1:AI1001?A", Value = 0.003_000 });
-            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Isopentane", Tag = "ns=2;s=1:AI1001?A", Value = 0.000_500 });
-            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "n-Pentane", Tag = "ns=2;s=1:AI1001?A", Value = 0.001_650 });
-            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Hexane", Tag = "ns=2;s=1:AI1001?A", Value = 0.002_150 });
-            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Heptane", Tag = "ns=2;s=1:AI1001?A", Value = 0.000_880 });
-            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Octane", Tag = "ns=2;s=1:AI1001?A", Value = 0.000_240 });
-            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Nonane", Tag = "ns=2;s=1:AI1001?A", Value = 0.000_150 });
-            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Decane", Tag = "ns=2;s=1:AI1001?A", Value = 0.000_090 });
-            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Hydrogen", Tag = "ns=2;s=1:AI1001?A", Value = 0.004_000 });
-            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Oxygen", Tag = "ns=2;s=1:AI1001?A", Value = 0.005_000 });
-            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Carbon monoxide", Tag = "ns=2;s=1:AI1001?A", Value = 0.002_000 });
-            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Water", Tag = "ns=2;s=1:AI1001?A", Value = 0.000_100 });
-            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Hydrogen sulfide", Tag = "ns=2;s=1:AI1001?A", Value = 0.002_500 });
-            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Helium", Tag = "ns=2;s=1:AI1001?A", Value = 0.007_000 });
-            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = "Argon", Tag = "ns=2;s=1:AI1001?A", Value = 0.001_000 });
+            conf.ConfigList.Item[0].Name = "Test config";
+            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = Aga8Component.Methane, Value = 0.778_240 });
+            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = Aga8Component.Nitrogen, Value = 0.020_000 });
+            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = Aga8Component.CarbonDioxide, Value = 0.060_000 });
+            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = Aga8Component.Ethane, Value = 0.080_000 });
+            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = Aga8Component.Propane, Value = 0.030_000 });
+            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = Aga8Component.IsoButane, Value = 0.001_500 });
+            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = Aga8Component.NormalButane, Value = 0.003_000 });
+            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = Aga8Component.IsoPentane, Value = 0.000_500 });
+            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = Aga8Component.NormalPentane, Value = 0.001_650 });
+            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = Aga8Component.Hexane, Value = 0.002_150 });
+            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = Aga8Component.Heptane, Value = 0.000_880 });
+            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = Aga8Component.Octane, Value = 0.000_240 });
+            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = Aga8Component.Nonane, Value = 0.000_150 });
+            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = Aga8Component.Decane, Value = 0.000_090 });
+            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = Aga8Component.Hydrogen, Value = 0.004_000 });
+            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = Aga8Component.Oxygen, Value = 0.005_000 });
+            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = Aga8Component.CarbonMonoxide, Value = 0.002_000 });
+            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = Aga8Component.Water, Value = 0.000_100 });
+            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = Aga8Component.HydrogenSulfide, Value = 0.002_500 });
+            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = Aga8Component.Helium, Value = 0.007_000 });
+            conf.ConfigList.Item[0].Composition.Item.Add(new Component { Name = Aga8Component.Argon, Value = 0.001_000 });
 
             conf.ConfigList.Item[0].PressureTemperatureList.Item.Add(new PressureTemperature
             {
@@ -341,7 +453,7 @@ namespace Aga8Tests
             conf.ConfigList.Item[0].PressureTemperatureList.Item[0].PressureFunction.Item.Add(new PressureMeasurement
             {
                 Name = "PF 1",
-                Tag = "ns=2;s=1:AI1001?Pressure",
+                Identifier = "1:AI1001?Pressure",
                 Value = 498.98675,
                 Unit = ConfigModel.PressureUnit.barg
             });
@@ -349,7 +461,7 @@ namespace Aga8Tests
             conf.ConfigList.Item[0].PressureTemperatureList.Item[0].TemperatureFunction.Item.Add(new TemperatureMeasurement
             {
                 Name = "PF 1",
-                Tag = "ns=2;s=1:AI1001?Temperature",
+                Identifier = "1:AI1001?Temperature",
                 Value = 126.85,
                 Unit = ConfigModel.TemperatureUnit.C
             });
@@ -360,14 +472,15 @@ namespace Aga8Tests
             });
 
             var compositionError = new CompositionError();
+            var densityError = new DensityError();
             for (int i = 0; i < 1000; i++)
             {
                 using (var aga = new AGA8Detail())
                 {
-                    aga.SetComposition(conf.ConfigList.Item[0].Composition.GetValues(), ref compositionError);
+                    aga.SetComposition(conf.ConfigList.Item[0].Composition.GetScaledValues(), ref compositionError);
                     aga.SetPressure(conf.ConfigList.Item[0].PressureTemperatureList.Item[0].PressureFunction.GetValue());
                     aga.SetTemperature(conf.ConfigList.Item[0].PressureTemperatureList.Item[0].TemperatureFunction.GetValue());
-                    aga.CalculateDensity();
+                    aga.CalculateDensity(ref densityError);
                     aga.CalculateProperties();
 
                     conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Properties.Item[0].Value = aga.GetProperty(conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Properties.Item[0].Property);
@@ -380,10 +493,10 @@ namespace Aga8Tests
 
                 using (var gerg = new Gerg2008())
                 {
-                    gerg.SetComposition(conf.ConfigList.Item[0].Composition.GetValues(),ref compositionError);
+                    gerg.SetComposition(conf.ConfigList.Item[0].Composition.GetScaledValues(), ref compositionError);
                     gerg.SetPressure(conf.ConfigList.Item[0].PressureTemperatureList.Item[0].PressureFunction.GetValue());
                     gerg.SetTemperature(conf.ConfigList.Item[0].PressureTemperatureList.Item[0].TemperatureFunction.GetValue());
-                    gerg.CalculateDensity();
+                    gerg.CalculateDensity(ref densityError);
                     gerg.CalculateProperties();
 
                     conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Properties.Item[0].Value = gerg.GetProperty(conf.ConfigList.Item[0].PressureTemperatureList.Item[0].Properties.Item[0].Property);
@@ -404,7 +517,7 @@ namespace Aga8Tests
             string TagConfFile = AppDomain.CurrentDomain.BaseDirectory.ToString(CultureInfo.InvariantCulture) + "\\Tag_Config_Test.xml";
             ConfigModel conf = ConfigModel.ReadConfig(TagConfFile);
 
-            Aga8OpcClient client = new Aga8OpcClient(conf.OpcUrl, conf.OpcUser, conf.OpcPassword);
+            Aga8OpcClient client = new(conf.OpcUrl, conf.OpcUser, conf.OpcPassword);
             Assert.IsNull(client.OpcSession);
             await client.Connect();
             Assert.IsNotNull(client.OpcSession);
@@ -412,9 +525,26 @@ namespace Aga8Tests
             client.DisConnect();
         }
 
+        [TestMethod]
+        public void Aga8OpcClient_Communicate()
+        {
+            ConfigModel config = ReadConfig("Aga8Calc.config");
+            Aga8Calc aga8Calc = new();
+            aga8Calc.Start();
+            Thread.Sleep((int)(config.Interval * 2.5));
+            aga8Calc.Stop();
+        }
+
         [TestClass]
         public class ConfigTests
         {
+            [TestMethod]
+            public void ConfigModel_ReadConfig()
+            {
+                string TagConfFile = AppDomain.CurrentDomain.BaseDirectory.ToString(CultureInfo.InvariantCulture) + "\\Tag_Config_Test.xml";
+                ConfigModel.ReadConfig(TagConfFile);
+            }
+
             [TestMethod]
             public void TemperatureMeasurement_GetAGA8Converted_UnitIsCelsius_ReturnKelvin()
             {
@@ -478,6 +608,19 @@ namespace Aga8Tests
             }
 
             [TestMethod]
+            public void PressureMeasurement_GetAGA8Converted_UnitIsBargAndScaled_Return_kPa()
+            {
+                var pressure = new PressureMeasurement();
+                double testPressurekPa = 11_271.325;
+                pressure.Value = 11170.0;
+                pressure.ScaleFactor = 0.01;
+                pressure.Unit = ConfigModel.PressureUnit.barg;
+
+                double resultBara = pressure.GetAGA8Converted();
+                Assert.AreEqual(testPressurekPa, resultBara, 1.0e-10);
+            }
+
+            [TestMethod]
             public void PressureMeasurement_GetAGA8Converted_UnitIsBara_Return_kPa()
             {
                 var pressure = new PressureMeasurement();
@@ -489,6 +632,18 @@ namespace Aga8Tests
                 Assert.AreEqual(testPressurekPa, resultBara, 1.0e-10);
             }
 
+            [TestMethod]
+            public void PressureMeasurement_GetAGA8Converted_UnitIsBaraAndScaled_Return_kPa()
+            {
+                var pressure = new PressureMeasurement();
+                double testPressurekPa = 15_775.64;
+                pressure.Value = 1.57756_4;
+                pressure.ScaleFactor = 100.0;
+                pressure.Unit = ConfigModel.PressureUnit.bara;
+
+                double resultBara = pressure.GetAGA8Converted();
+                Assert.AreEqual(testPressurekPa, resultBara, 1.0e-10);
+            }
             [TestMethod]
             public void PressureMeasurement_GetUnitConverted_UnitIsBarg_ReturnBarg()
             {
@@ -502,11 +657,37 @@ namespace Aga8Tests
             }
 
             [TestMethod]
+            public void PressureMeasurement_GetUnitConverted_UnitIsBargAndScaled_ReturnBarg()
+            {
+                var pressure = new PressureMeasurement();
+                double testPressureBarg = 111.7;
+                pressure.Value = 1_127_132.5;
+                pressure.ScaleFactor = 0.01;
+                pressure.Unit = ConfigModel.PressureUnit.barg;
+
+                double resultBarg = pressure.GetUnitConverted();
+                Assert.AreEqual(testPressureBarg, resultBarg, 1.0e-10);
+            }
+
+            [TestMethod]
             public void PressureMeasurement_GetUnitConverted_UnitIsBara_ReturnBara()
             {
                 var pressure = new PressureMeasurement();
                 double testPressureBara = 157.756_4;
                 pressure.Value = 15_775.64;
+                pressure.Unit = ConfigModel.PressureUnit.bara;
+
+                double resultBara = pressure.GetUnitConverted();
+                Assert.AreEqual(testPressureBara, resultBara, 1.0e-10);
+            }
+
+            [TestMethod]
+            public void PressureMeasurement_GetUnitConverted_UnitIsBaraAndScaled_ReturnBara()
+            {
+                var pressure = new PressureMeasurement();
+                double testPressureBara = 157.756_4;
+                pressure.Value = 15.775_64;
+                pressure.ScaleFactor = 1000.0;
                 pressure.Unit = ConfigModel.PressureUnit.bara;
 
                 double resultBara = pressure.GetUnitConverted();

@@ -1,94 +1,205 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<xs:schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xs="http://www.w3.org/2001/XMLSchema" attributeFormDefault="unqualified" elementFormDefault="qualified">
-  <xsd:element name="configuration">
-    <xsd:complexType>
-      <xsd:sequence>
-        <xsd:element name="OpcUrl" type="xsd:string" />
-        <xsd:element name="OpcUser" type="xsd:string" />
-        <xsd:element name="OpcPassword" type="xsd:string" />
-        <xsd:element name="Interval" type="xsd:decimal" />
-        <xsd:element name="ConfigList">
-          <xsd:complexType>
-            <xsd:sequence>
-              <xsd:element maxOccurs="unbounded" name="Config">
-                <xsd:complexType>
-                  <xsd:sequence>
-                    <xsd:element name="Composition">
-                      <xsd:complexType>
-                        <xsd:sequence>
-                          <xsd:element maxOccurs="21" name="Component">
-                            <xsd:complexType>
-                              <xsd:attribute name="Name" type="xsd:string" use="required" />
-                              <xsd:attribute name="Tag" type="xsd:string" use="optional"/>
-                              <xsd:attribute name="ScaleFactor" type="xsd:decimal" use="required" />
-                              <xsd:attribute name="Value" type="xsd:decimal" use="optional" />
-                            </xsd:complexType>
-                          </xsd:element>
-                        </xsd:sequence>
-                      </xsd:complexType>
-                    </xsd:element>
-                    <xsd:element name="PressureTemperatureList">
-                      <xsd:complexType>
-                        <xsd:sequence>
-                          <xsd:element name="PressureTemperature">
-                            <xsd:complexType>
-                              <xsd:sequence>
-                                <xsd:element name="PressureFunction">
-                                  <xsd:complexType>
-                                    <xsd:sequence>
-                                      <xsd:element maxOccurs="unbounded" name="Pressure">
-                                        <xsd:complexType>
-                                          <xsd:attribute name="Name" type="xsd:string" use="optional" />
-                                          <xsd:attribute name="Tag" type="xsd:string" use="required" />
-                                          <xsd:attribute name="Unit" type="xsd:string" use="required" />
-                                        </xsd:complexType>
-                                      </xsd:element>
-                                    </xsd:sequence>
-                                    <xsd:attribute name="MathFunction" type="xsd:string" use="optional" />
-                                  </xsd:complexType>
-                                </xsd:element>
-                                <xsd:element name="TemperatureFunction">
-                                  <xsd:complexType>
-                                    <xsd:sequence>
-                                      <xsd:element maxOccurs="unbounded" name="Temperature">
-                                        <xsd:complexType>
-                                          <xsd:attribute name="Name" type="xsd:string" use="optional" />
-                                          <xsd:attribute name="Tag" type="xsd:string" use="required" />
-                                          <xsd:attribute name="Unit" type="xsd:string" use="required" />
-                                        </xsd:complexType>
-                                      </xsd:element>
-                                    </xsd:sequence>
-                                    <xsd:attribute name="MathFunction" type="xsd:string" use="optional" />
-                                  </xsd:complexType>
-                                </xsd:element>
-                                <xsd:element name="Properties">
-                                  <xsd:complexType>
-                                    <xsd:sequence>
-                                      <xsd:element name="Property">
-                                        <xsd:complexType>
-                                          <xsd:attribute name="Tag" type="xsd:string" use="required" />
-                                          <xsd:attribute name="Property" type="xsd:string" use="required" />
-                                          <xsd:attribute name="Type" type="xsd:string" use="required" />
-                                        </xsd:complexType>
-                                      </xsd:element>
-                                    </xsd:sequence>
-                                  </xsd:complexType>
-                                </xsd:element>
-                              </xsd:sequence>
-                              <xsd:attribute name="Name" type="xsd:string" use="optional" />
-                            </xsd:complexType>
-                          </xsd:element>
-                        </xsd:sequence>
-                      </xsd:complexType>
-                    </xsd:element>
-                  </xsd:sequence>
-                  <xsd:attribute name="Name" type="xsd:string" use="optional" />
-                </xsd:complexType>
-              </xsd:element>
-            </xsd:sequence>
-          </xsd:complexType>
-        </xsd:element>
-      </xsd:sequence>
-    </xsd:complexType>
-  </xsd:element>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="configuration" type="configurationType" />
+
+  <xs:attributeGroup name="MeasurementType">
+    <xs:attribute type="xs:string" name="NamespaceURI" use="optional" />
+    <xs:attribute type="xs:string" name="Identifier" use="optional" />
+    <xs:attribute type="xs:string" name="RelativePath" use="optional" />
+    <xs:attribute type="xs:string" name="StartIdentifier" use="optional" />
+    <xs:attribute type="xs:double" name="Value" use="optional" />
+    <xs:attribute type="xs:double" name="ScaleFactor" use="optional" />
+    <xs:attribute type="xs:int" name="SamplingInterval" use="optional" />
+  </xs:attributeGroup>
+
+  <xs:complexType name="ComponentType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="Name" use="required">
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="Methane" />
+              <xs:enumeration value="Nitrogen" />
+              <xs:enumeration value="CarbonDioxide" />
+              <xs:enumeration value="Ethane" />
+              <xs:enumeration value="Propane" />
+              <xs:enumeration value="IsoButane" />
+              <xs:enumeration value="NormalButane" />
+              <xs:enumeration value="IsoPentane" />
+              <xs:enumeration value="NormalPentane" />
+              <xs:enumeration value="Hexane" />
+              <xs:enumeration value="Heptane" />
+              <xs:enumeration value="Octane" />
+              <xs:enumeration value="Nonane" />
+              <xs:enumeration value="Decane" />
+              <xs:enumeration value="Hydrogen" />
+              <xs:enumeration value="Oxygen" />
+              <xs:enumeration value="CarbonMonoxide" />
+              <xs:enumeration value="Water" />
+              <xs:enumeration value="HydrogenSulfide" />
+              <xs:enumeration value="Helium" />
+              <xs:enumeration value="Argon" />
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:attribute>
+        <xs:attributeGroup ref="MeasurementType" />
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:complexType name="CompositionType">
+    <xs:sequence>
+      <xs:element type="ComponentType" name="Component" maxOccurs="21" minOccurs="1" />
+    </xs:sequence>
+    <xs:attribute type="xs:int" name="SamplingInterval" use="optional" />
+    <xs:attribute type="xs:boolean" name="Normalize" use="optional" />
+  </xs:complexType>
+
+  <xs:simpleType name="MathFunctionType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Min" />
+      <xs:enumeration value="Max" />
+      <xs:enumeration value="Average" />
+      <xs:enumeration value="Median" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="PressureType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute type="xs:string" name="Name" use="optional" />
+        <xs:attributeGroup ref="MeasurementType" />
+        <xs:attribute name="Unit" use="optional">
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="bara" />
+              <xs:enumeration value="barg" />
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:attribute>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:complexType name="PressureFunctionType">
+    <xs:sequence>
+      <xs:element type="PressureType" name="Pressure" maxOccurs="unbounded" minOccurs="1" />
+    </xs:sequence>
+    <xs:attribute name="MathFunction" type="MathFunctionType" use="optional" />
+  </xs:complexType>
+
+  <xs:complexType name="TemperatureType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute type="xs:string" name="Name" use="optional" />
+        <xs:attributeGroup ref="MeasurementType" />
+        <xs:attribute name="Unit" use="optional">
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="C" />
+              <xs:enumeration value="K" />
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:attribute>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:complexType name="TemperatureFunctionType">
+    <xs:sequence>
+      <xs:element type="TemperatureType" name="Temperature" maxOccurs="unbounded" minOccurs="1" />
+    </xs:sequence>
+    <xs:attribute name="MathFunction" type="MathFunctionType" use="optional" />
+  </xs:complexType>
+
+  <xs:complexType name="PropertyType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attributeGroup ref="MeasurementType" />
+        <xs:attribute name="Property" use="required">
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="MolarConcentration" />
+              <xs:enumeration value="MolarMass" />
+              <xs:enumeration value="CompressibilityFactor" />
+              <xs:enumeration value="InternalEnergy" />
+              <xs:enumeration value="Enthalpy" />
+              <xs:enumeration value="Entropy" />
+              <xs:enumeration value="IsochoricHeatCapacity" />
+              <xs:enumeration value="IsobaricHeatCapacity " />
+              <xs:enumeration value="SpeedOfSound" />
+              <xs:enumeration value="GibbsEnergy" />
+              <xs:enumeration value="JouleThomsonCoefficient" />
+              <xs:enumeration value="IsentropicExponent" />
+              <xs:enumeration value="Density" />
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:attribute>
+        <xs:attribute name="Type" use="required">
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="single" />
+              <xs:enumeration value="double" />
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:attribute>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:complexType name="PropertiesType">
+    <xs:sequence>
+      <xs:element type="PropertyType" name="Property" maxOccurs="unbounded" minOccurs="1" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="PressureTemperatureType">
+    <xs:sequence>
+      <xs:element type="PressureFunctionType" name="PressureFunction" />
+      <xs:element type="TemperatureFunctionType" name="TemperatureFunction" />
+      <xs:element type="PropertiesType" name="Properties" />
+    </xs:sequence>
+    <xs:attribute type="xs:string" name="Name" use="optional" />
+  </xs:complexType>
+
+  <xs:complexType name="PressureTemperatureListType">
+    <xs:sequence>
+      <xs:element type="PressureTemperatureType" name="PressureTemperature" maxOccurs="unbounded" minOccurs="1" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="ConfigType">
+    <xs:sequence>
+      <xs:element type="CompositionType" name="Composition" />
+      <xs:element type="PressureTemperatureListType" name="PressureTemperatureList" />
+    </xs:sequence>
+    <xs:attribute type="xs:string" name="Name" use="optional" />
+  </xs:complexType>
+
+  <xs:complexType name="ConfigListType">
+    <xs:sequence>
+      <xs:element type="ConfigType" name="Config" maxOccurs="unbounded" minOccurs="1" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="configurationType">
+    <xs:all>
+      <xs:element type="xs:string" name="OpcUrl" minOccurs="1" />
+      <xs:element type="xs:string" name="OpcUser" minOccurs="0" />
+      <xs:element type="xs:string" name="OpcPassword" minOccurs="0" />
+      <xs:element type="xs:anyURI" name="DefaultNamespaceURI" minOccurs="1" />
+      <xs:element type="xs:float" name="Interval" minOccurs="1" />
+      <xs:element type="xs:boolean" name="ReadOnly" minOccurs="0" />
+      <xs:element name="EquationOfState" minOccurs="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="AGA8Detail" />
+            <xs:enumeration value="Gerg2008" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element type="ConfigListType" name="ConfigList" minOccurs="1" />
+    </xs:all>
+  </xs:complexType>
 </xs:schema>

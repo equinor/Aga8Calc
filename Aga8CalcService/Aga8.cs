@@ -56,6 +56,23 @@ namespace Aga8CalcService
         BadSum = 2
     }
 
+    public enum DensityError : int
+    {
+        Ok = 0,
+        IterationFail = 1,
+        PressureTooLow = 2,
+    }
+
+    interface IEquation : IDisposable
+    {
+        void SetComposition(Aga8Composition composition, ref CompositionError err);
+        void SetPressure(double pressure);
+        void SetTemperature(double temperature);
+        void CalculateDensity(ref DensityError err);
+        void CalculateProperties();
+        double GetProperty(ConfigModel.Aga8ResultCode resultCode);
+    }
+
     internal class AGA8DetailHandle : SafeHandle
     {
         public AGA8DetailHandle() : base(IntPtr.Zero, true) { }
@@ -72,7 +89,7 @@ namespace Aga8CalcService
         }
     }
 
-    public class AGA8Detail : IDisposable
+    public class AGA8Detail : IEquation
     {
         private readonly AGA8DetailHandle aga8;
         private Aga8Properties ResultProperties;
@@ -108,9 +125,9 @@ namespace Aga8CalcService
             return NativeMethods.Aga8GetDensity(aga8);
         }
 
-        public void CalculateDensity()
+        public void CalculateDensity(ref DensityError err)
         {
-            NativeMethods.Aga8CalculateDensity(aga8);
+            NativeMethods.Aga8CalculateDensity(aga8, ref err);
         }
 
         public void CalculateProperties()
@@ -121,37 +138,23 @@ namespace Aga8CalcService
 
         public double GetProperty(ConfigModel.Aga8ResultCode resultCode)
         {
-            switch (resultCode)
+            return resultCode switch
             {
-                case ConfigModel.Aga8ResultCode.MolarConcentration:
-                    return ResultProperties.d;
-                case ConfigModel.Aga8ResultCode.MolarMass:
-                    return ResultProperties.mm;
-                case ConfigModel.Aga8ResultCode.CompressibilityFactor:
-                    return ResultProperties.z;
-                case ConfigModel.Aga8ResultCode.InternalEnergy:
-                    return ResultProperties.u;
-                case ConfigModel.Aga8ResultCode.Enthalpy:
-                    return ResultProperties.h;
-                case ConfigModel.Aga8ResultCode.Entropy:
-                    return ResultProperties.s;
-                case ConfigModel.Aga8ResultCode.IsochoricHeatCapacity:
-                    return ResultProperties.cv;
-                case ConfigModel.Aga8ResultCode.IsobaricHeatCapacity:
-                    return ResultProperties.cp;
-                case ConfigModel.Aga8ResultCode.SpeedOfSound:
-                    return ResultProperties.w;
-                case ConfigModel.Aga8ResultCode.GibbsEnergy:
-                    return ResultProperties.g;
-                case ConfigModel.Aga8ResultCode.JouleThomsonCoefficient:
-                    return ResultProperties.jt;
-                case ConfigModel.Aga8ResultCode.IsentropicExponent:
-                    return ResultProperties.kappa;
-                case ConfigModel.Aga8ResultCode.Density:
-                    return ResultProperties.d * ResultProperties.mm; // g/l = kg/m³
-                default:
-                    return ResultProperties.d;
-            }
+                ConfigModel.Aga8ResultCode.MolarConcentration => ResultProperties.d,
+                ConfigModel.Aga8ResultCode.MolarMass => ResultProperties.mm,
+                ConfigModel.Aga8ResultCode.CompressibilityFactor => ResultProperties.z,
+                ConfigModel.Aga8ResultCode.InternalEnergy => ResultProperties.u,
+                ConfigModel.Aga8ResultCode.Enthalpy => ResultProperties.h,
+                ConfigModel.Aga8ResultCode.Entropy => ResultProperties.s,
+                ConfigModel.Aga8ResultCode.IsochoricHeatCapacity => ResultProperties.cv,
+                ConfigModel.Aga8ResultCode.IsobaricHeatCapacity => ResultProperties.cp,
+                ConfigModel.Aga8ResultCode.SpeedOfSound => ResultProperties.w,
+                ConfigModel.Aga8ResultCode.GibbsEnergy => ResultProperties.g,
+                ConfigModel.Aga8ResultCode.JouleThomsonCoefficient => ResultProperties.jt,
+                ConfigModel.Aga8ResultCode.IsentropicExponent => ResultProperties.kappa,
+                ConfigModel.Aga8ResultCode.Density => ResultProperties.d * ResultProperties.mm,// g/l = kg/m³
+                _ => ResultProperties.d,
+            };
         }
 
         public void Dispose()
@@ -191,7 +194,7 @@ namespace Aga8CalcService
         }
     }
 
-    public class Gerg2008 : IDisposable
+    public class Gerg2008 : IEquation
     {
         private readonly Gerg2008Handle gerg;
         private Aga8Properties ResultProperties;
@@ -227,9 +230,9 @@ namespace Aga8CalcService
             return NativeMethods.GergGetDensity(gerg);
         }
 
-        public void CalculateDensity()
+        public void CalculateDensity(ref DensityError err)
         {
-            NativeMethods.GergCalculateDensity(gerg);
+            NativeMethods.GergCalculateDensity(gerg, ref err);
         }
 
         public void CalculateProperties()
@@ -240,37 +243,23 @@ namespace Aga8CalcService
 
         public double GetProperty(ConfigModel.Aga8ResultCode resultCode)
         {
-            switch (resultCode)
+            return resultCode switch
             {
-                case ConfigModel.Aga8ResultCode.MolarConcentration:
-                    return ResultProperties.d;
-                case ConfigModel.Aga8ResultCode.MolarMass:
-                    return ResultProperties.mm;
-                case ConfigModel.Aga8ResultCode.CompressibilityFactor:
-                    return ResultProperties.z;
-                case ConfigModel.Aga8ResultCode.InternalEnergy:
-                    return ResultProperties.u;
-                case ConfigModel.Aga8ResultCode.Enthalpy:
-                    return ResultProperties.h;
-                case ConfigModel.Aga8ResultCode.Entropy:
-                    return ResultProperties.s;
-                case ConfigModel.Aga8ResultCode.IsochoricHeatCapacity:
-                    return ResultProperties.cv;
-                case ConfigModel.Aga8ResultCode.IsobaricHeatCapacity:
-                    return ResultProperties.cp;
-                case ConfigModel.Aga8ResultCode.SpeedOfSound:
-                    return ResultProperties.w;
-                case ConfigModel.Aga8ResultCode.GibbsEnergy:
-                    return ResultProperties.g;
-                case ConfigModel.Aga8ResultCode.JouleThomsonCoefficient:
-                    return ResultProperties.jt;
-                case ConfigModel.Aga8ResultCode.IsentropicExponent:
-                    return ResultProperties.kappa;
-                case ConfigModel.Aga8ResultCode.Density:
-                    return ResultProperties.d * ResultProperties.mm;
-                default:
-                    return ResultProperties.d;
-            }
+                ConfigModel.Aga8ResultCode.MolarConcentration => ResultProperties.d,
+                ConfigModel.Aga8ResultCode.MolarMass => ResultProperties.mm,
+                ConfigModel.Aga8ResultCode.CompressibilityFactor => ResultProperties.z,
+                ConfigModel.Aga8ResultCode.InternalEnergy => ResultProperties.u,
+                ConfigModel.Aga8ResultCode.Enthalpy => ResultProperties.h,
+                ConfigModel.Aga8ResultCode.Entropy => ResultProperties.s,
+                ConfigModel.Aga8ResultCode.IsochoricHeatCapacity => ResultProperties.cv,
+                ConfigModel.Aga8ResultCode.IsobaricHeatCapacity => ResultProperties.cp,
+                ConfigModel.Aga8ResultCode.SpeedOfSound => ResultProperties.w,
+                ConfigModel.Aga8ResultCode.GibbsEnergy => ResultProperties.g,
+                ConfigModel.Aga8ResultCode.JouleThomsonCoefficient => ResultProperties.jt,
+                ConfigModel.Aga8ResultCode.IsentropicExponent => ResultProperties.kappa,
+                ConfigModel.Aga8ResultCode.Density => ResultProperties.d * ResultProperties.mm,
+                _ => ResultProperties.d,
+            };
         }
 
         public void Dispose()
@@ -292,5 +281,49 @@ namespace Aga8CalcService
             gerg.Close();
             disposed = true;
         }
+    }
+
+    internal class NativeMethods
+    {
+        // External dependency: aga8
+        // URL: https://github.com/royvegard/aga8
+        // Version: 0.4.0
+        [DllImport("aga8", EntryPoint = "aga8_new")]
+        internal static extern AGA8DetailHandle Aga8New();
+        [DllImport("aga8", EntryPoint = "aga8_free")]
+        internal static extern void Aga8Free(IntPtr aga8);
+        [DllImport("aga8", EntryPoint = "aga8_set_composition")]
+        internal static extern void Aga8SetComposition(AGA8DetailHandle aga8, Aga8Composition composition, ref CompositionError err);
+        [DllImport("aga8", EntryPoint = "aga8_set_pressure")]
+        internal static extern void Aga8SetPressure(AGA8DetailHandle aga8, double pressure);
+        [DllImport("aga8", EntryPoint = "aga8_set_temperature")]
+        internal static extern void Aga8SetTemperature(AGA8DetailHandle aga8, double temperature);
+        [DllImport("aga8", EntryPoint = "aga8_calculate_density")]
+        internal static extern void Aga8CalculateDensity(AGA8DetailHandle aga8, ref DensityError err);
+        [DllImport("aga8", EntryPoint = "aga8_get_density")]
+        internal static extern double Aga8GetDensity(AGA8DetailHandle aga8);
+        [DllImport("aga8", EntryPoint = "aga8_calculate_properties")]
+        internal static extern void Aga8CalculateProperties(AGA8DetailHandle aga8);
+        [DllImport("aga8", EntryPoint = "aga8_get_properties")]
+        internal static extern Aga8Properties Aga8GetProperties(AGA8DetailHandle aga8);
+
+        [DllImport("aga8", EntryPoint = "gerg_new")]
+        internal static extern Gerg2008Handle GergNew();
+        [DllImport("aga8", EntryPoint = "gerg_free")]
+        internal static extern void GergFree(IntPtr gerg);
+        [DllImport("aga8", EntryPoint = "gerg_set_composition")]
+        internal static extern void GergSetComposition(Gerg2008Handle gerg, Aga8Composition composition, ref CompositionError err);
+        [DllImport("aga8", EntryPoint = "gerg_set_pressure")]
+        internal static extern void GergSetPressure(Gerg2008Handle gerg, double pressure);
+        [DllImport("aga8", EntryPoint = "gerg_set_temperature")]
+        internal static extern void GergSetTemperature(Gerg2008Handle gerg, double temperature);
+        [DllImport("aga8", EntryPoint = "gerg_calculate_density")]
+        internal static extern void GergCalculateDensity(Gerg2008Handle gerg, ref DensityError err);
+        [DllImport("aga8", EntryPoint = "gerg_get_density")]
+        internal static extern double GergGetDensity(Gerg2008Handle aggerga8);
+        [DllImport("aga8", EntryPoint = "gerg_calculate_properties")]
+        internal static extern void GergCalculateProperties(Gerg2008Handle gerg);
+        [DllImport("aga8", EntryPoint = "gerg_get_properties")]
+        internal static extern Aga8Properties GergGetProperties(Gerg2008Handle gerg);
     }
 }

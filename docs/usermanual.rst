@@ -60,69 +60,6 @@ They can be seen by running::
 
     PS C:\Program Files\Aga8Calc> .\Aga8CalcService.exe --help
 
-This will produce this output:
-
-::
-
-    Command-Line Reference
-
-    Aga8CalcService.exe [verb] [-option:value] [-switch]
-
-        run                 Runs the service from the command line (default)
-        help, --help        Displays help
-
-        install             Installs the service
-
-        --autostart       The service should start automatically (default)
-        --disabled        The service should be set to disabled
-        --manual          The service should be started manually
-        --delayed         The service should start automatically (delayed)
-        -instance         An instance name if registering the service
-                            multiple times
-        -username         The username to run the service
-        -password         The password for the specified username
-        --localsystem     Run the service with the local system account
-        --localservice    Run the service with the local service account
-        --networkservice  Run the service with the network service permission
-        --interactive     The service will prompt the user at installation for
-                            the service credentials
-        start             Start the service after it has been installed
-        --sudo            Prompts for UAC if running on Vista/W7/2008
-
-        -servicename      The name that the service should use when
-                            installing
-        -description      The service description the service should use when
-                            installing
-        -displayname      The display name the the service should use when
-                            installing
-
-        start               Starts the service if it is not already running
-
-        stop                Stops the service if it is running
-
-        uninstall           Uninstalls the service
-
-        -instance         An instance name if registering the service
-                            multiple times
-        --sudo            Prompts for UAC if running on Vista/W7/2008
-
-    Examples:
-
-        Aga8CalcService.exe install
-            Installs the service into the service control manager
-
-        Aga8CalcService.exe install -username:joe -password:bob --autostart
-            Installs the service using the specified username/password and
-            configures the service to start automatically at machine startup
-
-        Aga8CalcService.exe uninstall
-            Uninstalls the service
-
-        Aga8CalcService.exe install -instance:001
-            Installs the service, appending the instance name to the service name
-            so that the service can be installed multiple times. You may need to
-            tweak the log4net.config to make this play nicely with the log files.
-
 
 Configuration
 -------------
@@ -136,6 +73,7 @@ The configuration file is structured like the example below.
       <OpcUrl>opc.tcp://lt-103009:62548/Quickstarts/DataAccessServer</OpcUrl>
       <OpcUser>xxx</OpcUser>
       <OpcPassword>xxx</OpcPassword>
+      <DefaultNamespaceURI>http://test.org/UA/Alarms/</DefaultNamespaceURI>
       <Interval>1000</Interval>
       <EquationOfState>AGA8Detail</EquationOfState>
       <ConfigList>
@@ -158,6 +96,8 @@ The configuration file is structured like the example below.
 
 -   `<OpcUser>` and `<OpcPassword>` are used to select what user name and password to use to connect to the OPC server.
 
+-   `<DefaultNamespaceURI>` is used to set the default namespace URI to be used if no namespace URI is specified for the individual nodes.
+
 -   `<Interval>` is used to set the update interval of the calculation task.
     The interval is set in milli seconds, so 1000 would be 1 second.
 
@@ -174,31 +114,31 @@ Every `<Config>` element is structured like below.
 .. code-block:: xml
 
     <Config Name="GC 1">
-      <Composition>
-        <Component Name="Methane" Tag="ns=2;s=1:AI1001?A" ScaleFactor="0.01" />
-        <Component Name="Nitrogen" Tag="ns=2;s=1:AI1001?J" ScaleFactor="0.01" />
-        <Component Name="Carbon dioxide" Tag="ns=2;s=1:AI1001?K" ScaleFactor="0.01" />
-        <Component Name="Ethane" Tag="ns=2;s=1:AI1001?B" ScaleFactor="0.01" />
-        <Component Name="Propane" Tag="ns=2;s=1:AI1001?C" ScaleFactor="0.01" />
-        <Component Name="Isobutane" Tag="ns=2;s=1:AI1001?D" ScaleFactor="0.01" />
-        <Component Name="n-Butane" Tag="ns=2;s=1:AI1001?E" ScaleFactor="0.01" />
-        <Component Name="Isopentane" Tag="ns=2;s=1:AI1001?F" ScaleFactor="0.01" />
-        <Component Name="n-Pentane" Tag="ns=2;s=1:AI1001?G" ScaleFactor="0.01" />
-        <Component Name="Hexane" Tag="ns=2;s=1:AI1001?I" ScaleFactor="0.01" />
+      <Composition SamplingInterval="90000" Normalize="true">
+        <Component Name="Methane" Identifier="s=1:AI1001?A" ScaleFactor="0.01" />
+        <Component Name="Nitrogen" Identifier="s=1:AI1001?J" ScaleFactor="0.01" />
+        <Component Name="CarbonDioxide" Identifier="s=1:AI1001?K" ScaleFactor="0.01" />
+        <Component Name="Ethane" StartIdentifier="i=28" RelativePath="Ethane" ScaleFactor="0.01" />
+        <Component Name="Propane" Identifier="s=1:AI1001?C" ScaleFactor="0.01" />
+        <Component Name="IsoButane" RelativePath="20AI0001/IsoButane" ScaleFactor="0.01" />
+        <Component Name="NormalButane" Identifier="s=1:AI1001?E" ScaleFactor="0.01" />
+        <Component Name="IsoPentane" Identifier="s=1:AI1001?F" ScaleFactor="0.01" />
+        <Component Name="NormalPentane" Identifier="s=1:AI1001?G" ScaleFactor="0.01" />
+        <Component Name="Hexane" Identifier="s=1:AI1001?I" ScaleFactor="0.01" />
         <Component Name="Heptane" ScaleFactor="1.0" Value="0.0002471" />
       </Composition>
       <PressureTemperatureList>
         <PressureTemperature Name="Point 1">
           <PressureFunction MathFunction="Min">
-            <Pressure Name="P 1" Tag="ns=2;s=1:AI1001?Pressure" Unit="barg" />
-            <Pressure Name="P 2" Tag="ns=2;s=1:AI1002?Pressure" Unit="barg" />
+            <Pressure Name="P 1" Identifier="s=1:AI1001?Pressure" Unit="barg" ScaleFactor="0.5" />
+            <Pressure Name="P 2" Identifier="s=1:AI1002?Pressure" Unit="barg" SamplingInterval="1000" />
           </PressureFunction>
           <TemperatureFunction MathFunction="Max">
-            <Temperature Name="T 1" Tag="ns=2;s=1:AI1001?Temperature" Unit="C" />
-            <Temperature Name="T 2" Tag="ns=2;s=1:AI1002?Temperature" Unit="C" />
+            <Temperature Name="T 1" Identifier="s=1:AI1001?Temperature" Unit="C" />
+            <Temperature Name="T 2" Identifier="s=1:AI1002?Temperature" Unit="C" SamplingInterval="5000" />
           </TemperatureFunction>
           <Properties>
-            <Property Tag="ns=2;s=1:AI1001?Result" Property="MolarConcentration" Type="single" />
+            <Property Identifier="s=1:AI1001?Result" Property="MolarConcentration" Type="single" />
           </Properties>
         </PressureTemperature>
       </PressureTemperatureList>
@@ -208,39 +148,50 @@ Every `<Config>` element is structured like below.
 This holds the values that is read from, and the result written back to the OPC server.
 
 -   `<Composition>` contains up to 21 `<Component>` elements where each one contains attributes for the component.
-    Attributes:
+    `<Composition>` can have the following attributes:
 
-    - `Name` is used to identify the component in the log files.
-    - `Tag` is the OPC item to read the value from.
+    - `SamplingInterval` is the default sampling interval that will be requested for the monitored items for the OPC subscription.
+    - `Normalize` can be set to `true` to automatically normalize the composition sum to 1.0.
+
+    Attributes for `<Component>`:
+
+    - `Name` is used to identify the component.
+      The available names are:
+
+      - Methane
+      - Nitrogen
+      - CarbonDioxide
+      - Ethane
+      - Propane
+      - IsoButane
+      - NormalButane
+      - IsoPentane
+      - NormalPentane
+      - Hexane
+      - Heptane
+      - Octane
+      - Nonane
+      - Decane
+      - Hydrogen
+      - Oxygen
+      - CarbonMonoxide
+      - Water
+      - HydrogenSulfide
+      - Helium
+      - Argon
+
+    - `NamespaceURI` is the namespace URI for the OPC node to read.
+      If this is empty, the DefaultNamespaceURI will be used.
+    - `Identifier` is the OPC identifierType and identifier of the node to be read from.
+    - `StartIdentifier` is the start Node for the RelativePath.
+    - `RelativePath` is the path to the wanted node, relative to StartIdentifier.
     - `ScaleFactor` is used to scale the individual component values into the mol fraction range from 0-1.
     - `Value` is used to set a constant value for the component.
 
-    Tag and Value can not both be used at the same time for a component. Use one or the other!
+    Identifier and Value can not both be used at the same time for a component. Use one or the other!
 
-    The sort order of the `<Component>` elements is significant.
-    They must be in this order:
-
-    - Methane
-    - Nitrogen
-    - Carbon dioxide
-    - Ethane
-    - Propane
-    - Isobutane
-    - n-Butane
-    - Isopentane
-    - n-Pentane
-    - Hexane
-    - Heptane
-    - Octane
-    - Nonane
-    - Decane
-    - Hydrogen
-    - Oxygen
-    - Carbon monoxide
-    - Water
-    - Hydrogen sulfide
-    - Helium
-    - Argon
+    To read values from an OPC server either the `Identifier`, or the `RelativePath` with `StartIdentifier` can be used.
+    When using `RelativePath` the `StartIdentifier` is optional. If `StartIdentifier` is not specified it will default to the Objects folder.
 
 -   `<PressureTemperatureList>` can contain several `<PressureTemperature>` elements.
     Every `<PressureTemperature>` element contains the pressure and temperature to read, and one or more properties that is to be written to the OPC server.
@@ -257,7 +208,9 @@ This holds the values that is read from, and the result written back to the OPC 
 
     The `<Pressure>` elements have the following attributes:
 
-    - `Tag` is the OPC item to read.
+    - `Identifier` is the OPC identifierType and identifier of the node to be read from.
+    - `ScaleFactor` is used to scale the pressure to the expected unit.
+      For example to scale from mbarg to barg, ScaleFactor should be set to 0.001.
     - `Unit` is the expected engineering unit of the pressure value.
       This is used to convert the pressure value to the unit needed for the Aga8 equation of state, namely [kPa].
       The possible units are:
@@ -272,7 +225,7 @@ This holds the values that is read from, and the result written back to the OPC 
 
     The `<Temperature>` element have the following attributes:
 
-    - `Tag` is the OPC item to read.
+    - `Identifier` is the OPC identifierType and identifier of the node to be read from.
     - `Unit` is the expected engineering unit of the temperature value.
       This is used to convert the temperature to the proper unit - [K].
       The possible temperature units are:
@@ -284,7 +237,7 @@ This holds the values that is read from, and the result written back to the OPC 
     These are the results that will be written to the OPC server.
     The Attributes of the `<Property>` element are:
 
-    - `Tag` is the OPC item to write to.
+    - `Identifier` is the OPC identifierType and identifier of the node to be read from.
     - `Property` is the result that will be written to the OPC item.
       The possible options are:
 
@@ -317,36 +270,37 @@ A complete configuration file could look like this.
       <OpcUrl>opc.tcp://lt-103009:62548/Quickstarts/DataAccessServer</OpcUrl>
       <OpcUser>username</OpcUser>
       <OpcPassword>password</OpcPassword>
+      <DefaultNamespaceURI>http://test.org/UA/Alarms/</DefaultNamespaceURI>
       <Interval>10000.0</Interval>
       <EquationOfState>Gerg2008</EquationOfState>
       <ConfigList>
         <Config Name="GC 1">
           <Composition>
-            <Component Name="Methane" Tag="ns=2;s=1:AI1001?A" ScaleFactor="0.01" />
-            <Component Name="Nitrogen" Tag="ns=2;s=1:AI1001?J" ScaleFactor="0.01" />
-            <Component Name="Carbon dioxide" Tag="ns=2;s=1:AI1001?K" ScaleFactor="0.01" />
-            <Component Name="Ethane" Tag="ns=2;s=1:AI1001?B" ScaleFactor="0.01" />
-            <Component Name="Propane" Tag="ns=2;s=1:AI1001?C" ScaleFactor="0.01" />
-            <Component Name="Isobutane" Tag="ns=2;s=1:AI1001?D" ScaleFactor="0.01" />
-            <Component Name="n-Butane" Tag="ns=2;s=1:AI1001?E" ScaleFactor="0.01" />
-            <Component Name="Isopentane" Tag="ns=2;s=1:AI1001?F" ScaleFactor="0.01" />
-            <Component Name="n-Pentane" Tag="ns=2;s=1:AI1001?G" ScaleFactor="0.01" />
-            <Component Name="Hexane" Tag="ns=2;s=1:AI1001?I" ScaleFactor="0.01" />
+            <Component Name="Methane" Identifier="s=1:AI1001?A" ScaleFactor="0.01" />
+            <Component Name="Nitrogen" Identifier="s=1:AI1001?J" ScaleFactor="0.01" />
+            <Component Name="CarbonDioxide" Identifier="s=1:AI1001?K" ScaleFactor="0.01" />
+            <Component Name="Ethane" Identifier="s=1:AI1001?B" ScaleFactor="0.01" />
+            <Component Name="Propane" Identifier="s=1:AI1001?C" ScaleFactor="0.01" />
+            <Component Name="IsoButane" Identifier="s=1:AI1001?D" ScaleFactor="0.01" />
+            <Component Name="NormalButane" Identifier="s=1:AI1001?E" ScaleFactor="0.01" />
+            <Component Name="IsoPentane" Identifier="s=1:AI1001?F" ScaleFactor="0.01" />
+            <Component Name="NormalPentane" Identifier="s=1:AI1001?G" ScaleFactor="0.01" />
+            <Component Name="Hexane" NamespaceURI="http://analyzer.local/" Identifier="s=1:AI1001?I" ScaleFactor="0.01" />
             <Component Name="Heptane" ScaleFactor="1.0" Value="0.0002471" />
           </Composition>
           <PressureTemperatureList>
             <PressureTemperature Name="Point 1">
               <PressureFunction MathFunction="Min">
-                <Pressure Name="P 1" Tag="ns=2;s=1:AI1001?Pressure" Unit="barg" />
-                <Pressure Name="P 2" Tag="ns=2;s=1:AI1002?Pressure" Unit="bara" />
+                <Pressure Name="P 1" Identifier="s=1:AI1001?Pressure" Unit="barg" />
+                <Pressure Name="P 2" NamespaceURI="http://field-trans.local/" Identifier="s=1:AI1002?Pressure" Unit="bara" />
               </PressureFunction>
               <TemperatureFunction MathFunction="Max">
-                <Temperature Name="T 1" Tag="ns=2;s=1:AI1001?Temperature" Unit="C" />
-                <Temperature Name="T 2" Tag="ns=2;s=1:AI1002?Temperature" Unit="K" />
+                <Temperature Name="T 1" NamespaceURI="http://field-trans.local/" Identifier="s=1:AI1001?Temperature" Unit="C" />
+                <Temperature Name="T 2" NamespaceURI="http://field-trans.local/" Identifier="s=1:AI1002?Temperature" Unit="K" />
               </TemperatureFunction>
               <Properties>
-                <Property Tag="ns=2;s=1:AI1001?Result" Property="MolarConcentration" Type="single" />
-                <Property Tag="ns=2;s=1:AI1002?Result" Property="Density" Type="double" />
+                <Property Identifier="s=1:AI1001?Result" Property="MolarConcentration" Type="single" />
+                <Property Identifier="s=1:AI1002?Result" Property="Density" Type="double" />
               </Properties>
             </PressureTemperature>
           </PressureTemperatureList>
@@ -379,16 +333,20 @@ Sequence Diagram
     == Init ==
     Aga8Calc -> OpcServer : Connect request
     OpcServer --> Aga8Calc : Connect granted
+    Aga8Calc -> OpcServer : Subscription request
+    OpcServer --> Aga8Calc : Subscription granted
 
     == Main loop ==
     loop forever
-        Aga8Calc -> OpcServer : Poll pressure, temperature and composition
-        OpcServer --> Aga8Calc : Return pressure, temperature, composition
-
         hnote over Aga8Calc : Calculate results
 
         Aga8Calc -> OpcServer : Write results
 
         hnote over Aga8Calc : Wait <interval> ms
     end
+
+    group Subscription
+      OpcServer --> Aga8Calc : Subscription notification
+    end
+
     @enduml

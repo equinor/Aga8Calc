@@ -16,6 +16,7 @@ namespace Aga8CalcService
         private static bool autoAccept = false;
         private readonly UserIdentity user;
         private static readonly NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
+        public string[] namespaces;
 
         public Aga8OpcClient(string endpointUrl, string username, string password)
         {
@@ -77,7 +78,7 @@ namespace Aga8CalcService
                     logger.Warn("Missing application certificate, using unsecure connection.");
                 }
 
-                logger.Info($"Discover endpoints of { endpointUrl }.");
+                logger.Info($"Discover endpoints of {endpointUrl}.");
                 var selectedEndpoint = CoreClientUtils.SelectEndpoint(endpointUrl, haveAppCertificate, 15000);
 
                 logger.Info(CultureInfo.InvariantCulture, "Selected endpoint uses: {0}",
@@ -88,6 +89,13 @@ namespace Aga8CalcService
                 var endpoint = new ConfiguredEndpoint(null, selectedEndpoint, endpointConfiguration);
 
                 OpcSession = await Session.Create(config, endpoint, false, "OPC UA Console Client", 60000, user, null);
+
+                namespaces = OpcSession.NamespaceUris.ToArray();
+
+                for (int i = 0; i < namespaces.Length; i++)
+                {
+                    logger.Info(CultureInfo.InvariantCulture, "Namespace {0}: '{1}'", i, namespaces[i]);
+                }
 
                 // register keep alive handler
                 OpcSession.KeepAlive += Client_KeepAlive;
@@ -118,7 +126,7 @@ namespace Aga8CalcService
             }
         }
 
-        private void Client_KeepAlive(Session sender, KeepAliveEventArgs e)
+        private void Client_KeepAlive(ISession sender, KeepAliveEventArgs e)
         {
             if (e.Status != null && ServiceResult.IsNotGood(e.Status))
             {
@@ -141,7 +149,7 @@ namespace Aga8CalcService
                 return;
             }
 
-            OpcSession = reconnectHandler.Session;
+            OpcSession = reconnectHandler.Session as Session;
             reconnectHandler.Dispose();
             reconnectHandler = null;
 

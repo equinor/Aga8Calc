@@ -10,11 +10,11 @@ namespace Aga8CalcService
         {
             var exitCode = HostFactory.Run(x =>
             {
-                x.Service<Heartbeat>(s =>
+                x.Service<Aga8Calc>(s =>
                 {
-                    s.ConstructUsing(heartbeat => new Heartbeat());
-                    s.WhenStarted(heartbeat => heartbeat.Start());
-                    s.WhenStopped(heartbeat => heartbeat.Stop());
+                    s.ConstructUsing(aga8Calc => new Aga8Calc());
+                    s.WhenStarted(aga8Calc => aga8Calc.Start());
+                    s.WhenStopped(aga8Calc => aga8Calc.Stop());
                 });
 
                 x.RunAsLocalSystem();
