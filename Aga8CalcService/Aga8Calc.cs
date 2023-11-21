@@ -6,7 +6,6 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Reflection;
 using System.Timers;
-using System.Xml.Linq;
 
 namespace Aga8CalcService
 {
@@ -98,9 +97,17 @@ namespace Aga8CalcService
                 foreach (var comp in c.Composition.Item)
                 {
                     compositionSum += comp.GetScaledValue();
-                    logger.Debug(CultureInfo.InvariantCulture, "Component {0}, scaled value {1}", comp.Name, comp.GetScaledValue());
+                    logger.Debug(CultureInfo.InvariantCulture, "Config {0} Component {1}, scaled value {2}", c.Name, comp.Name, comp.GetScaledValue());
                 }
                 logger.Debug(CultureInfo.InvariantCulture, "Composition sum {0}", compositionSum);
+
+                if ( Math.Abs(compositionSum - 1.0) > 0.2)
+                {
+                    c.Composition.Quality = StatusCodes.Bad;
+                    logger.Error(CultureInfo.InvariantCulture, "Calculation aborted. Cause: invalid composition for {0}: {1}",
+                        c.Name, compositionError.ToString());
+                    continue;
+                }
 
                 Aga8Composition composition = c.Composition.GetScaledValues();
                 if (c.Composition.Normalize)
@@ -186,6 +193,8 @@ namespace Aga8CalcService
                             | StatusCode.IsNotGood(pt.PressureFunction.Quality))
                         {
                             status.Code = StatusCodes.Bad;
+                            logger.Error(CultureInfo.InvariantCulture, "PT point \"{0}\" invalid. Property values will not be written to OPC.", pt.Name);
+                            continue;
                         }
 
                     foreach (var property in pt.Properties.Item)
@@ -206,6 +215,12 @@ namespace Aga8CalcService
                     item.NodeId.ToString(),
                     item.Value.Value,
                     item.Value.StatusCode.ToString());
+            }
+
+            if (conf.ReadOnly)
+            {
+                logger.Info("Read only mode active. No values written to OPC server.");
+                return;
             }
 
             try
@@ -239,7 +254,7 @@ namespace Aga8CalcService
 
             subscription = new Subscription(_client.OpcSession.DefaultSubscription)
             {
-                DisplayName = "Console ReferenceClient Subscription",
+                DisplayName = "Aga8Calc",
                 PublishingEnabled = true,
                 PublishingInterval = Convert.ToInt32(conf.Interval / 2.0),
                 LifetimeCount = 0,
@@ -258,6 +273,7 @@ namespace Aga8CalcService
                     MonitoredItem item = new(subscription.DefaultItem);
                     item.StartNodeId = comp.NodeId;
                     item.AttributeId = Attributes.Value;
+                    item.DisplayName = comp.Name.ToString();
                     item.SamplingInterval  = c.Composition.SamplingInterval;
                     item.QueueSize = 1;
                     item.DiscardOldest = true;
@@ -281,6 +297,7 @@ namespace Aga8CalcService
                         MonitoredItem item = new(subscription.DefaultItem);
                         item.StartNodeId = pm.NodeId;
                         item.AttributeId = Attributes.Value;
+                        item.DisplayName = pm.Name;
                         item.SamplingInterval = pm.SamplingInterval;
                         item.QueueSize = 1;
                         item.DiscardOldest = true;
@@ -296,6 +313,7 @@ namespace Aga8CalcService
                         MonitoredItem item = new(subscription.DefaultItem);
                         item.StartNodeId = tm.NodeId;
                         item.AttributeId = Attributes.Value;
+                        item.DisplayName = tm.Name;
                         item.SamplingInterval = tm.SamplingInterval;
                         item.QueueSize = 1;
                         item.DiscardOldest = true;
@@ -314,52 +332,55 @@ namespace Aga8CalcService
 
         private void OnMonitoredItemNotification(MonitoredItem monitoredItem, MonitoredItemNotificationEventArgs e)
         {
-            try
+            lock (WorkerLock)
             {
-                MonitoredItemNotification notification = e.NotificationValue as MonitoredItemNotification;
-                logger.Debug(CultureInfo.InvariantCulture, "Subscription: {0}, Notification: {1} \"{2}\" Value = {3}", monitoredItem.Subscription.Id, notification.Message.SequenceNumber, monitoredItem.DisplayName, notification.Value);
-
-                if (notification != null)
+                try
                 {
-                    foreach (var c in conf.ConfigList.Item)
+                    MonitoredItemNotification notification = e.NotificationValue as MonitoredItemNotification;
+                    logger.Debug(CultureInfo.InvariantCulture, "Subscription: {0}, Notification: {1} \"{2}\" Value = {3}", monitoredItem.Subscription.Id, notification.Message.SequenceNumber, monitoredItem.DisplayName, notification.Value);
+
+                    if (notification != null)
                     {
-                        foreach (Component comp in c.Composition.Item)
+                        foreach (var c in conf.ConfigList.Item)
                         {
-                            if (string.IsNullOrEmpty(comp.NodeId)) { continue; }
-
-                            if (monitoredItem.StartNodeId.ToString() == comp.NodeId)
+                            foreach (Component comp in c.Composition.Item)
                             {
-                                comp.Value = Convert.ToDouble(notification.Value.Value);
-                            }
-                        }
+                                if (string.IsNullOrEmpty(comp.NodeId)) { continue; }
 
-                        foreach (PressureTemperature pt in c.PressureTemperatureList.Item)
-                        {
-                            foreach (PressureMeasurement pm in pt.PressureFunction.Item)
-                            {
-                                if (string.IsNullOrEmpty(pm.NodeId)) { continue; }
-
-                                if (monitoredItem.StartNodeId.ToString() == pm.NodeId)
+                                if (monitoredItem.StartNodeId.ToString() == comp.NodeId)
                                 {
-                                    pm.Value = Convert.ToDouble(notification.Value.Value);
+                                    comp.Value = Convert.ToDouble(notification.Value.Value);
                                 }
                             }
-                            foreach (TemperatureMeasurement tm in pt.TemperatureFunction.Item)
-                            {
-                                if (string.IsNullOrEmpty(tm.NodeId)) { continue; }
 
-                                if (monitoredItem.StartNodeId.ToString() == tm.NodeId)
+                            foreach (PressureTemperature pt in c.PressureTemperatureList.Item)
+                            {
+                                foreach (PressureMeasurement pm in pt.PressureFunction.Item)
                                 {
-                                    tm.Value = Convert.ToDouble(notification.Value.Value);
+                                    if (string.IsNullOrEmpty(pm.NodeId)) { continue; }
+
+                                    if (monitoredItem.StartNodeId.ToString() == pm.NodeId)
+                                    {
+                                        pm.Value = Convert.ToDouble(notification.Value.Value);
+                                    }
+                                }
+                                foreach (TemperatureMeasurement tm in pt.TemperatureFunction.Item)
+                                {
+                                    if (string.IsNullOrEmpty(tm.NodeId)) { continue; }
+
+                                    if (monitoredItem.StartNodeId.ToString() == tm.NodeId)
+                                    {
+                                        tm.Value = Convert.ToDouble(notification.Value.Value);
+                                    }
                                 }
                             }
                         }
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                logger.Error(ex, "OnMonitoredItemNotification error");
+                catch (Exception ex)
+                {
+                    logger.Error(ex, "OnMonitoredItemNotification error");
+                }
             }
         }
 
