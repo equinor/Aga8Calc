@@ -10,4 +10,4 @@ Runs as a Windows service.
 See [documentation](https://aga8calc.readthedocs.io/en/stable/).
 
 ## External dependencies
-Aga8 calculation is performed by https://github.com/usnistgov/AGA8
+Aga8 calculation is performed by https://github.com/royvegard/aga8
