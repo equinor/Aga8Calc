@@ -9,7 +9,7 @@ using static Aga8CalcService.ConfigModel;
 
 namespace Aga8CalcService
 {
-    [XmlRoot("configuration")]
+    [XmlRoot("Aga8Calc")]
     public class ConfigModel
     {
         public enum Aga8Component

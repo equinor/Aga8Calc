@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<Aga8Calc xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <OpcUrl>opc.tcp://localhost:4840/freeopcua/server/</OpcUrl>
   <OpcUser></OpcUser>
   <OpcPassword></OpcPassword>
@@ -47,4 +47,4 @@
       </PressureTemperatureList>
     </Config>
   </ConfigList>
-</configuration>
+</Aga8Calc>
