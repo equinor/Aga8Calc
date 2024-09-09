@@ -101,7 +101,7 @@ namespace Aga8CalcService
                 }
                 logger.Debug(CultureInfo.InvariantCulture, "Composition sum {0}", compositionSum);
 
-                if ( Math.Abs(compositionSum - 1.0) > 0.2)
+                if (Math.Abs(compositionSum - 1.0) > 0.2)
                 {
                     c.Composition.Quality = StatusCodes.Bad;
                     logger.Error(CultureInfo.InvariantCulture, "Calculation aborted. Cause: invalid composition for {0}: {1}",
@@ -180,7 +180,7 @@ namespace Aga8CalcService
         private void WriteToOPC()
         {
             // Make a list of all the OPC items that we want to write
-            WriteValueCollection wvc = new();
+            WriteValueCollection wvc = [];
 
             foreach (var c in conf.ConfigList.Item)
             {
@@ -188,14 +188,14 @@ namespace Aga8CalcService
                 {
                     StatusCode status = new() { Code = StatusCodes.Good };
 
-                        if (StatusCode.IsNotGood(c.Composition.Quality)
-                            | StatusCode.IsNotGood(pt.TemperatureFunction.Quality)
-                            | StatusCode.IsNotGood(pt.PressureFunction.Quality))
-                        {
-                            status.Code = StatusCodes.Bad;
-                            logger.Error(CultureInfo.InvariantCulture, "PT point \"{0}\" invalid. Property values will not be written to OPC.", pt.Name);
-                            continue;
-                        }
+                    if (StatusCode.IsNotGood(c.Composition.Quality)
+                        | StatusCode.IsNotGood(pt.TemperatureFunction.Quality)
+                        | StatusCode.IsNotGood(pt.PressureFunction.Quality))
+                    {
+                        status.Code = StatusCodes.Bad;
+                        logger.Error(CultureInfo.InvariantCulture, "PT point \"{0}\" invalid. Property values will not be written to OPC.", pt.Name);
+                        continue;
+                    }
 
                     foreach (var property in pt.Properties.Item)
                     {
@@ -225,8 +225,9 @@ namespace Aga8CalcService
 
             try
             {
-                StatusCodeCollection results = new();
-                if (wvc.Count > 0) {
+                StatusCodeCollection results = [];
+                if (wvc.Count > 0)
+                {
                     _client.OpcSession.Write(null, wvc, out results, out DiagnosticInfoCollection diagnosticInfos);
                 }
 
@@ -269,15 +270,17 @@ namespace Aga8CalcService
                 foreach (Component comp in c.Composition.Item)
                 {
                     if (string.IsNullOrEmpty(comp.NodeId)) { continue; }
-                    
-                    MonitoredItem item = new(subscription.DefaultItem);
-                    item.StartNodeId = comp.NodeId;
-                    item.AttributeId = Attributes.Value;
-                    item.DisplayName = comp.Name.ToString();
-                    item.SamplingInterval  = c.Composition.SamplingInterval;
-                    item.QueueSize = 1;
-                    item.DiscardOldest = true;
-                    item.MonitoringMode = MonitoringMode.Reporting;
+
+                    MonitoredItem item = new(subscription.DefaultItem)
+                    {
+                        StartNodeId = comp.NodeId,
+                        AttributeId = Attributes.Value,
+                        DisplayName = comp.Name.ToString(),
+                        SamplingInterval = c.Composition.SamplingInterval,
+                        QueueSize = 1,
+                        DiscardOldest = true,
+                        MonitoringMode = MonitoringMode.Reporting
+                    };
                     item.Notification += OnMonitoredItemNotification;
 
                     if (comp.SamplingInterval != -2)
@@ -294,14 +297,16 @@ namespace Aga8CalcService
                     {
                         if (string.IsNullOrEmpty(pm.NodeId)) { continue; }
 
-                        MonitoredItem item = new(subscription.DefaultItem);
-                        item.StartNodeId = pm.NodeId;
-                        item.AttributeId = Attributes.Value;
-                        item.DisplayName = pm.Name;
-                        item.SamplingInterval = pm.SamplingInterval;
-                        item.QueueSize = 1;
-                        item.DiscardOldest = true;
-                        item.MonitoringMode = MonitoringMode.Reporting;
+                        MonitoredItem item = new(subscription.DefaultItem)
+                        {
+                            StartNodeId = pm.NodeId,
+                            AttributeId = Attributes.Value,
+                            DisplayName = pm.Name,
+                            SamplingInterval = pm.SamplingInterval,
+                            QueueSize = 1,
+                            DiscardOldest = true,
+                            MonitoringMode = MonitoringMode.Reporting
+                        };
                         item.Notification += OnMonitoredItemNotification;
 
                         subscription.AddItem(item);
@@ -310,14 +315,16 @@ namespace Aga8CalcService
                     {
                         if (string.IsNullOrEmpty(tm.NodeId)) { continue; }
 
-                        MonitoredItem item = new(subscription.DefaultItem);
-                        item.StartNodeId = tm.NodeId;
-                        item.AttributeId = Attributes.Value;
-                        item.DisplayName = tm.Name;
-                        item.SamplingInterval = tm.SamplingInterval;
-                        item.QueueSize = 1;
-                        item.DiscardOldest = true;
-                        item.MonitoringMode = MonitoringMode.Reporting;
+                        MonitoredItem item = new(subscription.DefaultItem)
+                        {
+                            StartNodeId = tm.NodeId,
+                            AttributeId = Attributes.Value,
+                            DisplayName = tm.Name,
+                            SamplingInterval = tm.SamplingInterval,
+                            QueueSize = 1,
+                            DiscardOldest = true,
+                            MonitoringMode = MonitoringMode.Reporting
+                        };
                         item.Notification += OnMonitoredItemNotification;
 
                         subscription.AddItem(item);
@@ -402,8 +409,8 @@ namespace Aga8CalcService
 
         private void GenerateNodeIdString(IEnumerable<Measurement> measurement)
         {
-            BrowsePathCollection pathsToTranslate = new();
-            List<string> paths = new();
+            BrowsePathCollection pathsToTranslate = [];
+            List<string> paths = [];
             TypeTable typeTable = new(new NamespaceTable());
 
             foreach (var m in measurement)
@@ -460,10 +467,9 @@ namespace Aga8CalcService
             if (pathsToTranslate.Count > 0)
             {
                 BrowsePathResultCollection results;
-                DiagnosticInfoCollection diagnosticInfos;
                 try
                 {
-                    _client.OpcSession.TranslateBrowsePathsToNodeIds(null, pathsToTranslate, out results, out diagnosticInfos);
+                    _client.OpcSession.TranslateBrowsePathsToNodeIds(null, pathsToTranslate, out results, out DiagnosticInfoCollection diagnosticInfos);
                 }
                 catch (Exception e)
                 {
@@ -475,7 +481,7 @@ namespace Aga8CalcService
                 {
                     if (string.IsNullOrEmpty(m.Identifier) && !string.IsNullOrEmpty(m.RelativePath))
                     {
-                        int index = Array.IndexOf(paths.ToArray(), m.RelativePath);
+                        int index = Array.IndexOf([.. paths], m.RelativePath);
                         if (index >= 0 && StatusCode.IsGood(results[index].StatusCode))
                         {
                             m.NodeId = results[index].Targets[0].TargetId.ToString();

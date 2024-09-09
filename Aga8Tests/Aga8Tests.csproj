@@ -8,13 +8,14 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <AssemblyTitle>Aga8Tests</AssemblyTitle>
     <Product>Aga8Tests</Product>
     <Copyright>Copyright ©  2019</Copyright>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
     <FileVersion>1.0.0.0</FileVersion>
+    <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\Aga8CalcService\Aga8Calc.csproj" />
@@ -29,25 +30,25 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.7.2" />
-    <PackageReference Include="MSTest.TestAdapter" Version="3.1.1" />
-    <PackageReference Include="MSTest.TestFramework" Version="3.1.1" />
-    <PackageReference Include="OPCFoundation.NetStandard.Opc.Ua.Client" Version="1.4.372.56" />
-    <PackageReference Include="OPCFoundation.NetStandard.Opc.Ua.Configuration" Version="1.4.372.56" />
-    <PackageReference Include="OPCFoundation.NetStandard.Opc.Ua.Core" Version="1.4.372.56" />
-    <PackageReference Include="OPCFoundation.NetStandard.Opc.Ua.Security.Certificates" Version="1.4.372.56" />
-    <PackageReference Include="OPCFoundation.NetStandard.Opc.Ua.Server" Version="1.4.372.56" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.0" />
+    <PackageReference Include="MSTest.TestAdapter" Version="3.5.2" />
+    <PackageReference Include="MSTest.TestFramework" Version="3.5.2" />
+    <PackageReference Include="OPCFoundation.NetStandard.Opc.Ua.Client" Version="1.5.374.78" />
+    <PackageReference Include="OPCFoundation.NetStandard.Opc.Ua.Configuration" Version="1.5.374.78" />
+    <PackageReference Include="OPCFoundation.NetStandard.Opc.Ua.Core" Version="1.5.374.78" />
+    <PackageReference Include="OPCFoundation.NetStandard.Opc.Ua.Security.Certificates" Version="1.5.374.78" />
+    <PackageReference Include="OPCFoundation.NetStandard.Opc.Ua.Server" Version="1.5.374.78" />
     <PackageReference Include="Portable.BouncyCastle" Version="1.9.0" />
     <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
-    <PackageReference Include="System.ComponentModel.Composition" Version="7.0.0" />
+    <PackageReference Include="System.ComponentModel.Composition" Version="8.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.0.0" />
-    <PackageReference Include="System.ServiceModel.Primitives" Version="6.0.0" />
-    <PackageReference Include="System.ServiceModel.Http" Version="6.0.0" />
+    <PackageReference Include="System.ServiceModel.Primitives" Version="8.0.0" />
+    <PackageReference Include="System.ServiceModel.Http" Version="8.0.0" />
     <PackageReference Include="System.ServiceModel.Duplex" Version="6.0.0" />
-    <PackageReference Include="System.ServiceModel.NetTcp" Version="6.0.0" />
+    <PackageReference Include="System.ServiceModel.NetTcp" Version="8.0.0" />
     <PackageReference Include="System.ServiceModel.Security" Version="6.0.0" />
-    <PackageReference Include="System.ServiceModel.Federation" Version="6.0.0" />
+    <PackageReference Include="System.ServiceModel.Federation" Version="8.0.0" />
   </ItemGroup>
   <ItemGroup>
     <None Update="Aga8Calc.config">

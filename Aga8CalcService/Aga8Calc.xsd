@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified"
   xmlns:xs="http://www.w3.org/2001/XMLSchema">
-  <xs:element name="configuration" type="configurationType" />
+  <xs:element name="Aga8Calc" type="configurationType" />
 
   <xs:attributeGroup name="MeasurementType">
     <xs:attribute type="xs:string" name="NamespaceURI" use="optional" />
@@ -165,7 +165,8 @@
 
   <xs:complexType name="PressureTemperatureListType">
     <xs:sequence>
-      <xs:element type="PressureTemperatureType" name="PressureTemperature" maxOccurs="unbounded" minOccurs="1" />
+      <xs:element type="PressureTemperatureType" name="PressureTemperature" maxOccurs="unbounded"
+        minOccurs="1" />
     </xs:sequence>
   </xs:complexType>
 

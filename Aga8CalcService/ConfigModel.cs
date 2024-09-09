@@ -9,7 +9,7 @@ using static Aga8CalcService.ConfigModel;
 
 namespace Aga8CalcService
 {
-    [XmlRoot("configuration")]
+    [XmlRoot("Aga8Calc")]
     public class ConfigModel
     {
         public enum Aga8Component
@@ -123,7 +123,7 @@ namespace Aga8CalcService
 
     public class ConfigList
     {
-        public ConfigList() { Item = new List<Config>(); }
+        public ConfigList() { Item = []; }
         [XmlElement("Config")]
         public List<Config> Item { get; }
     }
@@ -144,7 +144,7 @@ namespace Aga8CalcService
 
     public class CompositionList
     {
-        public CompositionList() { Item = new List<Component>(); }
+        public CompositionList() { Item = []; }
         [XmlAttribute]
         public int SamplingInterval { get; set; } = 180000;
         [XmlAttribute]
@@ -234,14 +234,14 @@ namespace Aga8CalcService
 
     public class PTList
     {
-        public PTList() { Item = new List<PressureTemperature>(); }
+        public PTList() { Item = []; }
         [XmlElement("PressureTemperature")]
         public List<PressureTemperature> Item { get; }
     }
 
     public class PressureFunction
     {
-        public PressureFunction() { Item = new List<PressureMeasurement>(); }
+        public PressureFunction() { Item = []; }
         [XmlElement("Pressure")]
         public List<PressureMeasurement> Item { get; }
 
@@ -285,7 +285,7 @@ namespace Aga8CalcService
                     break;
                 case ConfigModel.Func.Median:
                     value = 0.0;
-                    List<double> v = new();
+                    List<double> v = [];
                     foreach (var it in Item)
                     {
                         v.Add(it.GetAGA8Converted());
@@ -319,7 +319,7 @@ namespace Aga8CalcService
 
     public class TemperatureFunction
     {
-        public TemperatureFunction() { Item = new List<TemperatureMeasurement>(); }
+        public TemperatureFunction() { Item = []; }
         [XmlElement("Temperature")]
         public List<TemperatureMeasurement> Item { get; }
 
@@ -363,7 +363,7 @@ namespace Aga8CalcService
                     break;
                 case ConfigModel.Func.Median:
                     value = 0.0;
-                    List<double> v = new();
+                    List<double> v = [];
                     foreach (var it in Item)
                     {
                         v.Add(it.GetAGA8Converted());
@@ -413,7 +413,7 @@ namespace Aga8CalcService
 
     public class PropertyList
     {
-        public PropertyList() { Item = new List<PropertyMeasurement>(); }
+        public PropertyList() { Item = []; }
         [XmlElement("Property")]
         public List<PropertyMeasurement> Item { get; }
     }

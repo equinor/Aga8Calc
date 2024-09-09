@@ -47,7 +47,7 @@ namespace Aga8CalcService
             {
                 logger.Info("Create an Application Configuration.");
 
-                ApplicationInstance application = new ApplicationInstance
+                ApplicationInstance application = new()
                 {
                     ApplicationName = "Aga8 Calc Client",
                     ApplicationType = ApplicationType.Client,
@@ -82,7 +82,7 @@ namespace Aga8CalcService
                 var selectedEndpoint = CoreClientUtils.SelectEndpoint(endpointUrl, haveAppCertificate, 15000);
 
                 logger.Info(CultureInfo.InvariantCulture, "Selected endpoint uses: {0}",
-                    selectedEndpoint.SecurityPolicyUri.Substring(selectedEndpoint.SecurityPolicyUri.LastIndexOf('#') + 1));
+                    selectedEndpoint.SecurityPolicyUri[(selectedEndpoint.SecurityPolicyUri.LastIndexOf('#') + 1)..]);
 
                 logger.Info("Create a session with OPC UA server.");
                 var endpointConfiguration = EndpointConfiguration.Create(config);
