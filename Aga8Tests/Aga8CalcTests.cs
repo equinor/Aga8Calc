@@ -507,7 +507,7 @@ namespace Aga8Tests
 
         // This test needs to have the OPC server mentioned
         // in the configuration file running.
-        [TestMethod]
+        //[TestMethod]
         public async Task Aga8OpcClient_Constructor()
         {
             string TagConfFile = AppDomain.CurrentDomain.BaseDirectory.ToString(CultureInfo.InvariantCulture) + "\\Tag_Config_Test.xml";
@@ -521,7 +521,7 @@ namespace Aga8Tests
             client.DisConnect();
         }
 
-        [TestMethod]
+        //[TestMethod]
         public void Aga8OpcClient_Communicate()
         {
             ConfigModel config = ReadConfig("Aga8Calc.config");
