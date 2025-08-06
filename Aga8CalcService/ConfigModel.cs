@@ -476,9 +476,12 @@ namespace Aga8CalcService
             ScaleFactor = 1.0;
         }
 
+        /// <summary>
+        /// Convert from Unit to kPa absolute.
+        /// </summary>
+
         public double GetAGA8Converted()
         {
-            // Convert from Unit to kPa absolute
             double result = 0.0;
             switch (Unit)
             {
@@ -495,9 +498,11 @@ namespace Aga8CalcService
             return (result);
         }
 
+        /// <summary>
+        /// Convert from kPa absolute to Unit.
+        /// </summary>
         public double GetUnitConverted()
         {
-            // Convert from kPa absolute to Unit
             double result = 0.0;
             switch (Unit)
             {
