@@ -422,7 +422,7 @@ namespace Aga8CalcService
 
                 if (!string.IsNullOrEmpty(m.Identifier) && !string.IsNullOrEmpty(m.RelativePath))
                 {
-                    logger.Warn(CultureInfo.InvariantCulture, "Identifier \"{0}\" and RelativePath \"{1}\" defined for \"{2}\". Identifier will be used and RelativePath will be ignored.", m.Identifier, m.RelativePath, "placeholder");
+                    logger.Warn(CultureInfo.InvariantCulture, "Identifier \"{0}\" and RelativePath \"{1}\" defined. Identifier will be used and RelativePath will be ignored.", m.Identifier, m.RelativePath);
                 }
 
                 string namespaceURI = conf.DefaultNamespaceURI;
@@ -484,6 +484,10 @@ namespace Aga8CalcService
                         int index = Array.IndexOf([.. paths], m.RelativePath);
                         if (index >= 0 && StatusCode.IsGood(results[index].StatusCode))
                         {
+                            if (results[index].Targets.Count > 1)
+                            {
+                                logger.Warn("Found multiple targets for path \"{0}\"", m.RelativePath);
+                            }
                             m.NodeId = results[index].Targets[0].TargetId.ToString();
                             logger.Debug(CultureInfo.InvariantCulture, "RelativePath \"{0}\" translates to NodeId \"{1}\"", m.RelativePath, m.NodeId);
                         }
