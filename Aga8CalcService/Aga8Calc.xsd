@@ -127,7 +127,7 @@
               <xs:enumeration value="Enthalpy" />
               <xs:enumeration value="Entropy" />
               <xs:enumeration value="IsochoricHeatCapacity" />
-              <xs:enumeration value="IsobaricHeatCapacity " />
+              <xs:enumeration value="IsobaricHeatCapacity" />
               <xs:enumeration value="SpeedOfSound" />
               <xs:enumeration value="GibbsEnergy" />
               <xs:enumeration value="JouleThomsonCoefficient" />
