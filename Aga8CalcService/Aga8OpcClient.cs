@@ -58,7 +58,7 @@ namespace Aga8CalcService
                 ApplicationConfiguration config = await application.LoadApplicationConfiguration(false);
 
                 // check the application certificate.
-                bool haveAppCertificate = await application.CheckApplicationInstanceCertificate(false, 0, 10 * 12);
+                bool haveAppCertificate = await application.CheckApplicationInstanceCertificates(false, 10 * 12);
                 if (!haveAppCertificate)
                 {
                     throw new Exception("Application instance certificate invalid!");
