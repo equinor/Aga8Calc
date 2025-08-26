@@ -205,26 +205,6 @@ namespace Aga8Tests
             ConfigModel.ReadConfig(file);
         }
 
-        /*
-        [TestMethod]
-        public void ReadConfig_ReadsAConfigFile()
-        {
-            string TagConfFile = AppDomain.CurrentDomain.BaseDirectory.ToString(CultureInfo.InvariantCulture) + "\\Tag_Config_Test.xml";
-            ConfigModel conf = ConfigModel.ReadConfig(TagConfFile);
-
-            Assert.AreEqual("opc.tcp://lt-103009:62548/Quickstarts/DataAccessServer", conf.OpcUrl);
-            Assert.AreEqual("username", conf.OpcUser);
-            Assert.AreEqual("password", conf.OpcPassword);
-            Assert.AreEqual(42.0, conf.Interval, 1.0e-5);
-            Assert.AreEqual("ns=2;s=1:AI1001?A", conf.ConfigList.Item[0].Composition.Item[0].Tag);
-            Assert.AreEqual("24PI1234", conf.ConfigList.Item[0].PressureTag);
-            Assert.AreEqual(Config.PressureUnits.barg, conf.ConfigList.Item[0].PressureUnit);
-            Assert.AreEqual("24TI1234", conf.ConfigList.Item[0].TemperatureTag);
-            Assert.AreEqual(Config.TemperatureUnits.C, conf.ConfigList.Item[0].TemperatureUnit);
-            Assert.AreEqual("24DI1234", conf.ConfigList.Item[0].ResultTag);
-            Assert.AreEqual(Config.Aga8ResultCode.Density, conf.ConfigList.Item[0].Calculation);
-        }
-        */
         [TestMethod]
         public void Aga8_CalculatesProperties()
         {
@@ -535,7 +515,7 @@ namespace Aga8Tests
             [TestMethod]
             public void ConfigModel_ReadConfig()
             {
-                string TagConfFile = AppDomain.CurrentDomain.BaseDirectory.ToString(CultureInfo.InvariantCulture) + "\\Tag_Config_Test.xml";
+                string TagConfFile = AppDomain.CurrentDomain.BaseDirectory.ToString(CultureInfo.InvariantCulture) + "\\Aga8Calc.config";
                 ConfigModel.ReadConfig(TagConfFile);
             }
 

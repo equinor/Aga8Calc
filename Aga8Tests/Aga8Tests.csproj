@@ -25,7 +25,7 @@
       <Link>aga8.dll</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Tag_Config_Test.xml">
+    <Content Include="Aga8Calc.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
