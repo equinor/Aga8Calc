@@ -199,19 +199,26 @@ namespace Aga8CalcService
 
                     foreach (var property in pt.Properties.Item)
                     {
-                        wvc.Add(new WriteValue
+                        try
                         {
-                            NodeId = property.NodeId,
-                            AttributeId = Attributes.Value,
-                            Value = new DataValue { Value = property.GetTypedValue(), StatusCode = status }
-                        });
+                            wvc.Add(new WriteValue
+                            {
+                                NodeId = property.NodeId,
+                                AttributeId = Attributes.Value,
+                                Value = new DataValue { Value = property.GetTypedValue(), StatusCode = status }
+                            });
+                        }
+                        catch (Exception e)
+                        {
+                            logger.Error(e, "Error adding OPC write value \"{0}\"", property.NodeId);
+                        }
                     }
                 }
             }
 
             foreach (var item in wvc)
             {
-                logger.Debug(CultureInfo.InvariantCulture, "Item to write: \"{0}\" Value: {1} {2}",
+                logger.Debug(CultureInfo.InvariantCulture, "Node to write: \"{0}\" Value: {1} {2}",
                     item.NodeId.ToString(),
                     item.Value.Value,
                     item.Value.StatusCode.ToString());
@@ -235,7 +242,7 @@ namespace Aga8CalcService
                 {
                     if (results[i].Code != 0)
                     {
-                        logger.Error(CultureInfo.InvariantCulture, "Write result: \"{0}\" Tag: \"{1}\" Value: \"{2}\" Type: \"{3}\"",
+                        logger.Error(CultureInfo.InvariantCulture, "Write result: \"{0}\" NodeId: \"{1}\" Value: \"{2}\" Type: \"{3}\"",
                             results[i].ToString(), wvc[i].NodeId, wvc[i].Value.Value, wvc[i].Value.Value.GetType().ToString());
                     }
                 }
@@ -415,7 +422,7 @@ namespace Aga8CalcService
 
             foreach (var m in measurement)
             {
-                if (string.IsNullOrEmpty(m.Identifier) && string.IsNullOrEmpty(m.RelativePath))
+                if (!string.IsNullOrEmpty(m.NodeId) || string.IsNullOrEmpty(m.Identifier) && string.IsNullOrEmpty(m.RelativePath))
                 {
                     continue;
                 }

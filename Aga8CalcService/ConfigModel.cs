@@ -452,7 +452,7 @@ namespace Aga8CalcService
         [XmlIgnore]
         public StatusCode Quality { get; set; }
 
-        [XmlIgnore]
+        [XmlAttribute]
         public string NodeId { get; set; }
 
         public double GetScaledValue()

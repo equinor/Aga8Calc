@@ -4,6 +4,7 @@
   <xs:element name="Aga8Calc" type="configurationType" />
 
   <xs:attributeGroup name="MeasurementType">
+    <xs:attribute type="xs:string" name="NodeId" use="optional" />
     <xs:attribute type="xs:string" name="NamespaceURI" use="optional" />
     <xs:attribute type="xs:string" name="Identifier" use="optional" />
     <xs:attribute type="xs:string" name="RelativePath" use="optional" />
