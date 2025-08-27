@@ -69,7 +69,7 @@ The configuration file is structured like the example below.
 .. code-block:: xml
 
     <?xml version="1.0" encoding="utf-8"?>
-    <configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <Aga8Calc xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
       <OpcUrl>opc.tcp://lt-103009:62548/Quickstarts/DataAccessServer</OpcUrl>
       <OpcUser>xxx</OpcUser>
       <OpcPassword>xxx</OpcPassword>
@@ -87,9 +87,9 @@ The configuration file is structured like the example below.
         ...
         </Config>
       </ConfigList>
-    </configuration>
+    </Aga8Calc>
 
--   `<configuration>` is the root element.
+-   `<Aga8Calc>` is the root element.
     All other elements live inside this one.
 
 -   `<OpcUrl>` is used to select what OPC server to connect to.
@@ -266,7 +266,7 @@ A complete configuration file could look like this.
 .. code-block:: xml
 
     <?xml version="1.0" encoding="utf-8"?>
-    <configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <Aga8Calc xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
       <OpcUrl>opc.tcp://lt-103009:62548/Quickstarts/DataAccessServer</OpcUrl>
       <OpcUser>username</OpcUser>
       <OpcPassword>password</OpcPassword>
@@ -306,7 +306,7 @@ A complete configuration file could look like this.
           </PressureTemperatureList>
         </Config>
       </ConfigList>
-    </configuration>
+    </Aga8Calc>
 
 Files
 -----
