@@ -79,7 +79,7 @@ namespace Aga8CalcService
                 }
 
                 logger.Info($"Discover endpoints of {endpointUrl}.");
-                var selectedEndpoint = CoreClientUtils.SelectEndpoint(endpointUrl, haveAppCertificate, 15000);
+                var selectedEndpoint = CoreClientUtils.SelectEndpoint(config, endpointUrl, haveAppCertificate, 15000);
 
                 logger.Info(CultureInfo.InvariantCulture, "Selected endpoint uses: {0}",
                     selectedEndpoint.SecurityPolicyUri[(selectedEndpoint.SecurityPolicyUri.LastIndexOf('#') + 1)..]);
