@@ -596,10 +596,4 @@ namespace Aga8CalcService
 
         }
     }
-
-    public class TimeStampedMeasurement : Measurement
-    {
-        [XmlIgnore]
-        public DateTime TimeStamp { get; set; }
-    }
 }
