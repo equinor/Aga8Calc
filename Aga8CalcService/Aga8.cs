@@ -68,7 +68,7 @@ namespace Aga8CalcService
         void SetComposition(Aga8Composition composition, ref CompositionError err);
         void SetPressure(double pressure);
         void SetTemperature(double temperature);
-        void CalculateDensity(ref DensityError err);
+        void CalculateDensity(ref DensityError err, Int32 flag = 0);
         void CalculateProperties();
         double GetProperty(ConfigModel.Aga8ResultCode resultCode);
     }
@@ -125,7 +125,7 @@ namespace Aga8CalcService
             return NativeMethods.Aga8GetDensity(aga8);
         }
 
-        public void CalculateDensity(ref DensityError err)
+        public void CalculateDensity(ref DensityError err, Int32 flag = 0)
         {
             NativeMethods.Aga8CalculateDensity(aga8, ref err);
         }
@@ -230,9 +230,9 @@ namespace Aga8CalcService
             return NativeMethods.GergGetDensity(gerg);
         }
 
-        public void CalculateDensity(ref DensityError err)
+        public void CalculateDensity(ref DensityError err, Int32 flag = 0)
         {
-            NativeMethods.GergCalculateDensity(gerg, ref err);
+            NativeMethods.GergCalculateDensity(gerg, flag, ref err);
         }
 
         public void CalculateProperties()
@@ -287,7 +287,7 @@ namespace Aga8CalcService
     {
         // External dependency: aga8
         // URL: https://github.com/royvegard/aga8
-        // Version: 0.4.0
+        // Version: 0.6.1
         [DllImport("aga8", EntryPoint = "aga8_new")]
         internal static extern AGA8DetailHandle Aga8New();
         [DllImport("aga8", EntryPoint = "aga8_free")]
@@ -318,9 +318,9 @@ namespace Aga8CalcService
         [DllImport("aga8", EntryPoint = "gerg_set_temperature")]
         internal static extern void GergSetTemperature(Gerg2008Handle gerg, double temperature);
         [DllImport("aga8", EntryPoint = "gerg_calculate_density")]
-        internal static extern void GergCalculateDensity(Gerg2008Handle gerg, ref DensityError err);
+        internal static extern void GergCalculateDensity(Gerg2008Handle gerg, Int32 flag, ref DensityError err);
         [DllImport("aga8", EntryPoint = "gerg_get_density")]
-        internal static extern double GergGetDensity(Gerg2008Handle aggerga8);
+        internal static extern double GergGetDensity(Gerg2008Handle gerg);
         [DllImport("aga8", EntryPoint = "gerg_calculate_properties")]
         internal static extern void GergCalculateProperties(Gerg2008Handle gerg);
         [DllImport("aga8", EntryPoint = "gerg_get_properties")]
