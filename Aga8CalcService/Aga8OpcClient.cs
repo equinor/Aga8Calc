@@ -10,7 +10,7 @@ namespace Aga8CalcService
     public sealed class Aga8OpcClient : IDisposable
     {
         private const int ReconnectPeriod = 10;
-        public Session OpcSession { get; set; }
+        public ISession OpcSession { get; set; }
         private SessionReconnectHandler reconnectHandler;
         private readonly string endpointUrl;
         private static bool autoAccept = false;
@@ -55,10 +55,10 @@ namespace Aga8CalcService
                 };
 
                 // load the application configuration.
-                ApplicationConfiguration config = await application.LoadApplicationConfiguration(false);
+                ApplicationConfiguration config = await application.LoadApplicationConfigurationAsync(false);
 
                 // check the application certificate.
-                bool haveAppCertificate = await application.CheckApplicationInstanceCertificates(false, 10 * 12);
+                bool haveAppCertificate = await application.CheckApplicationInstanceCertificatesAsync(false, 10 * 12);
                 if (!haveAppCertificate)
                 {
                     throw new Exception("Application instance certificate invalid!");
@@ -79,7 +79,7 @@ namespace Aga8CalcService
                 }
 
                 logger.Info($"Discover endpoints of {endpointUrl}.");
-                var selectedEndpoint = CoreClientUtils.SelectEndpoint(config, endpointUrl, haveAppCertificate, 15000);
+                var selectedEndpoint = await CoreClientUtils.SelectEndpointAsync(config, endpointUrl, haveAppCertificate, 15000);
 
                 logger.Info(CultureInfo.InvariantCulture, "Selected endpoint uses: {0}",
                     selectedEndpoint.SecurityPolicyUri[(selectedEndpoint.SecurityPolicyUri.LastIndexOf('#') + 1)..]);
@@ -88,7 +88,8 @@ namespace Aga8CalcService
                 var endpointConfiguration = EndpointConfiguration.Create(config);
                 var endpoint = new ConfiguredEndpoint(null, selectedEndpoint, endpointConfiguration);
 
-                OpcSession = await Session.Create(config, endpoint, false, "OPC UA Console Client", 60000, user, null);
+                var sessionFactory = TraceableSessionFactory.Instance;
+                OpcSession = await sessionFactory.CreateAsync(config, endpoint, false, "OPC UA Console Client", 60000, user, null);
 
                 namespaces = OpcSession.NamespaceUris.ToArray();
 
@@ -108,7 +109,7 @@ namespace Aga8CalcService
             }
         }
 
-        public void DisConnect()
+        public async Task DisConnect()
         {
             // stop any reconnect operation.
             if (reconnectHandler != null)
@@ -120,7 +121,7 @@ namespace Aga8CalcService
             // disconnect any existing session.
             if (OpcSession != null)
             {
-                OpcSession.Close(5000);
+                await OpcSession.CloseAsync(5000);
                 OpcSession.Dispose();
                 OpcSession = null;
             }
@@ -149,7 +150,7 @@ namespace Aga8CalcService
                 return;
             }
 
-            OpcSession = reconnectHandler.Session as Session;
+            OpcSession = reconnectHandler.Session as ISession;
             reconnectHandler.Dispose();
             reconnectHandler = null;
 
