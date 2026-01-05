@@ -84,6 +84,9 @@
     <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
     <PackageReference Include="System.ComponentModel.Composition" Version="10.0.0" />
     <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
+  <PackageReference Include="System.Private.Uri" Version="4.3.2" />
+  <PackageReference Include="System.Security.Cryptography.Pkcs" Version="6.0.3" />
+  <PackageReference Include="System.Text.RegularExpressions" Version="4.3.1" />
     <PackageReference Include="Topshelf" Version="4.3.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.1.2" />
